@@ -1,0 +1,68 @@
+.containerMain {
+  /* background-image: url("/backgroundHomeDes.png"),linear-gradient(to right bottom, rgb(6, 6, 38) 0%, rgb(87, 133, 180) 100%); */
+}
+@media screen and (max-width: 860px) {
+  .logo {
+    display: block;
+  }
+}
+.HeaderRightHome {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end !important;
+}
+@media only screen and (max-width: 600px) {
+  .containerMain {
+    height: inherit !important;
+    /* background-image: url("/backgroundHomeMobile.png"),linear-gradient(to right bottom, rgb(6, 6, 38) 0%, rgb(87, 133, 180) 100%); */
+  }
+  .HeaderLeftHome {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .HeaderRightHome {
+    display: flex;
+    align-items: center;
+    justify-content: center !important;
+  }
+  .image-homepage {
+    display: none !important;
+  }
+  .left-block-homepage {
+    text-align: center;
+    padding: 10 !important;
+  }
+  .left-block-home-button {
+    justify-content: center;
+  }
+  .logo-homepage {
+    margin-bottom: 35px;
+  }
+}
+
+.left-block-homepage {
+  padding: 40px !important;
+  padding-top: 0;
+  padding-right: 80px !important;
+  padding-bottom: 0;
+  align-self: center;
+}
+
+@media only screen and (max-width: 320px) {
+  .containerMain {
+    height: unset !important;
+    /* background-image: url("/backgroundHomeMobile.png"),linear-gradient(to right bottom, rgb(6, 6, 38) 0%, rgb(87, 133, 180) 100%); */
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .header-homepage {
+    padding-right: 20px;
+    padding-left: 40px;
+  }
+}
+
+.span-red {
+  color: tomato;
+}

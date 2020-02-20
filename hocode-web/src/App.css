@@ -1,0 +1,57 @@
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+a:visited {
+  color: #000000 !important;
+}
+a {
+  color: #000000 !important;
+}
+
+p,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Nunito Sans", sans-serif;
+}
+
+.centerDiv {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+@media only screen and (max-width: 600px) {
+  .configFormContainer {
+    flex-direction: column;
+  }
+
+  .configFormContainerItem {
+    min-width: 100%;
+  }
+}
+
+.MenuItemLinkBack {
+  color: #1f74be !important;
+}
