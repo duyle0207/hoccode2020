@@ -45,7 +45,7 @@ class MiniTaskPage extends Component {
       match: { params }
     } = this.props;
     axios
-      .get(`https://hocodevn.com/api/v1/minitasks/${params.minitaskId}`)
+      .get(`http://localhost:8081/api/v1/minitasks/${params.minitaskId}`)
       .then(res => {
         const minitask = res.data;
 
@@ -84,7 +84,7 @@ class MiniTaskPage extends Component {
       }));
       axios
         .get(
-          `https://hocodevn.com/api/v1/minitasks/${this.props.match.params.minitaskId}`
+          `http://localhost:8081/api/v1/minitasks/${this.props.match.params.minitaskId}`
         )
         .then(res => {
           const minitask = res.data;
@@ -250,7 +250,7 @@ class MiniTaskPage extends Component {
     console.log(junit4);
     //console.log(code);
     axios
-      .post("https://hocodevn.com/api/runner/java", {
+      .post("http://localhost:8081/api/runner/java", {
         code: code,
         test: junit4
       })
@@ -297,7 +297,7 @@ class MiniTaskPage extends Component {
     }));
 
     axios
-      .post("https://hocodevn.com/api/runner/java", {
+      .post("http://localhost:8081/api/runner/java", {
         code: code,
         test: junit4
       })
