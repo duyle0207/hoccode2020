@@ -12,7 +12,7 @@ class Certificate extends Component {
     // console.log(currentParams);
     // axios
     //   .get(
-    //     `https://hocodevn.com/api/v1/auth/courses/${currentParams.courseId}/tasks`
+    //     `http://localhost:8081/api/v1/auth/courses/${currentParams.courseId}/tasks`
     //   )
     //   .then(res => {
     //     console.log(res.data);

@@ -52,23 +52,23 @@ class Overview extends React.Component {
   }
   getApi = async () => {
     await Promise.all([
-      axios.get(`https://hocodevn.com/auth/usercourse`).then(res => {
+      axios.get(`http://localhost:8081/auth/usercourse`).then(res => {
         const courses = res.data;
         console.log(courses);
         this.setState({ courses: courses.course_info });
       }),
 
-      axios.get(`https://hocodevn.com/api/v1/events`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/events`).then(res => {
         const events = res.data;
         console.log(events);
         this.setState({ events });
       }),
-      axios.get(`https://hocodevn.com/api/v1/books`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/books`).then(res => {
         const books = res.data;
         console.log(books);
         this.setState({ books });
       }),
-      axios.get(`https://hocodevn.com/api/v1/dailyminitask`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/dailyminitask`).then(res => {
         const daily_minitasks = res.data;
         console.log(daily_minitasks);
         this.setState({ daily_minitasks: daily_minitasks });

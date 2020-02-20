@@ -53,12 +53,12 @@ class NavRight extends React.Component {
   }
   getApi = async () => {
     await Promise.all([
-      axios.get(`https://hocodevn.com/api/v1/books`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/books`).then(res => {
         const books = res.data;
         console.log(books);
         this.setState({ books });
       }),
-      axios.get(`https://hocodevn.com/api/v1/events`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/events`).then(res => {
         const events = res.data;
         console.log(events);
         this.setState({ events });

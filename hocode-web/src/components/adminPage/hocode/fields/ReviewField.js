@@ -30,7 +30,7 @@ const ReviewField = ({ source, record = {} }) => {
 
           axios
             .put(
-              `https://hocodevn.com/api/v1/curd/certs/${recordNew.id}`,
+              `http://localhost:8081/api/v1/curd/certs/${recordNew.id}`,
               recordNew
             )
             .then(res => {
@@ -52,7 +52,7 @@ const ReviewField = ({ source, record = {} }) => {
   
             axios
               .put(
-                `https://hocodevn.com/api/v1/curd/certs/${recordNew.id}`,
+                `http://localhost:8081/api/v1/curd/certs/${recordNew.id}`,
                 recordNew
               )
               .then(res => {

@@ -92,7 +92,7 @@ class SearchCertPage extends React.Component {
   onSubmitSearch = () => {
     this.setState({ isLoading: true, rows: [] });
     // console.log(this.state.searchID);
-    Axios.get(`https://hocodevn.com/api/v1/certs/search/${this.state.searchID}`)
+    Axios.get(`http://localhost:8081/api/v1/certs/search/${this.state.searchID}`)
       .then(res => {
         this.setState({ rows: res.data, isLoading: false });
         console.log(this.state.rows);

@@ -87,7 +87,7 @@ class Account extends React.Component {
   getApi = async () => {
     await Promise.all([
       axios
-        .get("https://hocodevn.com/auth/userinfo")
+        .get("http://localhost:8081/auth/userinfo")
         .then(res => {
           this.setState({
             firstName: res.data.firstname,

@@ -30,7 +30,7 @@ class CourseBody extends Component {
   }
   getApi=async () =>{
     await Promise.all([
-      axios.get(`https://hocodevn.com/api/v1/courses`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/courses`).then(res => {
         const courses = res.data;
         console.log(courses)
         this.setState({ courses });

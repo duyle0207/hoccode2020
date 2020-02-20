@@ -35,23 +35,23 @@ class PrintBody extends Component {
   getApi = async () => {
     await Promise.all([
       axios
-        .get(`https://hocodevn.com/api/v1/curd/configs/byname/hocode`)
+        .get(`http://localhost:8081/api/v1/curd/configs/byname/hocode`)
         .then(res => {
           console.log(res.data);
           const certificateConfig = res.data;
 
           this.setState({ review_point: certificateConfig.review_point });
         }),
-      axios.get("https://hocodevn.com/auth/userinfo").then(res => {
+      axios.get("http://localhost:8081/auth/userinfo").then(res => {
         console.log(res.data);
         this.setState({ user_codepoint: res.data.codepoint });
       }),
-      axios.get(`https://hocodevn.com/auth/completeminitask`).then(res => {
+      axios.get(`http://localhost:8081/auth/completeminitask`).then(res => {
         const minitasks = res.data;
         console.log(minitasks);
         this.setState({ minitasks });
       }),
-      axios.get(`https://hocodevn.com/api/v1/auth/viewcert`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/auth/viewcert`).then(res => {
         const certificate = res.data;
         console.log(res.data); 
         this.setState({certificateViewStart: certificate });
@@ -68,7 +68,7 @@ class PrintBody extends Component {
       openDialogCertificate: true
     });
     await Promise.all([
-      axios.get(`https://hocodevn.com/api/v1/auth/reviewcert`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/auth/reviewcert`).then(res => {
         const certificate = res.data;
         console.log(res.data);
         this.setState({ certificateViewStart:certificate });

@@ -62,7 +62,7 @@ class ModelTaskCreate extends Component {
   }
 
   componentDidMount() {
-    axios.get("https://hocodevn.com/api/v1/courses").then(res => {
+    axios.get("http://localhost:8081/api/v1/courses").then(res => {
       this.setState({ course: res.data, isLoading: false });
     });
   }
@@ -105,7 +105,7 @@ class ModelTaskEdit extends Component {
   }
 
   componentDidMount() {
-    axios.get("https://hocodevn.com/api/v1/courses").then(res => {
+    axios.get("http://localhost:8081/api/v1/courses").then(res => {
       this.setState({ course: res.data, isLoading: false });
     });
   }

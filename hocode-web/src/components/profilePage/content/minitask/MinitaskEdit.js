@@ -109,7 +109,7 @@ class MinitaskEdit extends Component {
     // console.log(currentParams);
     let minitask;
     axios
-      .get(`https://hocodevn.com/api/v1/minitasks/${this.props.minitasksId}`)
+      .get(`http://localhost:8081/api/v1/minitasks/${this.props.minitasksId}`)
       .then(res => {
         console.log(res.data);
         minitask = res.data;
@@ -141,7 +141,7 @@ class MinitaskEdit extends Component {
           level_ref_select: found2
         });
       });
-    axios.get(`https://hocodevn.com/api/v1/courses`).then(res => {
+    axios.get(`http://localhost:8081/api/v1/courses`).then(res => {
       const courses = res.data;
       const coursesFilter = courses.filter(course => course.tasks.length > 0); // chọn những courses có task
       const coursesoption = coursesFilter.map(course => {
@@ -247,7 +247,7 @@ class MinitaskEdit extends Component {
     };
     axios
       .put(
-        `https://hocodevn.com/api/v1/curd/minitasks/${this.props.minitasksId}`,
+        `http://localhost:8081/api/v1/curd/minitasks/${this.props.minitasksId}`,
         newMiniTask
       )
       .then(function(response) {

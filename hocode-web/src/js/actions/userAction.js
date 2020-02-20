@@ -5,7 +5,7 @@ export const submitUpdateMinitask = (minitask_id, task_id) => dispatch => {
   console.log({minitask_id: minitask_id,
     task_id: task_id})
   axios
-    .post("https://hocodevn.com/api/v1/auth/updateusercourse", {
+    .post("http://localhost:8081/api/v1/auth/updateusercourse", {
       minitask_id: minitask_id,
       task_id: task_id
     })
@@ -26,7 +26,7 @@ export const changeUserInfo = (newUser, userId) => dispatch => {
     payload: true
   });
   axios
-    .post("https://hocodevn.com/auth/userinfoupdate", {
+    .post("http://localhost:8081/auth/userinfoupdate", {
       id: userId,
       avatar: newUser.avatar,
       password: newUser.password,
@@ -46,7 +46,7 @@ export const changeUserInfo = (newUser, userId) => dispatch => {
 
 export const getUser = () => dispatch => {
   axios
-    .get("https://hocodevn.com/auth/userinfo")
+    .get("http://localhost:8081/auth/userinfo")
     .then(res => {
       dispatch({
         type: GET_USER,

@@ -47,7 +47,7 @@ class TaskBody extends Component {
     console.log(currentParams);
     axios
       .get(
-        `https://hocodevn.com/api/v1/auth/courses/${currentParams.courseId}/tasks`
+        `http://localhost:8081/api/v1/auth/courses/${currentParams.courseId}/tasks`
       )
       .then(res => {
         console.log(res.data);
@@ -56,7 +56,7 @@ class TaskBody extends Component {
         this.setState({ tasks: tasks1, isLoading: false });
       });
     axios
-      .get(`https://hocodevn.com/api/v1/courses/${currentParams.courseId}`)
+      .get(`http://localhost:8081/api/v1/courses/${currentParams.courseId}`)
       .then(res => {
         const course = res.data;
         console.log(course);
@@ -82,7 +82,7 @@ class TaskBody extends Component {
 
     axios
       .put(
-        `https://hocodevn.com/api/v1/curd/courses/${currentParams.courseId}`,
+        `http://localhost:8081/api/v1/curd/courses/${currentParams.courseId}`,
         newcourse
       )
       .then(res => {

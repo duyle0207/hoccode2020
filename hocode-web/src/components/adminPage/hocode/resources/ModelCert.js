@@ -61,7 +61,7 @@ class ModelCertList extends Component {
   componentDidMount() {
     axios
       .get(
-        `https://hocodevn.com/api/v1/curd/configs/byname/${this.state.name_site}`
+        `http://localhost:8081/api/v1/curd/configs/byname/${this.state.name_site}`
       )
       .then(res => {
         console.log(res.data);
@@ -101,7 +101,7 @@ class ModelCertList extends Component {
 
     this.setState({ isLoading: true });
     axios
-      .post(`https://hocodevn.com/api/v1/curd/configs`, dataUpdate)
+      .post(`http://localhost:8081/api/v1/curd/configs`, dataUpdate)
       .then(res => {
         this.setState({
           name: res.data.name,
@@ -288,7 +288,7 @@ class ModelCertCreate extends Component {
   }
 
   componentDidMount() {
-    axios.get("https://hocodevn.com/api/v1/courses").then(res => {
+    axios.get("http://localhost:8081/api/v1/courses").then(res => {
       this.setState({ course: res.data, isLoading: false });
     });
   }
@@ -333,7 +333,7 @@ class ModelCertEdit extends Component {
   }
 
   componentDidMount() {
-    axios.get("https://hocodevn.com/api/v1/courses").then(res => {
+    axios.get("http://localhost:8081/api/v1/courses").then(res => {
       this.setState({ course: res.data, isLoading: false });
     });
   }
