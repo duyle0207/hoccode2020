@@ -9,16 +9,19 @@ const PrivateRoute = ({ component: Component, auth, ...rest }) => (
       auth.isAuthenticated === true ? ( // xet cho chô nay quyen voi username == giang moi dc cho vao router nay
         <Component {...props} />
       ) : (
-        <Redirect to="/login" />
-      )
+          <Redirect to="/login" />
+        )
     }
   />
 );
 PrivateRoute.propTypes = {
   auth: PropTypes.object
 };
+
 const mapStateToProps = (state) => {
+  console.log(state);
   return ({
-  auth: state.rootReducer.auth,
-})};
+    auth: state.rootReducer.auth,
+  })
+};
 export default connect(mapStateToProps)(PrivateRoute);

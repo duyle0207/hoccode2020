@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -75,6 +76,9 @@ func (h *Handler) Login(c echo.Context) (err error) {
 	}
 
 	ur.Token = t
+	fmt.Println("")
+	fmt.Println(token)
+	fmt.Println("")
 
 	// if err = db.DB(config.NameDb).C("course").Update(bson.M{"_id": ur.ID}, bson.M{"$set": bson.M{"token": t}}); err != nil {
 	// 	return echo.ErrInternalServerError
@@ -84,12 +88,38 @@ func (h *Handler) Login(c echo.Context) (err error) {
 
 }
 
+func (h *Handler) IsNewAccount(c echo.Context) (err error) {
+
+	user:= &model.User{}
+
+	if err = c.Bind(user); err != nil {
+		return  err
+	}
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	us := &model.User{}
+
+	if err = db.DB(config.NameDb).C("users").
+		Find(bson.M{
+			"email":user.Email,
+			"del": bson.M{"$ne": true},
+			}).One(us); err != nil {
+		return c.JSON(http.StatusOK, "new")
+	} else {
+		return c.JSON(http.StatusOK, "old")
+	}
+}
+
 func (h *Handler) SignUp(c echo.Context) (err error) {
 	ur := &model.User{}
 
 	if err = c.Bind(ur); err != nil {
 		return err
 	}
+
+	ur.Avatar = "https://ui-avatars.com/api/?name=" + ur.FirstName + "+" + ur.LastName
 
 	// Validation
 	if ur.Email == "" || ur.Password == "" {
@@ -107,6 +137,11 @@ func (h *Handler) SignUp(c echo.Context) (err error) {
 	defer db.Close()
 
 	urF := &model.User{}
+
+	e := db.DB(config.NameDb).C("users").
+		Find(bson.M{"email": ur.Email, "del": bson.M{"$ne": true}}).One(urF)
+
+	fmt.Println(e)
 
 	if err = db.DB(config.NameDb).C("users").
 		Find(bson.M{"email": ur.Email, "del": bson.M{"$ne": true}}).One(urF); err != nil {

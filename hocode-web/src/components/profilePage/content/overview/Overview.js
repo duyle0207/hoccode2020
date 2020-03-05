@@ -56,6 +56,8 @@ class Overview extends React.Component {
         const courses = res.data;
         console.log(courses);
         this.setState({ courses: courses.course_info });
+      }).catch(err => {
+        console.log(err);
       }),
 
       axios.get(`http://localhost:8081/api/v1/events`).then(res => {

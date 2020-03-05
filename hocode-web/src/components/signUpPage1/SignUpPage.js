@@ -85,6 +85,7 @@ class SignUpPage extends React.Component {
       firstName: "",
       email: "",
       password: "",
+      socialAccount: "local",
       password2: "",
       errors: {},
       errorForm: {
@@ -184,12 +185,12 @@ class SignUpPage extends React.Component {
       });
       return;
     }
-
     const newUser = {
       lastName: this.state.lastName,
       firstName: this.state.firstName,
       email: this.state.email,
-      password: this.state.password
+      password: this.state.password,
+      socialAccount: this.state.socialAccount
     };
     console.log(newUser);
     this.props.registerUser(newUser, this.props.history);
@@ -199,7 +200,6 @@ class SignUpPage extends React.Component {
     if (val !== null || val !== "") {
       return false;
     }
-
     return true;
   }
 

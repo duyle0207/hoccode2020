@@ -8,6 +8,7 @@ import { logoutUser } from "../../../js/actions/authActions";
 import { getUser } from "../../../js/actions/userAction";
 import "./minitaskHeader.css";
 import UserMenu from "./UserMenu";
+
 class MiniTaskHeader extends Component {
   onLogout = e => {
     e.preventDefault();
@@ -71,7 +72,7 @@ class MiniTaskHeader extends Component {
               }}
             >
               <KeyboardBackspaceIcon style={{ fontSize: 16 }} />
-              <p style={{ fontSize: 14, marginLeft: "3px" }}>Back</p>
+            <p style={{ fontSize: 14, marginLeft: "3px" }}>Back</p>
             </div>
             <div
               className="miniTask_name"

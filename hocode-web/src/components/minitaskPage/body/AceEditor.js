@@ -25,19 +25,19 @@ class CodeEditor extends Component {
         editorProps={{
           $blockScrolling: Infinity
         }}
-        placeholder="Placeholder Text"
+        placeholder=""
         mode="java"
         theme="github"
         name="blah2"
         onLoad={this.onLoad}
         onChange={this.onChange} 
-        fontSize={14}
+        fontSize={18}
         showPrintMargin={true}
         showGutter={true}
         highlightActiveLine={true}
         value={`function onLoad(editor) {
-      console.log("i've loaded");
-    }`}
+          console.log("i've loaded");
+        }`}
         setOptions={{
           enableBasicAutocompletion: true,
           enableLiveAutocompletion: true,

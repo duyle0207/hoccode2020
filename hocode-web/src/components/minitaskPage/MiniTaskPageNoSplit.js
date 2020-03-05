@@ -250,7 +250,7 @@ class MiniTaskPage extends Component {
     console.log(junit4);
     //console.log(code);
     axios
-      .post("http://localhost:8081/api/runner/java", {
+      .post("http://localhost:8080/api/runner/java", {
         code: code,
         test: junit4
       })
@@ -297,7 +297,7 @@ class MiniTaskPage extends Component {
     }));
 
     axios
-      .post("http://localhost:8081/api/runner/java", {
+      .post("http://localhost:8080/api/runner/java", {
         code: code,
         test: junit4
       })

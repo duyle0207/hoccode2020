@@ -255,7 +255,7 @@ class MiniTaskPage extends Component {
     console.log(junit4);
     //console.log(code);
     axios
-      .post("http://localhost:8081/api/runner/java", {
+      .post("http://localhost:8080/api/runner/java", {
         code: code,
         test: junit4
       })
@@ -288,6 +288,7 @@ class MiniTaskPage extends Component {
         }.bind(this)
       );
   }
+
   submitCode() {
     this.setState((state, props) => ({
       result: {}
@@ -297,12 +298,16 @@ class MiniTaskPage extends Component {
     let junit4 = this.createFileTest(minitask);
 
     let code = `import java.lang.Math; \n public class Solution {\n    public Solution(){}\n    ${this.state.userCode}\n    }`;
+
     this.setState((state, props) => ({
       isLoading: true
     }));
 
+    console.log(code);
+    console.log(junit4);
+
     axios
-      .post("http://localhost:8081/api/runner/java", {
+      .post("http://localhost:8080/api/runner/java", {
         code: code,
         test: junit4
       })

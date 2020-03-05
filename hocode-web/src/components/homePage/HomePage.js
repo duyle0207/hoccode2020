@@ -124,8 +124,8 @@ class CourseBody extends Component {
               </Grid>
 
               <Grid item>
-                <Link
-                  to="/login"
+                <a
+                  href="/login"
                   style={{ textDecoration: "none", marginLeft: "30px" }}
                 >
                   <Button
@@ -141,7 +141,7 @@ class CourseBody extends Component {
                   >
                     Đăng nhập
                   </Button>
-                </Link>
+                </a>
               </Grid>
               <Grid item>
                 <Link
@@ -306,6 +306,7 @@ class CourseBody extends Component {
 const mapStateToProps = state => ({
   auth: state.rootReducer.auth
 });
+
 export default withStyles(styles)(connect(mapStateToProps, {})(CourseBody));
 
 // <Container className={classes.cardGrid} maxWidth="md">

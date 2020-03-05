@@ -17,6 +17,8 @@ type (
 		CodePoint int           `json:"codepoint" bson:"codepoint"`
 		Avatar    string        `json:"avatar" bson:"avatar"`
 		Role      string        `json:"role" bson:"role"`
+		SocialAccount string    `json:"socialAccount" bson:"socialAccount"`
+		Avt    string        	`json:"avt" bson:"avt"`
 		// Company []company      `json:"company,omitempty" bson:"company,omitempty"`
 		Timestamp time.Time `json:"timestamp" bson:"timestamp"`
 		Del       bool      `json:"del" bson:"del"`

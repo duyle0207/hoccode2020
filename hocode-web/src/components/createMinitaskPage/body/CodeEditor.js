@@ -21,10 +21,6 @@ import "codemirror/addon/hint/css-hint.js"
 
 
 
-
-
-
-
 class CodeEditor extends Component {
 
   render() {

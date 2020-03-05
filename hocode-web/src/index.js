@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/browser';
 
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
     // dev code
-} else {
+} else {    
     // production code
     Sentry.init({dsn: "https://cd5ce2da28be4dcfaea42bfa2f637fba@sentry.io/1827293"});
 }

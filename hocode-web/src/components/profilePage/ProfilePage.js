@@ -110,6 +110,8 @@ class ProfilePage extends React.Component {
       menu: 1
     };
     this.handleDrawerToggle = this.handleDrawerToggle.bind(this);
+
+    // console.log(this.props.match.url);
   }
 
   handleDrawerToggle() {

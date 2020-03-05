@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -45,6 +46,9 @@ func (h *Handler) Task(c echo.Context) (err error) {
 
 	for i := 0; i < len(ta); i++ {
 		mta := []*model.MiniTask{}
+
+		fmt.Println(ta[i].ID.Hex())
+		fmt.Println()
 
 		db.DB(config.NameDb).C("minitasks").
 			Find(bson.M{

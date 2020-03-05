@@ -13,9 +13,25 @@ import { withStyles } from "@material-ui/styles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import { connect } from "react-redux";
-import { loginUser } from "../../js/actions/authActions";
+import { loginUser, registerUser, setCurrentUser } from "../../js/actions/authActions";
+
+import FacebookLogin from 'react-facebook-login';
+import '../../App.css';
+import GoogleLogin from 'react-google-login';
+
+import axios from "axios";
+
+// import setAuthToken from "../../js/utils/setAuthToken";
+// import jwt_decode from "jwt-decode";
+
+import {
+  FacebookShareCount,
+  FacebookIcon,
+  FacebookShareButton
+} from "react-share";
 
 import "./LoginPage.css";
+
 
 const CssTextField = withStyles({
   root: {
@@ -60,7 +76,7 @@ const styles = {
     marginTop: 8
   },
   submit: {
-    margin: "16px 0px"
+    margin: "5px 0px"
   }
 };
 function Copyright() {
@@ -84,7 +100,14 @@ class LoginPage extends React.Component {
       password: "",
       remember: true,
       isLoading: false,
-      errors: {}
+      errors: {},
+      // userDataRegister: {
+      //   email: "",
+      //   password: "",
+      //   firstName: "",
+      //   lastName: "",
+      //   avatar: ""
+      // }
     };
   }
   componentDidMount() {
@@ -133,10 +156,112 @@ class LoginPage extends React.Component {
     loginF.then(val => {
       this.setState({ isLoading: false });
     });
+
   };
+
+  responseFacebook = (response) => {
+    console.log(response);
+
+    const userData = {
+      email: response.email,
+      password: response.email + response.id,
+      firstName: response.name,
+      lastName: "",
+      avt: response.picture.data.url,
+      socialAccount: "facebook",
+      remember: true
+    }
+
+    console.log(userData);
+
+    axios
+      .post("http://localhost:8081/api/v1/isNewAccount", userData)
+      .then(res => {
+        console.log(res);
+        if (res.data === "new") {
+          axios
+            .post("http://localhost:8081/api/v1/signup", userData)
+            .then(res => {
+
+              console.log(userData);
+
+              var loginF = Promise.all([this.props.loginUser(userData)]);
+
+              loginF.then(val => {
+                this.setState({ isLoading: false });
+              });
+            })
+        }
+        else {
+
+          var loginF = Promise.all([this.props.loginUser(userData)]);
+
+          loginF.then(val => {
+            this.setState({ isLoading: false });
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  responseGoogle = (response) => {
+    console.log(response);
+    console.log(response.profileObj.email);
+    console.log(response.accessToken);
+
+    const userData = {
+      email: response.profileObj.email,
+      avt: "https://lh3.googleusercontent.com/a-/AOh14Gi0t34hOD66OuZT-weICO7pHbpEs6g1Ni8ZcqXr6w=s96-c",
+      password: response.profileObj.email +
+        response.profileObj.googleId,
+      firstName: response.profileObj.givenName,
+      lastName: response.profileObj.familyName,
+      socialAccount: "google",
+      remember: true
+    }
+
+    axios
+      .post("http://localhost:8081/api/v1/isNewAccount", userData)
+      .then(res => {
+        console.log(res);
+        if (res.data === "new") {
+          axios
+            .post("http://localhost:8081/api/v1/signup", userData)
+            .then(res => {
+              console.log(res);
+
+              var loginF = Promise.all([this.props.loginUser(userData)]);
+
+              loginF.then(val => {
+                this.setState({ isLoading: false });
+              });
+
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
+        else {
+          var loginF = Promise.all([this.props.loginUser(userData)]);
+
+          loginF.then(val => {
+            this.setState({ isLoading: false });
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    console.log(userData);
+  }
+
   render() {
     const { errors } = this.state;
     const { classes } = this.props;
+    // const primary = red[500]; // #F44336
 
     return (
       <Container component="main" maxWidth="xs">
@@ -218,7 +343,7 @@ class LoginPage extends React.Component {
             {/* <Button fullWidth variant="contained" onClick={this.onSubmitTest}>
               Tài khoản admin test
             </Button> */}
-            
+
             <Button
               type="submit"
               fullWidth
@@ -233,10 +358,61 @@ class LoginPage extends React.Component {
                   style={{ margin: 2 }}
                 />
               ) : (
-                "Đăng nhập"
-              )}
+                  "Đăng nhập"
+                )}
             </Button>
-
+            <Grid container spacing={3}>
+              <Grid item xs={6} sm={3} ></Grid>
+              <Grid item xs={6} sm={3} ></Grid>
+              <Grid item xs={6} sm={3} >
+                <FacebookLogin
+                  isDisabled={false}
+                  appId="652851902151426" //APP ID NOT CREATED YET
+                  fields="name,email,picture"
+                  textButton=""
+                  scope="public_profile, email, user_birthday"
+                  returnScopes={true}
+                  size="small"
+                  icon={<i className="fab fa-facebook-f icon ml-3 mt-1"></i>}
+                  version="2.3"
+                  cssClass="btnFacebook"
+                  // icon="fa-facebook"
+                  callback={this.responseFacebook}
+                // autoLoad={true}
+                />
+                {/* <FacebookLogin
+                  appId="652851902151426" //APP ID NOT CREATED YET
+                  fields="name,email,picture"
+                  textButton="Facebook"
+                  size="small"
+                  icon={<i className="fab fa-facebook-f icon ml-3 mt-1"></i>}
+                  version="2.3"
+                  cssClass="btnFacebook"
+                  callback={this.responseFacebook}
+                // autoLoad={true}
+                /> */}
+                {/* <div class="fb-login-button" style={{ 'float': 'left' }} data-width="" data-size="large" data-button-type="continue_with" data-auto-logout-link="false" data-use-continue-as="false"></div> */}
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                {/* <div class="ui-content align-icon-right">
+              <span class="ui-text">
+                <img class="social-btn-icon" alt="Login with Facebook" src="https://hrcdn.net/fcore/assets/facebook-colored-af4249157d.svg" />
+              </span>
+            </div> */}
+                <GoogleLogin
+                  clientId="191659603798-o1h3pffa90vi6dkmufi1btf3t05vk8r7.apps.googleusercontent.com" //CLIENTID NOT CREATED YET
+                  // scope="profile,email"
+                  className="btnGoogle"
+                  // buttonText="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Google"
+                  buttonText=""
+                  icon={false}
+                  onSuccess={this.responseGoogle}
+                  onFailure={this.responseGoogle}
+                // autoLoad={true}
+                />
+                {/* <div class="fb-login-button" style={{ 'float': 'left' }} data-width="" data-size="large" data-button-type="continue_with" data-auto-logout-link="false" data-use-continue-as="false"></div> */}
+              </Grid>
+            </Grid>
             <Grid container>
               <Grid item xs>
                 <Link to="#" variant="body2">
@@ -249,12 +425,10 @@ class LoginPage extends React.Component {
                 </Link>
               </Grid>
             </Grid>
-
             <Grid container>
               <Grid item xs>
                 <Link to="#" variant="body2"></Link>
               </Grid>
-
               <Grid item>
                 <Typography variant="subtitle1">
                   <a
@@ -283,6 +457,14 @@ class LoginPage extends React.Component {
           </form>
         </div>
         <Box mt={8}>
+          <FacebookShareButton url="https://github.com/nygardk/react-share#readme" >
+            <FacebookIcon size={30} round={true} />
+            <FacebookShareCount url="https://github.com/nygardk/react-share#readme">
+              {shareCount => (
+                <span className="myShareCountWrapper">{shareCount}</span>
+              )}
+            </FacebookShareCount>
+          </FacebookShareButton>
           <Copyright />
         </Box>
       </Container>
@@ -294,5 +476,5 @@ const mapStateToProps = state => ({
   errors: state.rootReducer.errors
 });
 export default withStyles(styles)(
-  connect(mapStateToProps, { loginUser })(LoginPage)
+  connect(mapStateToProps, { loginUser, registerUser, setCurrentUser })(LoginPage)
 );

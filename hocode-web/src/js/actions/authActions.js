@@ -22,25 +22,29 @@ export const loginUser = userData => dispatch => {
   return axios
     .post("http://localhost:8081/api/v1/login", userData)
     .then(res => {
+      console.log(res.data);
       // Save to localStorage
 
       // Set token to localStorage
       const { token } = res.data;
 
       const decoded = jwt_decode(token);
+      console.log('Decode: ',decoded);
+      console.log('token: ',token);
+      console.log(userData);
       if (userData.remember) {
         localStorage.setItem("AuthToken", token);
 
         localStorage.setItem("token", token);
         localStorage.setItem("permissions", decoded.data.role);
-
         setAuthToken(token); // set token ở header
+
         // get user
       }
-
       console.log(decoded);
       // Set current user
       dispatch(setCurrentUser(decoded));
+
     })
     .catch(err =>
       dispatch({

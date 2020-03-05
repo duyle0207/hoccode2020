@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/duythien0912/hocode/config"
@@ -29,6 +30,8 @@ func (h *Handler) GetUserCourse(c echo.Context) (err error) {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	ID := claims["id"].(string)
+	fmt.Println("ID")
+	fmt.Println(ID)
 
 	db := h.DB.Clone()
 	defer db.Close()
@@ -44,7 +47,6 @@ func (h *Handler) GetUserCourse(c echo.Context) (err error) {
 			uc.CourseInfo = []*model.CourseInfo{}
 			return c.JSON(http.StatusOK, uc)
 		}
-
 		return
 	}
 
@@ -61,6 +63,30 @@ func (h *Handler) GetUserCourse(c echo.Context) (err error) {
 // @Param  course body model.BodyUC true "UpdateUserCourse"
 // @Success 200 {object} model.UserCourseOut
 // @Router /auth/updateusercourse [post]
+func (h *Handler) GetListUserCourse(c echo.Context) (err error) {
+	userCourse := []*model.UserCourse{}
+
+	// page, _ := strconv.Atoi(c.QueryParam("page"))
+	offset, _ := strconv.Atoi(c.QueryParam("offset"))
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	if err = db.DB(config.NameDb).C("user_course").
+		Find(bson.M{"del": bson.M{"$ne": true}}).
+		// Skip((page - 1) * limit).
+		Skip(offset).
+		Limit(limit).
+		Sort("-timestamp").
+		All(&userCourse); err != nil {
+		return
+	}
+	c.Response().Header().Set("x-total-count", strconv.Itoa(len(userCourse)))
+
+	return c.JSON(http.StatusOK, userCourse)
+}
+
 func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 
 	uc := &model.UserCourse{}

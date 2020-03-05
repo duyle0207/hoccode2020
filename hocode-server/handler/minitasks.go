@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -206,10 +207,16 @@ func (h *Handler) DailyMiniTask(c echo.Context) (err error) {
 		return
 	}
 
+	for i:=0;i<len(mta);i++ {
+		fmt.Println(mta[i].TaskId)
+		fmt.Println(bson.ObjectIdHex(mta[i].TaskId))
+		fmt.Println("")
+	}
+
 	for i := 0; i < len(mta); i++ {
 
 		tf := &model.Task{}
-
+		fmt.Println(mta[i].TaskId)
 		if err = db.DB(config.NameDb).C("tasks").
 			// FindId(bson.ObjectIdHex(mta[i].TaskId)).
 			Find(bson.M{
@@ -220,13 +227,19 @@ func (h *Handler) DailyMiniTask(c echo.Context) (err error) {
 			// Select(bson.M{"id": id}).
 			One(&tf); err != nil {
 			if err == mgo.ErrNotFound {
+				fmt.Println("error")
 				return echo.ErrNotFound
 			}
-
 			return
 		}
 		mta[i].Avatar = tf.BackgroundImage
 	}
+	for i:=0;i<len(mta);i++ {
+		fmt.Println(i)
+		fmt.Println(mta[i].Avatar)
+		fmt.Println(i)
+	}
+
 	return c.JSON(http.StatusOK, mta)
 
 }

@@ -238,7 +238,7 @@ class SignUpPage extends Component {
                                     }}
                                 >
                                     Login
-    </span>
+                                </span>
                             </a>
                         </div>
                         <div className="pass_textf_A3_Group_6_Class">

@@ -53,6 +53,7 @@ function App() {
               <Route path="/signup" exact component={SignUpPage} />
               <Route path="/reactmde" exact component={ReactMde} />
               <Route path="/searchcert" component={SearchCertPage} />
+
               <PrivateRoute path="/courses" exact component={CoursePage} />
               <PrivateRoute
                 path="/courses/:courseId/tasks"

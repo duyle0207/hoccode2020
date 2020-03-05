@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -105,6 +106,7 @@ func (h *Handler) GetOneUsers(c echo.Context) (err error) {
 // @Router /users/:id [put]
 func (h *Handler) UpdateUsers(c echo.Context) (err error) {
 
+	fmt.Println("Update")
 	bk := &model.User{
 		// ID: bson.NewObjectId(),
 	}
@@ -114,6 +116,9 @@ func (h *Handler) UpdateUsers(c echo.Context) (err error) {
 	if err = c.Bind(bk); err != nil {
 		return
 	}
+
+	fmt.Println(bk.Avatar)
+
 	bk.ID = bson.ObjectIdHex(id)
 	if bk.ID == "" {
 		bk.ID = bson.NewObjectId()

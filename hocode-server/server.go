@@ -49,6 +49,7 @@ func main() {
 	// mongodb://admin:adminadmin1@ds021984.mlab.com:21984/hocode
 	//_, err := mgo.Dial("mongodb://admin:adminadmin1@ds021984.mlab.com:21984/hocode")
 
+
 	db, err := mgo.Dial(config.LinkDb + config.NameDb)
 	if err != nil {
 		log.Info("Connect mongodb error")
@@ -103,11 +104,14 @@ func main() {
 	r.POST("/profile", h.CreateProfile)
 	r.POST("/login", h.Login)
 	r.POST("/signup", h.SignUp)
+	r.POST("/isNewAccount", h.IsNewAccount)
 
 	r.GET("/dailyminitask", h.DailyMiniTask)
 
 	r.GET("/books", h.GetBooks)
 	r.GET("/events", h.GetListEvents)
+
+	r.GET("/daily", h.DailyMiniTask)
 
 	r.GET("/certs/search/:id", h.SearchCertsByID)
 
@@ -179,6 +183,9 @@ func main() {
 	r.POST("/createbook", h.CreateBook)
 	r.POST("/courses", h.CreateCourse)
 	r.POST("/tasks", h.CreateTask)
+
+	r.GET("/listMinitask", h.GetListUserMinitask)
+
 	r.POST("/minitasks", h.CreateMinitast)
 
 	rs.Use(middleware.JWT([]byte("secret")))
@@ -189,6 +196,8 @@ func main() {
 
 	rs.GET("/userinfo", h.GetUserData)
 	rs.POST("/userinfoupdate", h.UpdataUserData)
+
+	rs.GET("/listUserCourse", h.GetListUserCourse)
 
 	rs.GET("/usercourse", h.GetUserCourse)
 
@@ -261,6 +270,7 @@ func main() {
 func ServerHeader(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		c.Response().Header().Set(echo.HeaderServer, "Echo/3.0")
+		c.Response().Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 		c.Response().Header().Set("Access-Control-Expose-Headers", "Content-Range")
 		c.Response().Header().Set("Access-Control-Expose-Headers", "X-Total-Count")
 

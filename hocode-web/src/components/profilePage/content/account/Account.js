@@ -89,6 +89,7 @@ class Account extends React.Component {
       axios
         .get("http://localhost:8081/auth/userinfo")
         .then(res => {
+          console.log(res);
           this.setState({
             firstName: res.data.firstname,
             lastName: res.data.lastname,
@@ -140,7 +141,9 @@ class Account extends React.Component {
 
     this.setState({ [e.target.id]: e.target.value });
   };
+  
   toBase64(file) {
+    console.log(file);
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -148,6 +151,7 @@ class Account extends React.Component {
       reader.onerror = error => reject(error);
     });
   }
+
   async ImgToBase64(file) {
     const result = await this.toBase64(file).catch(e => e);
     if (result instanceof Error) {
@@ -191,6 +195,9 @@ class Account extends React.Component {
         isLoading: true
       };
     });
+
+    console.log(this.state.image);
+
     await this.props.changeUserInfo(newUser, this.props.auth.user.data.id);
     setTimeout(() => {
       this.setState(function(state, props) {

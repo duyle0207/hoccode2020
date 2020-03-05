@@ -32,6 +32,7 @@ func (h *Handler) TestAuth(c echo.Context) (err error) {
 }
 
 func (h *Handler) GetUserData(c echo.Context) (err error) {
+
 	// Get team and member from the query string
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)

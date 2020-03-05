@@ -9,14 +9,18 @@ const initialState = {
 };
 
 export default function(state = initialState, action) {
+  console.log(state);
   switch (action.type) {
     case SET_CURRENT_USER:
+      console.log(action.payload);
+      console.log("SET");
       return {
         ...state,
         isAuthenticated: !isEmpty(action.payload),
         user: action.payload
       }; 
     default:
+      console.log(state);
       return state;
   }
 }
