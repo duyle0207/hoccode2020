@@ -39,6 +39,17 @@ class Certificate extends Component {
           position: "relative"
         }}
       >
+        <div  className="container">
+          <div className="row">
+            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6" style={{marginLeft: 100, marginTop: 80}}>
+                <img src="../logo_HCMUTE.png" height="80" width="80" />
+            </div>
+            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6" style={{position: 'absolute',right: 100, top: 80}}>
+                <img src="../logo.png" height="80" width="80" />
+            </div>
+          </div>
+        </div>
+        
         <Grid
           container
           style={{
@@ -58,7 +69,7 @@ class Certificate extends Component {
           <Grid item xs={12} sm={12} md={12} style={{margin:"0px 135px"}}>
             {" "}
             
-            <div><p style={{ fontFamily: `'Dancing Script', cursive`, fontSize:30,margin:"20px 0px", textAlign:"center"}}>For successfully completing the Hocode program.</p></div>
+            <div><p style={{ fontFamily: `'Dancing Script', cursive`, fontSize:30,margin:"20px 0px", textAlign:"center"}}>For successfully completion of Java program following Hocode qualification .</p></div>
             <div><p style={{ margin:"20px 0px", textAlign:"center",textTransform:"uppercase",fontWeight:"bold",fontSize:20}}>ID:  {Certificate.cert === undefined ?"":Certificate.cert.search_id}</p></div>
           </Grid>
         </Grid>
