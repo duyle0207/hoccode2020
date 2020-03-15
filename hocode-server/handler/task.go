@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/duythien0912/hocode/config"
+	"github.com/duyle0207/hoccode2020/config"
 
 	"github.com/dgrijalva/jwt-go"
-	model "github.com/duythien0912/hocode/models"
+	model "github.com/duyle0207/hoccode2020/models"
 	"github.com/labstack/echo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -196,5 +196,61 @@ func (h *Handler) CreateTask(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, tn)
-
 }
+
+func (h *Handler) IsPassTask(c echo.Context) (err error) {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	course_id := c.Param("course_id")
+	//fmt.Println("[course_id]")
+	//fmt.Println(course_id)
+	//
+	//fmt.Println("[UserID]")
+	//fmt.Println(userID)
+	//
+	db := h.DB.Clone()
+	defer db.Close()
+
+	// Find tasks in Course
+	user_minitask_list := []*model.UserMiniTask{}
+	db.DB(config.NameDb).C("user_minitask").Find(bson.M{
+		"user_id": userID,
+	}).All(&user_minitask_list)
+
+
+	task_list := []*model.Task{}
+	total_minitask := 0
+	db.DB(config.NameDb).C("tasks").Find(bson.M{
+		"course_id": course_id,
+	}).All(&task_list)
+
+	for i:=0;i < len(task_list);i++{
+		total_minitask += len(GetTotalTaskMinitask(task_list[i].ID.Hex(), h))
+		fmt.Println("[LEN LEN]")
+		fmt.Println(len(GetTotalTaskMinitask(task_list[i].ID.Hex(), h)))
+	}
+
+	count_Completed_Minitask := 0
+	for i:=0;i< len(user_minitask_list);i++{
+		fmt.Println(len(user_minitask_list[i].MiniTaskInfo))
+		for j:=0;j<len(user_minitask_list[i].MiniTaskInfo);j++{
+			if user_minitask_list[i].MiniTaskInfo[j].CourseID == course_id {
+				count_Completed_Minitask++
+			}
+		}
+	}
+	fmt.Println("[Completed Task]")
+	fmt.Println(count_Completed_Minitask)
+
+	course_pass_info := model.CoursePassInfo{}
+
+	course_pass_info.CourseID = course_id
+	course_pass_info.MinitaskSoved = count_Completed_Minitask
+	course_pass_info.TotalMiniTask = total_minitask
+
+	return c.JSON(http.StatusOK, course_pass_info)
+}
+

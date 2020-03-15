@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/duythien0912/hocode/handler/code"
-	model "github.com/duythien0912/hocode/models"
+	"github.com/duyle0207/hoccode2020/handler/code"
+	model "github.com/duyle0207/hoccode2020/models"
 
 	"fmt"
 	"os"

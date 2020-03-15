@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/duythien0912/hocode/config"
+	"github.com/duyle0207/hoccode2020/config"
 
 	"github.com/dgrijalva/jwt-go"
 
@@ -11,7 +11,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	model "github.com/duythien0912/hocode/models"
+	model "github.com/duyle0207/hoccode2020/models"
 
 	"gopkg.in/mgo.v2"
 

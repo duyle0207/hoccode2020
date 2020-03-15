@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/duythien0912/hocode/config"
+	"github.com/duyle0207/hoccode2020/config"
 
 	"github.com/dgrijalva/jwt-go"
-	model "github.com/duythien0912/hocode/models"
+	model "github.com/duyle0207/hoccode2020/models"
 	"github.com/labstack/echo"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -115,7 +115,6 @@ func (h *Handler) GetUserCompleteMititask(c echo.Context) (err error) {
 		if tf != nil {
 			if tf.BackgroundImage != "" {
 				mta[i].Avatar = tf.BackgroundImage
-
 			}
 		}
 	}

@@ -60,7 +60,7 @@ function App() {
                 component={TaskPage}
               />
               <PrivateRoute
-                path="/tasks/:minitaskId"
+                path="/tasks/:minitaskId/:courseId/:taskId"
                 component={MiniTaskPage}
               />
               <Route path="/createminitask" exact component={CreateMiniTask} />

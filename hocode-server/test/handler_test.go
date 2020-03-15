@@ -8,8 +8,8 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/assert"
-	model "github.com/duythien0912/hocode/models"
-	handler "github.com/duythien0912/hocode/handlers"
+	model "github.com/duyle0207/hoccode2020/models"
+	handler "github.com/duyle0207/hoccode2020/handlers"
 
 )
 
