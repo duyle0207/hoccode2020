@@ -8,6 +8,13 @@ import Rating from "@material-ui/lab/Rating";
 import { withStyles } from "@material-ui/styles";
 import React, { Component } from "react";
 import "./hover.css";
+import axios from "axios";
+import Box from "@material-ui/core/Box";
+import {
+  // FacebookShareCount,
+  FacebookIcon,
+  FacebookShareButton
+} from "react-share";
 
 const randomColor = () => {
   var listColor = [deepOrange[500], deepPurple[500], green[500], pink[500]];
@@ -38,6 +45,20 @@ const styles = {
   }
 };
 class CourseItem extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      totalMinitask: 0
+    };
+  }
+
+  componentDidMount() {
+    axios.get(`http://localhost:8081/totalMinitask/${this.props.course.id}`).then(res => {
+      this.setState({ totalMinitask: res.data })
+    });
+  }
+
   render() {
     const { classes, course } = this.props;
     return (
@@ -191,8 +212,30 @@ class CourseItem extends Component {
                     color="textSecondary"
                     component="p"
                   >
-                    {course.total_minitask}
+                    {this.state.totalMinitask}
                   </Typography>
+                </Grid>
+                
+
+                <Grid
+                  item
+                  xs
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-end"
+                  }}
+                >
+                  <Box mt={1}>
+                    <FacebookShareButton url="https://www.google.com/" >
+                      <FacebookIcon size={30} round={true} />
+                      {/* <FacebookShareCount url="https://www.google.com/">
+                        {shareCount => (
+                          <span className="myShareCountWrapper">{shareCount}</span>
+                        )}
+                      </FacebookShareCount> */}
+                    </FacebookShareButton>
+                  </Box>
                 </Grid>
               </Grid>
             </div>

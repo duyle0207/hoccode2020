@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/duythien0912/hocode/config"
+	"github.com/duyle0207/hoccode2020/config"
 
-	model "github.com/duythien0912/hocode/models"
+	model "github.com/duyle0207/hoccode2020/models"
 	"github.com/labstack/echo"
 	gonanoid "github.com/matoous/go-nanoid"
 	"gopkg.in/mgo.v2"

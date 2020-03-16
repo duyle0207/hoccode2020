@@ -1,14 +1,15 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/duythien0912/hocode/config"
+	"github.com/duyle0207/hoccode2020/config"
 
 	"github.com/dgrijalva/jwt-go"
-	model "github.com/duythien0912/hocode/models"
+	model "github.com/duyle0207/hoccode2020/models"
 	"github.com/labstack/echo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -205,7 +206,35 @@ func (h *Handler) TaskByCoursesID(c echo.Context) (err error) {
 // @Param  id path int true "Course ID"
 // @Success 200 {array} model.Task
 // @Router /courses/{id}/tasks [get]
+
+func GetMiniTaskList(task_miniTask []*model.Task_Minitask , h *Handler) (miniTasks []*model.MiniTask) {
+
+	db:= h.DB.Clone()
+	defer db.Close()
+
+	for i:=0;i<len(task_miniTask); i++ {
+		miniTask := &model.MiniTask{}
+		db.DB(config.NameDb).C("minitasks").
+			Find(
+				bson.M{
+					"_id": bson.ObjectIdHex(task_miniTask[i].MiniTaskID),
+				},
+		).One(&miniTask)
+		fmt.Println(miniTask.MiniTaskName)
+		miniTasks = append(miniTasks, miniTask)
+	}
+
+	//fmt.Println("Len")
+	//for i:=0;i<len(miniTasks);i++ {
+	//	fmt.Println()
+	//	fmt.Println(miniTasks[i].MiniTaskName)
+	//	fmt.Println()
+	//}
+	return miniTasks
+}
+
 func (h *Handler) AuthTaskByCoursesID(c echo.Context) (err error) {
+
 	ta := []*model.Task{}
 
 	page, _ := strconv.Atoi(c.QueryParam("page"))
@@ -214,6 +243,8 @@ func (h *Handler) AuthTaskByCoursesID(c echo.Context) (err error) {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	userID := claims["id"].(string)
+
+	fmt.Println(userID)
 
 	id := c.Param("id")
 
@@ -230,15 +261,22 @@ func (h *Handler) AuthTaskByCoursesID(c echo.Context) (err error) {
 	}
 
 	for i := 0; i < len(ta); i++ {
-		mta := []*model.MiniTask{}
-
-		db.DB(config.NameDb).C("minitasks").
+		task_miniTask := []*model.Task_Minitask{}
+		db.DB(config.NameDb).C("task_minitask").
 			Find(bson.M{
 				"task_id": ta[i].ID.Hex(),
-				"del":     bson.M{"$ne": true}},
-			).
-			Sort("-timestamp").
-			All(&mta)
+		}).All(&task_miniTask)
+
+		mta := GetMiniTaskList(task_miniTask, h)
+
+		//mta := []*model.MiniTask{}
+
+		//db.DB(config.NameDb).C("minitasks").
+		//	Find(bson.M{
+		//		"task_id": ta[i].ID.Hex(),
+		//		"del":     bson.M{"$ne": true}},
+		//	).
+		//	All(&mta)
 
 		userMiniTask := &model.UserMiniTask{}
 
@@ -257,23 +295,22 @@ func (h *Handler) AuthTaskByCoursesID(c echo.Context) (err error) {
 		vitri := -1
 
 		for i := 0; i < len(mta); i++ {
-			for j := 0; j < len(
-				userMiniTask.MiniTaskInfo); j++ {
-				if mta[i].ID.Hex() == userMiniTask.MiniTaskInfo[j].MiniTaskID {
+			for j := 0; j < len(userMiniTask.MiniTaskInfo); j++ {
+				if mta[i].ID.Hex() == userMiniTask.MiniTaskInfo[j].MiniTaskID &&
+					userMiniTask.MiniTaskInfo[j].CourseID == id {
 					vitri = i
 					mta[i].Status = userMiniTask.MiniTaskInfo[j].Status
 				}
-
 			}
-
 		}
-
 		if vitri != -1 {
 			mta[vitri].Vitri = true
 		}
-
-		ta[i].Minitasks = mta
-
+		if mta == nil {
+			ta[i].Minitasks = []*model.MiniTask{}
+		} else {
+			ta[i].Minitasks = mta
+		}
 	}
 
 	return c.JSON(http.StatusOK, ta)

@@ -20,5 +20,6 @@ type (
 	MiniTaskInfo struct {
 		MiniTaskID string `json:"minitask_id" bson:"minitask_id"`
 		Status     string `json:"status" bson:"status"`
+		CourseID   string `json:"course_id" bson:"course_id"`
 	}
 )

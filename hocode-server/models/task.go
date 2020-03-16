@@ -17,3 +17,11 @@ type (
 		Del             bool          `json:"del" bson:"del"`
 	}
 )
+
+type (
+	CoursePassInfo struct {
+		CourseID		string        `json:"course_id" bson:"course_id"`
+		MinitaskSoved 	int        `json:"minitask_solved" bson:"minitask_solved"`
+		TotalMiniTask	int        `json:"total_minitask" bson:"total_minitask"`
+	}
+)

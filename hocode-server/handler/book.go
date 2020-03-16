@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"github.com/duyle0207/hoccode2020/config"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/duythien0912/hocode/config"
-	model "github.com/duythien0912/hocode/models"
+	"github.com/duyle0207/hoccode2020/models"
+	//model "github.com/duyle0207/hoccode2020/models"
 	"github.com/labstack/echo"
 	"gopkg.in/mgo.v2/bson"
 )

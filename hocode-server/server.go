@@ -1,14 +1,16 @@
 package main
 
 import (
-	config "github.com/duythien0912/hocode/config"
-	"github.com/duythien0912/hocode/handler"
+	"crypto/tls"
+	"github.com/duyle0207/hoccode2020/config"
+	"github.com/duyle0207/hoccode2020/handler"
+	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
-
-	"github.com/getsentry/sentry-go"
 	"gopkg.in/mgo.v2"
+	"net"
+	"time"
 )
 
 // @title Hocode API
@@ -49,7 +51,53 @@ func main() {
 	// mongodb://admin:adminadmin1@ds021984.mlab.com:21984/hocode
 	//_, err := mgo.Dial("mongodb://admin:adminadmin1@ds021984.mlab.com:21984/hocode")
 
-	db, err := mgo.Dial(config.LinkDb + config.NameDb)
+	//db, err := mgo.Dial(config.LinkDb + config.NameDb)
+	//if err != nil {
+	//	log.Info("Connect mongodb error")
+	//	e.Logger.Fatal(err)
+	//} else {
+	//	log.Info("Connect mongodb success")
+	//}
+
+	//URI without ssl=true
+	//var mongoURI = "mongodb://duyle:aaaaaaaa@" +
+	//	"cluster0-shard-00-01-gwhbh.mongodb.net:27017" +
+	//	",cluster0-shard-00-00-gwhbh.mongodb.net:27017.mongodb.net," +
+	//	"cluster0-shard-00-02-gwhbh.mongodb.net:27017.mongodb.net/hocode?replicaSet=replName&authSource=admin"
+	//
+	//dialInfo, err := mgo.ParseURL(mongoURI)
+	//
+	////Below part is similar to above.
+	//tlsConfig := &tls.Config{}
+	//dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+	//	conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+	//	return conn, err
+	//}
+	//db, err := mgo.DialWithInfo(dialInfo)
+	//
+	//if err != nil {
+	//	log.Info("Connect mongodb error")
+	//	e.Logger.Fatal(err)
+	//} else {
+	//	log.Info("Connect mongodb success")
+	//}
+
+	tlsConfig := &tls.Config{}
+
+	dialInfo := &mgo.DialInfo{
+		Addrs: []string{config.LinkDb},
+		Database: config.NameDb,
+		Username: config.Username,
+		Password: config.Password,
+		Timeout:60 * time.Second,
+		Source: config.Source,
+	}
+	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+		return conn, err
+	}
+	db, err := mgo.DialWithInfo(dialInfo)
+
 	if err != nil {
 		log.Info("Connect mongodb error")
 		e.Logger.Fatal(err)
@@ -62,6 +110,10 @@ func main() {
 
 	e.GET("/health_check", h.HealthCheck)
 	e.GET("/health_check2", h.HealthCheck)
+
+	e.POST("/createTaskMinTask", h.CreateTaskMinTask)
+
+	e.GET("/totalMinitask/:course_id", h.GetTotalCourseMinitask)
 
 	// e.GET("/users", h.GetUser)
 	// e.GET("/users/:id", h.GetUserByID)
@@ -98,6 +150,7 @@ func main() {
 
 	r.GET("/minitasks", h.Minitasks)
 	r.GET("/minitasks/:id", h.MinitasksByID)
+	r.GET("/getMinitasksByTaskID/:id", h.GetMiniTaskByTaskID)
 
 	r.GET("/profile", h.Profile)
 	r.POST("/profile", h.CreateProfile)
@@ -162,11 +215,14 @@ func main() {
 	curd.POST("/tasks", h.CreateTasks)
 	curd.DELETE("/tasks/:id", h.DeleteTasks)
 
+	curd.GET("/searchMinitasks/:mini_task_name", h.SearchMinitasks)
 	curd.GET("/minitasks", h.GetListMiniTasks)
 	curd.GET("/minitasks/:id", h.GetOneMiniTasks)
 	curd.PUT("/minitasks/:id", h.UpdateMiniTasks)
 	curd.POST("/minitasks", h.CreateMiniTasks)
 	curd.DELETE("/minitasks/:id", h.DeleteMiniTasks)
+	curd.DELETE("/task_minitask/:task_id/:minitask_id/:course_id", h.DeleteTaskMinitask)
+	curd.GET("/getCoursePassInfo/:course_id", h.IsPassTask)
 
 	// End CURD
 
@@ -204,11 +260,12 @@ func main() {
 
 	rs.GET("/courses/:id/tasks", h.AuthTaskByCoursesID)
 
-	rs.POST("/updateusercourse", h.UpdateUserCourse)
+	rs.POST("/updateusercourse/:course_id", h.UpdateUserCourse)
 
 	rs.POST("/nextminitask", h.NextMiniTask)
 
 	rs.POST("/nextminitask", h.NextMiniTask)
+
 	rs.GET("/tasks/:id", h.TaskByID)
 
 	ra := e.Group("/auth")

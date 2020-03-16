@@ -5,13 +5,14 @@
   "dependencies": {
     "@material-ui/core": "^4.4.2",
     "@material-ui/icons": "^4.4.3",
-    "@material-ui/lab": "^4.0.0-alpha.33",
+    "@material-ui/lab": "^4.0.0-alpha.45",
     "@sentry/browser": "^5.9.1",
     "axios": "^0.19.0",
     "codemirror": "^5.49.0",
     "is-empty": "^1.2.0",
     "js-beautify": "^1.10.2",
     "jwt-decode": "^2.2.0",
+    "markdown-react-js": "^1.0.2",
     "prop-types": "^15.7.2",
     "ra-data-json-server": "^2.9.7",
     "ra-data-simple-rest": "^2.9.7",
@@ -19,6 +20,7 @@
     "react": "^16.13.0",
     "react-ace": "^7.0.4",
     "react-admin": "^2.9.7",
+    "react-awesome-modal": "^2.0.5",
     "react-codemirror2": "^6.0.0",
     "react-dom": "^16.13.0",
     "react-facebook-auth": "^1.4.0",
@@ -62,5 +64,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "envify": "^4.1.0",
+    "terser": "^4.6.6",
+    "uglifyify": "^5.0.2"
   }
 }

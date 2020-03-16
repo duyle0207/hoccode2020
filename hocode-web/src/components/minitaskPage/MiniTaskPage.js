@@ -27,6 +27,7 @@ import HashLoader from "react-spinners/HashLoader";
 class MiniTaskPage extends Component {
   constructor(props) {
     super(props);
+    console.log(this.props);
     this.state = {
       minitask: {},
       result: {},
@@ -48,6 +49,7 @@ class MiniTaskPage extends Component {
     const {
       match: { params }
     } = this.props;
+    console.log(params);
     axios
       .get(`http://localhost:8081/api/v1/minitasks/${params.minitaskId}`)
       .then(res => {
@@ -299,6 +301,17 @@ class MiniTaskPage extends Component {
 
     let code = `import java.lang.Math; \n public class Solution {\n    public Solution(){}\n    ${this.state.userCode}\n    }`;
 
+    const {
+      match: { params }
+    } = this.props;
+    console.log(params.taskId)
+    console.log(this.state.minitask.task_id);
+    this.props.submitUpdateMinitask(
+      this.state.minitask.id,
+      params.taskId,
+      params.courseId
+    );
+
     this.setState((state, props) => ({
       isLoading: true
     }));
@@ -368,6 +381,9 @@ class MiniTaskPage extends Component {
   render() {
     const { minitask, result } = this.state;
     const { isLoadingComponent } = this.state;
+    const {
+      match: { params }
+    } = this.props;
     function renderPassedTestCount() {
       if (result !== undefined) {
         if (result.stdout !== undefined) {
@@ -581,7 +597,7 @@ class MiniTaskPage extends Component {
                           <div style={{ marginLeft: 30, fontSize: 12 }}>
                             {this.props.user.next_minitask.id === "" ? (
                               <Link
-                                to={`/profile/course`}
+                                to={`/profile/courses/${params.courseId}/tasks`}
                                 style={{
                                   textDecoration: "none",
                                   color: "#595959"
@@ -591,7 +607,7 @@ class MiniTaskPage extends Component {
                               </Link>
                             ) : (
                               <Link
-                                to={`/tasks/${this.props.user.next_minitask.id}`}
+                                to={`/tasks/${this.props.user.next_minitask.id}/${params.courseId}/${params.taskId}`}
                                 style={{
                                   textDecoration: "none",
                                   color: "#595959"

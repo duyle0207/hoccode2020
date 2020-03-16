@@ -24,11 +24,11 @@ import axios from "axios";
 // import setAuthToken from "../../js/utils/setAuthToken";
 // import jwt_decode from "jwt-decode";
 
-import {
-  FacebookShareCount,
-  FacebookIcon,
-  FacebookShareButton
-} from "react-share";
+// import {
+//   FacebookShareCount,
+//   FacebookIcon,
+//   FacebookShareButton
+// } from "react-share";
 
 import "./LoginPage.css";
 
@@ -457,14 +457,6 @@ class LoginPage extends React.Component {
           </form>
         </div>
         <Box mt={8}>
-          <FacebookShareButton url="https://github.com/nygardk/react-share#readme" >
-            <FacebookIcon size={30} round={true} />
-            <FacebookShareCount url="https://github.com/nygardk/react-share#readme">
-              {shareCount => (
-                <span className="myShareCountWrapper">{shareCount}</span>
-              )}
-            </FacebookShareCount>
-          </FacebookShareButton>
           <Copyright />
         </Box>
       </Container>

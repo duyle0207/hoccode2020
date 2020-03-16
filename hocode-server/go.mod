@@ -1,4 +1,4 @@
-module github.com/duythien0912/hocode
+module github.com/duyle0207/hoccode2020
 
 go 1.12
 

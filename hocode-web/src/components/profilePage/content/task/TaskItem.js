@@ -70,10 +70,12 @@ class TaskItem extends Component {
   renderMiniItem(minitask) {
     //miniItemStatus
 
+    var { task } = this.props;
+
     if (minitask.status === "hoanthanh") {
       return (
         <Link
-          to={`/tasks/${minitask.id}`}
+          to={`/tasks/${minitask.id}/${this.props.courseId}/${task.id}`}
           style={{
             display: "flex",
             textDecoration: "none",
@@ -105,7 +107,7 @@ class TaskItem extends Component {
                     margin: 0
                   }}
                 >
-                  {minitask.code_point}
+                  {minitask.code_point},{minitask.status}
                 </p>
               </div>
               <div>
@@ -164,7 +166,7 @@ class TaskItem extends Component {
     ) {
       return (
         <Link
-          to={`/tasks/${minitask.id}`}
+          to={`/tasks/${minitask.id}/${this.props.courseId}/${task.id}`}
           style={{
             display: "flex",
             textDecoration: "none",

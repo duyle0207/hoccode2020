@@ -56,6 +56,17 @@ class Overview extends React.Component {
         const courses = res.data;
         console.log(courses);
         this.setState({ courses: courses.course_info });
+        var c = this.state.courses;
+        this.state.courses.forEach((e,i) => {
+          axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${e.course_id}`).then(res => {
+            // console.log("[CoursePass]");
+            // console.log(res.data);
+            // c[i].progress = res.data.minitask_solved +"/"+res.data.total_minitask
+            c[i].completed_tasks_count = res.data.minitask_solved
+            c[i].total_tasks_count = res.data.total_minitask
+            this.setState({courses:c});
+          });
+        });
       }).catch(err => {
         console.log(err);
       }),
@@ -138,20 +149,92 @@ class Overview extends React.Component {
             />
           </div>
         ) : (
-          <React.Fragment>
-            <Grid item xs={12} sm={5} md={5}>
-              <Paper className={classes.paper}>
-                <Grid container style={{ marginBottom: 15 }}>
-                  <Grid item style={{ flexGrow: 1 }}>
-                    <div style={{ fontWeight: "bold" }}>Chủ đề gần đây</div>{" "}
+            <React.Fragment>
+              <Grid item xs={12} sm={5} md={5}>
+                <Paper className={classes.paper}>
+                  <Grid container style={{ marginBottom: 15 }}>
+                    <Grid item style={{ flexGrow: 1 }}>
+                      <div style={{ fontWeight: "bold" }}>Chủ đề gần đây</div>{" "}
+                    </Grid>
                   </Grid>
-                </Grid>
-                {this.state.courses.length === 0 ? (
-                  <div style={{}}>Bạn chưa thực hiện bài thực hành nào.</div>
-                ) : (
-                  this.state.courses.map(course => {
+                  {this.state.courses.length === 0 ? (
+                    <div style={{}}>Bạn chưa thực hiện bài thực hành nào.</div>
+                  ) : (
+                      this.state.courses.map(course => {
+                        return (
+                          <React.Fragment key={course.course_id}>
+                            <Grid
+                              container
+                              style={{ alignItems: "center", flexWrap: "unset" }}
+                            >
+                              <Grid item>
+                                <img
+                                  className={classes.img}
+                                  style={{
+                                    width: "50px",
+                                    height: "50px",
+                                    objectFit: "cover",
+                                    borderRadius: "8px"
+                                  }}
+                                  alt="complex"
+                                  src={course.background_image}
+                                />
+                              </Grid>
+                              <Grid item style={{ flexGrow: 1, padding: 10 }}>
+                                <Tooltip title="Tên chủ đề" placement="top">
+                                  <div style={{ fontWeight: "bold" }}>
+                                    <Link
+                                      className="item"
+                                      key={course.course_id}
+                                      style={{ textDecoration: "none" }}
+                                      to={`${url}/courses/${course.course_id}/tasks`}
+                                    >
+                                      {course.course_name}
+                                    </Link>
+                                  </div>
+                                </Tooltip>
+                                <Tooltip
+                                  title="Số lượng bài học đã hoàn thành"
+                                  placement="top"
+                                >
+                                  <div style={{ color: "#9d9d9d" }}>
+                                    {course.completed_tasks_count}/
+                                {course.total_tasks_count}
+                                  </div>
+                                </Tooltip>
+                              </Grid>
+                              <Grid item>
+                                <Tooltip title="Tiến độ" placement="top">
+                                  <LinearProgress
+                                    variant="determinate"
+                                    value={
+                                      (course.completed_tasks_count /
+                                        course.total_tasks_count) *
+                                      100
+                                    }
+                                    style={{ width: 115 }}
+                                  />
+                                </Tooltip>
+                              </Grid>
+                            </Grid>
+                            <Divider style={{ margin: "auto" }} />{" "}
+                          </React.Fragment>
+                        );
+                      })
+                    )}
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={7} md={7}>
+                <Paper className={classes.paper}>
+                  <Grid container style={{ marginBottom: 15 }}>
+                    <Grid item style={{ flexGrow: 1 }}>
+                      <div style={{ fontWeight: "bold" }}>Thách thức mới</div>{" "}
+                    </Grid>
+                  </Grid>
+
+                  {this.state.daily_minitasks.map(daily_minitask => {
                     return (
-                      <React.Fragment key={course.course_id}>
+                      <React.Fragment key={daily_minitask.id}>
                         <Grid
                           container
                           style={{ alignItems: "center", flexWrap: "unset" }}
@@ -166,107 +249,35 @@ class Overview extends React.Component {
                                 borderRadius: "8px"
                               }}
                               alt="complex"
-                              src={course.background_image}
+                              src={daily_minitask.avatar}
                             />
                           </Grid>
                           <Grid item style={{ flexGrow: 1, padding: 10 }}>
-                            <Tooltip title="Tên chủ đề" placement="top">
-                              <div style={{ fontWeight: "bold" }}>
-                                <Link
-                                  className="item"
-                                  key={course.course_id}
-                                  style={{ textDecoration: "none" }}
-                                  to={`${url}/courses/${course.course_id}/tasks`}
-                                >
-                                  {course.course_name}
-                                </Link>
-                              </div>
-                            </Tooltip>
-                            <Tooltip
-                              title="Số lượng bài học đã hoàn thành"
-                              placement="top"
+                            <div style={{ fontWeight: "bold" }}>
+                              <Link
+                                className="item"
+                                style={{ textDecoration: "none" }}
+                                to={`/tasks/${daily_minitask.id}`}
+                              >
+                                {daily_minitask.mini_task_name}
+                              </Link>
+                            </div>
+                            <div
+                              style={{ display: "flex", alignItems: "center" }}
                             >
-                              <div style={{ color: "#9d9d9d" }}>
-                                {course.completed_tasks_count}/
-                                {course.total_tasks_count}
-                              </div>
-                            </Tooltip>
+                              <Tooltip title="Số đậu" placement="top">
+                                <div style={{ color: "#9d9d9d" }}>
+                                  Số đậu: {daily_minitask.code_point}
+                                </div>
+                              </Tooltip>
+                              <Tooltip title="Độ khó" placement="top">
+                                <div style={{ marginLeft: 10 }}>
+                                  {this.renderLevelMinitaskChip(daily_minitask)}
+                                </div>
+                              </Tooltip>
+                            </div>
                           </Grid>
-                          <Grid item>
-                            <Tooltip title="Tiến độ" placement="top">
-                              <LinearProgress
-                                variant="determinate"
-                                value={
-                                  (course.completed_tasks_count /
-                                    course.total_tasks_count) *
-                                  100
-                                }
-                                style={{ width: 115 }}
-                              />
-                            </Tooltip>
-                          </Grid>
-                        </Grid>
-                        <Divider style={{ margin: "auto" }} />{" "}
-                      </React.Fragment>
-                    );
-                  })
-                )}
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={7} md={7}>
-              <Paper className={classes.paper}>
-                <Grid container style={{ marginBottom: 15 }}>
-                  <Grid item style={{ flexGrow: 1 }}>
-                    <div style={{ fontWeight: "bold" }}>Thách thức mới</div>{" "}
-                  </Grid>
-                </Grid>
-
-                {this.state.daily_minitasks.map(daily_minitask => {
-                  return (
-                    <React.Fragment key={daily_minitask.id}>
-                      <Grid
-                        container
-                        style={{ alignItems: "center", flexWrap: "unset" }}
-                      >
-                        <Grid item>
-                          <img
-                            className={classes.img}
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              objectFit: "cover",
-                              borderRadius: "8px"
-                            }}
-                            alt="complex"
-                            src={daily_minitask.avatar}
-                          />
-                        </Grid>
-                        <Grid item style={{ flexGrow: 1, padding: 10 }}>
-                          <div style={{ fontWeight: "bold" }}>
-                            <Link
-                              className="item"
-                              style={{ textDecoration: "none" }}
-                              to={`/tasks/${daily_minitask.id}`}
-                            >
-                              {daily_minitask.mini_task_name}
-                            </Link>
-                          </div>
-                          <div
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            <Tooltip title="Số đậu" placement="top">
-                              <div style={{ color: "#9d9d9d" }}>
-                                Số đậu: {daily_minitask.code_point}
-                              </div>
-                            </Tooltip>
-                            <Tooltip title="Độ khó" placement="top">
-                              <div style={{ marginLeft: 10 }}>
-                                {this.renderLevelMinitaskChip(daily_minitask)}
-                              </div>
-                            </Tooltip>
-                          </div>
-                        </Grid>
-                        {/* <Grid item>
+                          {/* <Grid item>
                           {daily_minitask.status === "hoanthanh" ? (
                             <Tooltip title="Đã hoàn thành" placement="top">
                               {" "}
@@ -308,15 +319,15 @@ class Overview extends React.Component {
                             </Tooltip>
                           )}
                         </Grid> */}
-                      </Grid> 
-                      <Divider style={{ margin: "auto" }} />{" "}
-                    </React.Fragment>
-                  );
-                })}
-              </Paper>
-            </Grid>
+                        </Grid>
+                        <Divider style={{ margin: "auto" }} />{" "}
+                      </React.Fragment>
+                    );
+                  })}
+                </Paper>
+              </Grid>
 
-            {/* <Grid item xs={12} sm={12} md={12}>
+              {/* <Grid item xs={12} sm={12} md={12}>
               <Paper className={classes.paper}>
                 <div style={{ fontWeight: "bold" }}>Sự kiện nổi bật</div>{" "}
                 {this.state.events.map(event => {
@@ -373,8 +384,8 @@ class Overview extends React.Component {
                 })}
               </Paper>
             </Grid> */}
-          </React.Fragment>
-        )}
+            </React.Fragment>
+          )}
       </Grid>
     );
   }

@@ -2,14 +2,15 @@ package handler
 
 import (
 	"fmt"
+	"github.com/duyle0207/hoccode2020/config"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/duythien0912/hocode/config"
+	"github.com/duyle0207/hoccode2020/models"
 
 	"github.com/dgrijalva/jwt-go"
-	model "github.com/duythien0912/hocode/models"
+	//model "github.com/duyle0207/hoccode2020/models"
 	"github.com/labstack/echo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -54,6 +55,17 @@ func (h *Handler) GetUserCourse(c echo.Context) (err error) {
 
 }
 
+//func GetMiniTaskByID(id string, h *Handler) (minitask model.MiniTask) {
+//
+//	db := h.DB.Clone()
+//	defer db.Close()
+//
+//	db.DB(config.NameDb).C("minitask").Find(bson.M{
+//		"_id": id,
+//	}).One(&minitask)
+//	return minitask
+//}
+
 // UpdateUserCourse godoc
 // @Summary UpdateUserCourse
 // @Description UpdateUserCourse
@@ -91,6 +103,8 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 
 	uc := &model.UserCourse{}
 
+	course_id := c.Param("course_id")
+
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	userID := claims["id"].(string)
@@ -116,27 +130,27 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 	db := h.DB.Clone()
 	defer db.Close()
 
-	taskf := &model.Task{}
+	//taskf := &model.Task{}
+	//
+	//if err = db.DB(config.NameDb).C("tasks").
+	//	// FindId(bson.ObjectIdHex(bodyUC.TaskID)).
+	//	Find(bson.M{
+	//		"_id": bson.ObjectIdHex(bodyUC.TaskID),
+	//		"del": bson.M{"$ne": true},
+	//	}).
+	//	// Find(bson.M{}).
+	//	// Select(bson.M{"id": id}).
+	//	One(&taskf); err != nil {
+	//	if err == mgo.ErrNotFound {
+	//		return echo.ErrNotFound
+	//	}
+	//
+	//	return
+	//}
 
-	if err = db.DB(config.NameDb).C("tasks").
-		// FindId(bson.ObjectIdHex(bodyUC.TaskID)).
-		Find(bson.M{
-			"_id": bson.ObjectIdHex(bodyUC.TaskID),
-			"del": bson.M{"$ne": true},
-		}).
-		// Find(bson.M{}).
-		// Select(bson.M{"id": id}).
-		One(&taskf); err != nil {
-		if err == mgo.ErrNotFound {
-			return echo.ErrNotFound
-		}
+	mta := []*model.Task_Minitask{}
 
-		return
-	}
-
-	mta := []*model.MiniTask{}
-
-	db.DB(config.NameDb).C("minitasks").
+	db.DB(config.NameDb).C("task_minitask").
 		Find(bson.M{
 			"task_id": bodyUC.TaskID,
 			"del":     bson.M{"$ne": true},
@@ -144,9 +158,13 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		Sort("-timestamp").
 		All(&mta)
 
-	taskf.Minitasks = mta
+	//taskf.Minitasks = mta
+	fmt.Println("[TaskID]")
+	fmt.Println(bodyUC.TaskID)
+	fmt.Println("MTA len")
+	fmt.Println(len(mta))
 
-	bodyUC.CourseID = taskf.CourseId
+	//course_id = taskf.CourseId
 
 	uc.UserID = userID
 
@@ -164,11 +182,12 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		isInDB = false
 		// return
 	}
+
 	ucLocationC := -1
 
 	if len(uc.CourseInfo) != 0 {
 		for i := 0; i < len(uc.CourseInfo); i++ {
-			if uc.CourseInfo[i].CourseID == bodyUC.CourseID {
+			if uc.CourseInfo[i].CourseID == course_id {
 				ucLocationC = i
 			}
 		}
@@ -180,7 +199,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 	if err = db.DB(config.NameDb).C("course").
 		// FindId(bson.ObjectIdHex(bodyUC.CourseID)).
 		Find(bson.M{
-			"_id": bson.ObjectIdHex(bodyUC.CourseID),
+			"_id": bson.ObjectIdHex(course_id),
 			"del": bson.M{"$ne": true},
 		}).
 		One(&course); err != nil {
@@ -230,7 +249,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 
 	if len(userMiniTask.MiniTaskInfo) != 0 {
 		for i := 0; i < len(userMiniTask.MiniTaskInfo); i++ {
-			if userMiniTask.MiniTaskInfo[i].MiniTaskID == bodyUC.MiniTaskID {
+			if userMiniTask.MiniTaskInfo[i].MiniTaskID == bodyUC.MiniTaskID && userMiniTask.MiniTaskInfo[i].CourseID == course_id {
 				uMiniTaskLocationC = i
 			}
 		}
@@ -261,6 +280,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		miniTaskIn := &model.MiniTaskInfo{}
 		miniTaskIn.Status = "hoanthanh"
 		miniTaskIn.MiniTaskID = bodyUC.MiniTaskID
+		miniTaskIn.CourseID = course_id
 
 		// Cộng điểm cho user
 		mtf := &model.MiniTask{}
@@ -296,9 +316,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 			}
 			return
 		}
-
 		userMiniTask.MiniTaskInfo = append(userMiniTask.MiniTaskInfo, miniTaskIn)
-
 	}
 
 	codePoint = ur.CodePoint
@@ -325,8 +343,6 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 
 	// db.getCollection("minitasks").find({_id: {$gt: ObjectId("5d9b6ff5fe6e2b038fe5a409") }}).limit(1)
 
-	nextMiniTask := &model.MiniTask{}
-
 	// nextMiniTask.Timestamp = time.Now()
 	// if err = db.DB(config.NameDb).C("minitasks").
 	// 	Find(
@@ -342,17 +358,48 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 	// 	One(&nextMiniTask); err != nil {
 	// }
 
+	nextMiniTask := &model.MiniTask{}
+
 	for i := range mta {
-		if mta[i].ID.Hex() == bodyUC.MiniTaskID {
+		if mta[i].MiniTaskID == bodyUC.MiniTaskID {
 			// Found!
-			fmt.Println("[mta]")
-			fmt.Println(mta[i].MiniTaskName)
+			mtf := &model.MiniTask{}
+			if err = db.DB(config.NameDb).C("minitasks").
+				// FindId(bson.ObjectIdHex(id)).
+				Find(bson.M{
+					"_id": bson.ObjectIdHex(mta[i].MiniTaskID),
+					"del": bson.M{"$ne": true},
+				}).
+				One(&mtf); err != nil {
+				if err == mgo.ErrNotFound {
+					return echo.ErrNotFound
+				}
+			}
+			fmt.Println("[Current] Minitask")
+			fmt.Println(mtf.MiniTaskName)
 
 			if i+1 < len(mta) {
-				nextMiniTask = mta[i+1]
+				mtf := &model.MiniTask{}
+				if err = db.DB(config.NameDb).C("minitasks").
+					// FindId(bson.ObjectIdHex(id)).
+					Find(bson.M{
+						"_id": bson.ObjectIdHex(mta[i+1].MiniTaskID),
+						"del": bson.M{"$ne": true},
+					}).
+					One(&mtf); err != nil {
+					if err == mgo.ErrNotFound {
+						return echo.ErrNotFound
+					}
+				}
+				fmt.Println("[Next] Minitask")
+				fmt.Println(mtf.MiniTaskName)
+				nextMiniTask = mtf
 			}
 		}
 	}
+
+	fmt.Println("[ucLocationC]")
+	fmt.Println(ucLocationC)
 
 	if ucLocationC != -1 {
 
@@ -376,7 +423,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 	} else {
 		courseInfo := &model.CourseInfo{}
 
-		courseInfo.CourseID = bodyUC.CourseID
+		courseInfo.CourseID = course_id
 		courseInfo.CourseName = course.CourseName
 		courseInfo.BackgroundImage = course.BackgroundImage
 		courseInfo.TotalTasksCount = course.TotalMinitask // len(taskf.Minitasks)

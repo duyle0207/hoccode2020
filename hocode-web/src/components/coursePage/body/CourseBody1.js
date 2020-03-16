@@ -38,10 +38,10 @@ class CourseBody extends Component {
     const {courses} = this.state
     return (
       <Grid container className={classes.CourseContainer} justify="center">
+        aaa
         <Grid item xs={12} sm={12} style={{ padding: "0px 60px" }}>
           <div className = "gallery" >
           {courses.map((course)=><Link className = "item"key={course.id} style={{textDecoration:'none'}}to={`/courses/${course.id}/tasks`}><CourseItem course={course}/></Link>)}
-            
           </div>
         </Grid>
       </Grid>

@@ -5,12 +5,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/duythien0912/hocode/config"
+	"github.com/duyle0207/hoccode2020/config"
+	"github.com/duyle0207/hoccode2020/models"
 
-	model "github.com/duythien0912/hocode/models"
 	"github.com/labstack/echo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
 )
 
 // MiniTasks godoc
@@ -46,7 +47,6 @@ func (h *Handler) GetListMiniTasks(c echo.Context) (err error) {
 	c.Response().Header().Set("x-total-count", strconv.Itoa(len))
 
 	return c.JSON(http.StatusOK, bk)
-
 }
 
 // MiniTasks godoc

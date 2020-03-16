@@ -37,7 +37,10 @@ class TaskBody extends Component {
     this.state = {
       tasks: [],
       isLoading: true,
-      course: {}
+      course: {},
+      courseId: "",
+      totalMinitask: 0,
+      coursPassInfo: {}
     };
   }
   componentDidMount() {
@@ -45,6 +48,18 @@ class TaskBody extends Component {
 
     const currentParams = getParams(location.pathname);
     console.log(currentParams);
+
+    axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${currentParams.courseId}`).then(res => {
+      console.log("[CoursePass]")
+      console.log(res.data);
+    });
+
+    axios.get(`http://localhost:8081/totalMinitask/${currentParams.courseId}`).then(res => {
+      this.setState({totalMinitask: res.data})
+    });
+    
+    this.setState({courseId:currentParams.courseId})
+    
     axios
       .get(
         `http://localhost:8081/api/v1/auth/courses/${currentParams.courseId}/tasks`
@@ -55,6 +70,7 @@ class TaskBody extends Component {
         let tasks1 = tasks.reverse();
         this.setState({ tasks: tasks1, isLoading: false });
       });
+      
     axios
       .get(`http://localhost:8081/api/v1/courses/${currentParams.courseId}`)
       .then(res => {
@@ -182,7 +198,7 @@ class TaskBody extends Component {
                         style={{ marginLeft: 4 }}
                       >
                         {/* {course.total_minitask} */}
-                        {course.total_minitask} bài học
+                        {this.state.totalMinitask} bài học
                       </Typography>
                     </Grid>
                     <Grid
@@ -238,8 +254,9 @@ class TaskBody extends Component {
             </Grid>
 
             <Grid item xs={12} sm={6} style={{ padding: "0px 10px" }}>
+              {/* <h1>{this.state.courseId}</h1> */}
               {tasks.map(task => (
-                <TaskItem key={task.id} task={task} />
+                <TaskItem key={task.id} task={task} courseId={this.state.courseId} />
               ))}
             </Grid>
           </React.Fragment>
