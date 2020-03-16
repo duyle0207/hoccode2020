@@ -49,7 +49,6 @@ func main() {
 	// mongodb://admin:adminadmin1@ds021984.mlab.com:21984/hocode
 	//_, err := mgo.Dial("mongodb://admin:adminadmin1@ds021984.mlab.com:21984/hocode")
 
-
 	db, err := mgo.Dial(config.LinkDb + config.NameDb)
 	if err != nil {
 		log.Info("Connect mongodb error")
@@ -200,7 +199,7 @@ func main() {
 	rs.GET("/listUserCourse", h.GetListUserCourse)
 
 	rs.GET("/usercourse", h.GetUserCourse)
-
+	rs.GET("/reviewcourse", h.ReviewCourse)
 	rs.GET("/completeminitask", h.GetUserCompleteMititask)
 
 	rs.GET("/courses/:id/tasks", h.AuthTaskByCoursesID)

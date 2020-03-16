@@ -335,3 +335,62 @@ func (h *Handler) CreateCourse(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, pn)
 
 }
+
+// review course
+
+func (h *Handler) ReviewCourse(c echo.Context) (err error) {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	ID := claims["id"].(string)
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	ur := &model.User{}
+
+	if err = db.DB(config.NameDb).C("users").
+		// FindId(bson.ObjectIdHex(ID)).
+		Find(bson.M{
+			"_id": bson.ObjectIdHex(ID),
+			"del": bson.M{"$ne": true},
+		}).
+		One(&ur); err != nil {
+		if err == mgo.ErrNotFound {
+			return echo.ErrNotFound
+		}
+		return
+	}
+
+	bk := &model.Course{}
+
+	if err = db.DB(config.NameDb).C("courses").
+		// FindId(bson.ObjectIdHex(id)).
+		Find(bson.M{
+			"id": ur.ID.Hex(),
+			//"config_id": configApp.ID.Hex(),
+			//"del":       bson.M{"$ne": true},
+		}).
+		One(&bk); err != nil {
+		if err == mgo.ErrNotFound {
+			// return echo.ErrNotFound
+			// return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
+
+		}
+		// returns
+	}
+	_, errUs := db.DB(config.NameDb).C("certs").UpsertId(bk.ID, bk)
+	if errUs != nil {
+		// return echo.ErrInternalServerError
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: errUs}
+	}
+	bk.Agree = false
+
+	reviewCourseOut := &model.ReviewCourse{
+		User:    ur,
+		Courses: bk,
+	}
+
+	c.Response().Header().Set("x-total-count", strconv.Itoa(1))
+
+	return c.JSON(http.StatusOK, reviewCourseOut)
+}
