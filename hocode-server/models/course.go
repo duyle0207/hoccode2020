@@ -18,6 +18,9 @@ type (
 		RatingValue     float64    `json:"rating_value" bson:"rating_value"`
 		CourseDesc      string     `json:"course_desc" bson:"course_desc"`
 
+		StartTime		time.Time  `json:"start_time" bson:"start_time"`
+		EndTime			time.Time  `json:"end_time" bson:"end_time"`
+
 		TotalMinitask int       `json:"total_minitask" bson:"total_minitask"`
 		Tasks         []*Task   `json:"tasks" bson:"tasks"`
 		Timestamp     time.Time `json:"timestamp" bson:"timestamp"`
