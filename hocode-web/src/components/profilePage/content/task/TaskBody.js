@@ -58,7 +58,7 @@ class TaskBody extends Component {
       console.log(res.data);
     });
 
-    axios.get(`http://localhost:8081/totalMinitask/${currentParams.courseId}`).then(res => {
+    axios.get(`http://localhost:8081/api/v1/totalMinitask/${currentParams.courseId}`).then(res => {
       this.setState({ totalMinitask: res.data })
     });
 

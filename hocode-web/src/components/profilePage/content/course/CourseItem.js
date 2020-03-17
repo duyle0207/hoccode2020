@@ -68,7 +68,8 @@ class CourseItem extends Component {
   }
 
   componentDidMount() {
-    axios.get(`http://localhost:8081/totalMinitask/${this.props.course.id}`).then(res => {
+    axios.get(`http://localhost:8081/api/v1/totalMinitask/${this.props.course.id}`).then(res => {
+      console.log(res.data);
       this.setState({ totalMinitask: res.data });
     });
     axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${this.props.course.id}`).then(res => {
