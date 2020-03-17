@@ -29,6 +29,7 @@
     "react-admin-date-inputs2": "^1.1.9",
     "react-awesome-modal": "^2.0.5",
     "react-codemirror2": "^6.0.0",
+    "react-countdown-now": "^2.1.2",
     "react-dom": "^16.13.0",
     "react-facebook-auth": "^1.4.0",
     "react-facebook-login": "^4.1.1",

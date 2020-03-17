@@ -24,6 +24,7 @@ class CourseBody extends Component {
       const courses = res.data;
       this.setState({ courses });
     });
+    var code;
   }
   render() {
     const { classes } = this.props;

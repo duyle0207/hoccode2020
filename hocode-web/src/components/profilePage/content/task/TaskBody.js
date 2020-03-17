@@ -11,7 +11,10 @@ import { matchPath } from "react-router-dom";
 import HashLoader from "react-spinners/HashLoader";
 import { randomColor } from "../course/CourseItem";
 import TaskItem from "./TaskItem";
+import Box from "@material-ui/core/Box";
+import { connect } from "react-redux";
 
+import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 
 const styles = {
   card: {
@@ -40,7 +43,8 @@ class TaskBody extends Component {
       course: {},
       courseId: "",
       totalMinitask: 0,
-      coursPassInfo: {}
+      coursPassInfo: {},
+      courseStatus: ''
     };
   }
   componentDidMount() {
@@ -55,11 +59,11 @@ class TaskBody extends Component {
     });
 
     axios.get(`http://localhost:8081/totalMinitask/${currentParams.courseId}`).then(res => {
-      this.setState({totalMinitask: res.data})
+      this.setState({ totalMinitask: res.data })
     });
-    
-    this.setState({courseId:currentParams.courseId})
-    
+
+    this.setState({ courseId: currentParams.courseId })
+
     axios
       .get(
         `http://localhost:8081/api/v1/auth/courses/${currentParams.courseId}/tasks`
@@ -70,18 +74,28 @@ class TaskBody extends Component {
         let tasks1 = tasks.reverse();
         this.setState({ tasks: tasks1, isLoading: false });
       });
-      
+
     axios
       .get(`http://localhost:8081/api/v1/courses/${currentParams.courseId}`)
       .then(res => {
         const course = res.data;
-        console.log(course);
-        this.setState({ course: course });
+        var code;
+        if ((new Date() < new Date(course.start_time))) {
+          code = -1;
+        }
+        if ((new Date() > new Date(course.start_time)) && (new Date() < new Date(course.end_time))) {
+          code = 0;
+        }
+        if ((new Date() > new Date(course.end_time))) {
+          code = 1;
+        }
+        this.setState({ course: course, courseStatus: code });
       });
 
     /* setTimeout(()=>{
             console.log(this.state.tasks)
         },2000)*/
+
   }
 
   onClickRating(val) {
@@ -109,8 +123,31 @@ class TaskBody extends Component {
 
   render() {
     const { classes } = this.props;
-    const { tasks, course } = this.state;
+    const { tasks, course, courseStatus } = this.state;
     const { isLoading } = this.state;
+    let courseLoop;
+    if (courseStatus === -1) {
+      if (this.props.user.role === "admin" || this.props.user.role === "mod") {
+        courseLoop = tasks.map(task => (
+          <TaskItem key={task.id} task={task} courseId={this.state.courseId} />
+        ))
+      }
+      else {
+        courseLoop =
+          <React.Fragment>
+            <Box justifyContent="center">
+              <Typography align="center" variant="h2">
+                Course hiện tại chưa được mở quay lại sau nhé! <InsertEmoticonIcon />
+              </Typography>
+            </Box>
+          </React.Fragment>
+      }
+    }
+    else {
+      courseLoop = tasks.map(task => (
+        <TaskItem key={task.id} task={task} courseId={this.state.courseId} />
+      ))
+    }
     return (
       <Grid container className={classes.TasksContainer} justify="center">
         {/* <Card className={classes.card}>
@@ -134,103 +171,103 @@ class TaskBody extends Component {
             />
           </div>
         ) : (
-          <React.Fragment>
-            <Grid item xs={12} sm={12} style={{ marginBottom: 30 }}>
-              <Paper>
-                <Grid container style={{ padding: 30 }}>
-                  <Grid item xs={12} sm={12}>
-                    <Typography variant="h5" component="h3">
-                      {course.course_name}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <p>{course.course_desc}</p>
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    sm={12}
-                    container
-                    style={{ justifyContent: "space-between" }}
-                  >
-                    <Grid
-                      item
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-start"
-                      }}
-                    >
-                      <Avatar
-                        className={classes.smallAvatar}
-                        style={{ backgroundColor: randomColor() }}
-                      >
-                        {" "}
-                        {course.user_create
-                          ? course.user_create.charAt(0).toUpperCase()
-                          : "H"}
-                      </Avatar>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                        style={{ marginLeft: 4 }}
-                      >
-                        {/* {course.total_minitask} */}
-                        {course.user_create !== ""
-                          ? course.user_create
-                          : "Hocode"}
+            <React.Fragment>
+              <Grid item xs={12} sm={12} style={{ marginBottom: 30 }}>
+                <Paper>
+                  <Grid container style={{ padding: 30 }}>
+                    <Grid item xs={12} sm={12}>
+                      <Typography variant="h5" component="h3">
+                        {course.course_name}
                       </Typography>
                     </Grid>
-
-                    <Grid
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-start"
-                      }}
-                    >
-                      <LaptopIcon />
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                        style={{ marginLeft: 4 }}
-                      >
-                        {/* {course.total_minitask} */}
-                        {this.state.totalMinitask} bài học
-                      </Typography>
+                    <Grid item xs={12} sm={12}>
+                      <p>{course.course_desc}</p>
                     </Grid>
                     <Grid
                       item
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-start"
-                      }}
+                      xs={12}
+                      sm={12}
+                      container
+                      style={{ justifyContent: "space-between" }}
                     >
-                      <Rating
-                        name="a"
-                        value={course.rating_value}
-                        read-only="true"
-                        precision={0.5}
-                        size="large"
-                        onChange={(event, newValue) => {
-                          this.onClickRating(newValue);
+                      <Grid
+                        item
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "flex-start"
                         }}
-                      />
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                        style={{ marginLeft: 4 }}
                       >
-                        {/* {course.total_minitask} */}
+                        <Avatar
+                          className={classes.smallAvatar}
+                          style={{ backgroundColor: randomColor() }}
+                        >
+                          {" "}
+                          {course.user_create
+                            ? course.user_create.charAt(0).toUpperCase()
+                            : "H"}
+                        </Avatar>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                          style={{ marginLeft: 4 }}
+                        >
+                          {/* {course.total_minitask} */}
+                          {course.user_create !== ""
+                            ? course.user_create
+                            : "Hocode"}
+                        </Typography>
+                      </Grid>
+
+                      <Grid
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "flex-start"
+                        }}
+                      >
+                        <LaptopIcon />
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                          style={{ marginLeft: 4 }}
+                        >
+                          {/* {course.total_minitask} */}
+                          {this.state.totalMinitask} bài học
+                      </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "flex-start"
+                        }}
+                      >
+                        <Rating
+                          name="a"
+                          value={course.rating_value}
+                          read-only="true"
+                          precision={0.5}
+                          size="large"
+                          onChange={(event, newValue) => {
+                            this.onClickRating(newValue);
+                          }}
+                        />
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                          style={{ marginLeft: 4 }}
+                        >
+                          {/* {course.total_minitask} */}
                         Đánh giá({course.rating ? course.rating.length : 0})
                       </Typography>
-                    </Grid>
+                      </Grid>
 
-                    {/* <Grid
+                      {/* <Grid
                       item
                       style={{
                         display: "flex",
@@ -248,19 +285,15 @@ class TaskBody extends Component {
                       </Typography>
                       <CircularProgress variant="determinate" value={100} />
                     </Grid> */}
+                    </Grid>
                   </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-
-            <Grid item xs={12} sm={6} style={{ padding: "0px 10px" }}>
-              {/* <h1>{this.state.courseId}</h1> */}
-              {tasks.map(task => (
-                <TaskItem key={task.id} task={task} courseId={this.state.courseId} />
-              ))}
-            </Grid>
-          </React.Fragment>
-        )}
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6} style={{ padding: "0px 10px" }}>
+                {courseLoop}
+              </Grid>
+            </React.Fragment>
+          )}
       </Grid>
     );
   }
@@ -268,4 +301,8 @@ class TaskBody extends Component {
 
 const average = list => list.reduce((prev, curr) => prev + curr) / list.length;
 
-export default withStyles(styles)(TaskBody);
+const mapStateToProps = state => ({
+  user: state.rootReducer.user
+});
+
+export default withStyles(styles)(connect(mapStateToProps, null)(TaskBody));

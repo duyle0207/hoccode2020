@@ -10,6 +10,9 @@ import React, { Component } from "react";
 import "./hover.css";
 import axios from "axios";
 import Box from "@material-ui/core/Box";
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Tooltip from "@material-ui/core/Tooltip";
+
 import {
   // FacebookShareCount,
   FacebookIcon,
@@ -49,18 +52,175 @@ class CourseItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      totalMinitask: 0
+      totalMinitask: 0,
+      days: 0,
+      hours: 0,
+      min: 0,
+      sec: 0,
+      coueseStatus: 0,
+      coursePassInfo: {},
+      isLoadingCourseInfo: true,
     };
+  }
+
+  componentWillUnmount() {
+    this.stop();
   }
 
   componentDidMount() {
     axios.get(`http://localhost:8081/totalMinitask/${this.props.course.id}`).then(res => {
-      this.setState({ totalMinitask: res.data })
+      this.setState({ totalMinitask: res.data });
     });
+    axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${this.props.course.id}`).then(res => {
+      this.setState({ coursePassInfo: res.data, isLoadingCourseInfo: false });
+    });
+    this.interval = setInterval(() => {
+      const date = this.calculateCountdown(this.props.course.end_time);
+      date ? this.setState(date) : this.stop();
+    }, 1000);
+    var code;
+    if ((new Date() < new Date(this.props.course.start_time))) {
+      code = -1;
+    }
+    if ((new Date() > new Date(this.props.course.start_time)) && (new Date() < new Date(this.props.course.end_time))) {
+      code = 0;
+    }
+    if ((new Date() > new Date(this.props.course.end_time))) {
+      code = 1;
+    }
+    this.setState({ courseStatus: code });
+  }
+
+  calculateCountdown(endDate) {
+    let diff = (Date.parse(new Date(endDate)) - Date.parse(new Date())) / 1000;
+
+    // clear countdown when date is reached
+    if (diff <= 0) return false;
+
+    const timeLeft = {
+      years: 0,
+      days: 0,
+      hours: 0,
+      min: 0,
+      sec: 0,
+      millisec: 0,
+    };
+
+    // calculate time difference between now and expected date
+    if (diff >= (365.25 * 86400)) { // 365.25 * 24 * 60 * 60
+      timeLeft.years = Math.floor(diff / (365.25 * 86400));
+      diff -= timeLeft.years * 365.25 * 86400;
+    }
+    if (diff >= 86400) { // 24 * 60 * 60
+      timeLeft.days = Math.floor(diff / 86400);
+      diff -= timeLeft.days * 86400;
+    }
+    if (diff >= 3600) { // 60 * 60
+      timeLeft.hours = Math.floor(diff / 3600);
+      diff -= timeLeft.hours * 3600;
+    }
+    if (diff >= 60) {
+      timeLeft.min = Math.floor(diff / 60);
+      diff -= timeLeft.min * 60;
+    }
+    timeLeft.sec = diff;
+
+    return timeLeft;
+  }
+
+  stop() {
+    clearInterval(this.interval);
+  }
+
+  addLeadingZeros(value) {
+    value = String(value);
+    while (value.length < 2) {
+      value = '0' + value;
+    }
+    return value;
   }
 
   render() {
+    const { days, hours, min, sec, courseStatus } = this.state;
     const { classes, course } = this.props;
+
+
+    let timer;
+    if (courseStatus === 0) {
+      timer = <React.Fragment>
+        <Box display="flex" color="#ef5350">
+          <Typography variant="button" display="block" gutterBottom>
+            Đang diển ra
+          </Typography>
+        </Box>
+        <Box mb={1} display="flex" color="#f44336">
+          <Box order={4}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.addLeadingZeros(sec) + ' giây '}&nbsp;
+            </Typography>
+          </Box>
+          <Box order={3}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.addLeadingZeros(min) + ' phút '}&nbsp;
+            </Typography>
+          </Box>
+          <Box order={2}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.addLeadingZeros(hours) + ' giờ '}&nbsp;
+            </Typography>
+          </Box>
+          <Box order={1}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.addLeadingZeros(days) + ' ngày '}&nbsp;
+            </Typography>
+          </Box>
+        </Box>
+      </React.Fragment>
+    } else if (courseStatus === -1) {
+      timer = <React.Fragment>
+        <Box display="flex" color="#212121">
+          <Typography variant="button" display="block" gutterBottom>
+            Sắp diển ra
+          </Typography>
+        </Box>
+        <Box mb={1} display="flex" color="#4caf50">
+          <Box order={4}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.addLeadingZeros(sec) + ' giây '}&nbsp;
+            </Typography>
+          </Box>
+          <Box order={3}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.addLeadingZeros(min) + ' phút '}&nbsp;
+            </Typography>
+          </Box>
+          <Box order={2}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.addLeadingZeros(hours) + ' giờ '}&nbsp;
+            </Typography>
+          </Box>
+          <Box order={1}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.addLeadingZeros(days) + ' ngày '}&nbsp;
+            </Typography>
+          </Box>
+        </Box>
+      </React.Fragment>
+    } else if (courseStatus === 1) {
+      timer = <React.Fragment>
+        <Box display="flex" color="#757575">
+          <Typography variant="button" display="block" gutterBottom>
+            Kết thúc
+          </Typography>
+        </Box>
+        <Box mb={1} display="flex" color="#757575">
+          <Typography variant="button" display="block" gutterBottom>
+            {new Date(course.end_time).toISOString().replace(/T/, ' ').replace(/\..+/, '')}
+          </Typography>
+        </Box>
+      </React.Fragment>
+    }
+
     return (
       <Grid
         container
@@ -69,7 +229,7 @@ class CourseItem extends Component {
           height: "100%",
           display: "flex",
           // justifyContent: "center",
-          alignItems: "center"
+          alignItems: "center",
         }}
         className={`${classes.courseItem} hvr-bounce-in`}
       >
@@ -114,7 +274,6 @@ class CourseItem extends Component {
                 {course.course_name}
               </Typography>
             </div>
-
             <div
               style={{
                 margin: "5px 12px 10px",
@@ -137,7 +296,6 @@ class CourseItem extends Component {
                 style={{
                   height: 40,
                   overflow: "hidden",
-
                   wordBreak: "break-word"
                 }}
               >
@@ -145,7 +303,6 @@ class CourseItem extends Component {
               </Typography>
             </div>
             <Divider light />
-
             <div
               style={{
                 margin: "8px 12px",
@@ -187,7 +344,6 @@ class CourseItem extends Component {
                     {course.user_create ? course.user_create : "Hocode"}
                   </Typography>
                 </Grid>
-
                 <Grid
                   item
                   xs
@@ -215,8 +371,6 @@ class CourseItem extends Component {
                     {this.state.totalMinitask}
                   </Typography>
                 </Grid>
-                
-
                 <Grid
                   item
                   xs
@@ -241,6 +395,42 @@ class CourseItem extends Component {
             </div>
           </Grid>
         </Grid>
+        {!this.state.isLoadingCourseInfo ?
+          <React.Fragment>
+            <Box justifyContent="flex-start" p={1} display="flex" color="#757575">
+              <Tooltip title={(this.state.coursePassInfo.total_minitask === 0) ? "0%" : (this.state.coursePassInfo.minitask_solved /
+                this.state.coursePassInfo.total_minitask) * 100 + "%"} placement="top">
+                <LinearProgress
+                  variant="determinate"
+                  value={this.state.coursePassInfo.total_minitask === 0 ? "0" :
+                    (this.state.coursePassInfo.minitask_solved /
+                      this.state.coursePassInfo.total_minitask) * 100
+                  }
+                  style={{ width: 250, height: 7 }}
+                />
+              </Tooltip>
+            </Box>
+            <Box justifyContent="flex-start" display="flex" color="#757575">
+              {(this.state.coursePassInfo.minitask_solved + "/" + this.state.coursePassInfo.total_minitask)}
+            </Box>
+          </React.Fragment>
+          :
+          <Box p={1} display="flex" color="#757575">
+            <Box order={1}>
+              <Tooltip title="Tiến độ" placement="top">
+                <LinearProgress variant="query" style={{ width: 250, height: 7 }} />
+              </Tooltip>
+            </Box>
+            {/* <Box order={2}>
+            <Typography variant="button" display="block" gutterBottom>
+              {this.state.coursePassInfo.minitask_solved + "/" +
+                this.state.coursePassInfo.total_minitask}
+            </Typography>
+          </Box> */}
+          </Box>
+        }
+        <Divider light />
+        {timer}
       </Grid>
     );
   }
