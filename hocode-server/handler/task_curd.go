@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strconv"
 	"time"
@@ -127,6 +129,42 @@ func (h *Handler) UpdateTasks(c echo.Context) (err error) {
 	// if err = db.DB(config.NameDb).C("tasks").Insert(bk); err != nil {
 	// 	return echo.ErrInternalServerError
 	// }
+	fmt.Println("[ID]")
+	fmt.Println(id)
+	task_db := &model.Task{}
+	db.DB(config.NameDb).C("tasks").Find(bson.M{
+		"_id": bson.ObjectIdHex(id),
+	}).One(&task_db)
+
+	fmt.Println("[DB]")
+	fmt.Println(task_db.CourseId)
+	fmt.Println("[WEB")
+	fmt.Println(bk.CourseId)
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	user_minitask := model.UserMiniTask{}
+	db.DB(config.NameDb).C("user_minitask").Find(bson.M{
+		"user_id": userID,
+	}).One(&user_minitask)
+
+	fmt.Println("[Before]")
+	fmt.Println(len(user_minitask.MiniTaskInfo))
+
+	if task_db.CourseId != bk.CourseId {
+		user_minitask.MiniTaskInfo = UpdateMinitaskAfterEditTask(task_db.CourseId, task_db.ID.Hex(), user_minitask.MiniTaskInfo)
+	}
+
+	fmt.Println("[After]")
+	fmt.Println(len(user_minitask.MiniTaskInfo))
+
+	_, errMinitask := db.DB(config.NameDb).C("user_minitask").UpsertId(user_minitask.ID, user_minitask)
+	if errMinitask != nil {
+		// return echo.ErrInternalServerError
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: errMinitask}
+	}
 
 	_, errUs := db.DB(config.NameDb).C("tasks").UpsertId(bk.ID, bk)
 	if errUs != nil {
@@ -136,6 +174,17 @@ func (h *Handler) UpdateTasks(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, bk)
 
+}
+
+func UpdateMinitaskAfterEditTask(course_id string, task_id string,course_info []*model.MiniTaskInfo) []*model.MiniTaskInfo {
+	count := 0
+	for i:=0;i< len(course_info);i++{
+		if course_info[i].CourseID == course_id && course_info[i].TaskID == task_id{
+			count++
+			course_info = append(course_info[:i], course_info[i+1:]...)
+		}
+	}
+	return course_info
 }
 
 // Tasks godoc

@@ -12,6 +12,9 @@ import axios from "axios";
 import Box from "@material-ui/core/Box";
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Tooltip from "@material-ui/core/Tooltip";
+import EmojiNatureIcon from "@material-ui/icons/EmojiNature";
+import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import {
   // FacebookShareCount,
@@ -69,10 +72,11 @@ class CourseItem extends Component {
 
   componentDidMount() {
     axios.get(`http://localhost:8081/api/v1/totalMinitask/${this.props.course.id}`).then(res => {
-      console.log(res.data);
+      // console.log(res.data);
       this.setState({ totalMinitask: res.data });
     });
     axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${this.props.course.id}`).then(res => {
+      console.log(res.data);
       this.setState({ coursePassInfo: res.data, isLoadingCourseInfo: false });
     });
     this.interval = setInterval(() => {
@@ -295,7 +299,7 @@ class CourseItem extends Component {
                 color="textSecondary"
                 component="p"
                 style={{
-                  height: 40,
+                  height: 20,
                   overflow: "hidden",
                   wordBreak: "break-word"
                 }}
@@ -303,6 +307,47 @@ class CourseItem extends Component {
                 {course.course_desc}
               </Typography>
             </div>
+            {!this.state.isLoadingCourseInfo ?
+              <React.Fragment>
+                <Box justifyContent="flex-start" p={1} display="flex" color="#757575">
+                  <Tooltip title={(this.state.coursePassInfo.total_minitask === 0) ? "0%" : (this.state.coursePassInfo.minitask_solved /
+                    this.state.coursePassInfo.total_minitask) * 100 + "%"} placement="top">
+                    <LinearProgress
+                      variant="determinate"
+                      value={this.state.coursePassInfo.total_minitask === 0 ? "0" :
+                        (this.state.coursePassInfo.minitask_solved /
+                          this.state.coursePassInfo.total_minitask) * 100
+                      }
+                      style={{ width: '100%', height: 7 }}
+                    />
+                  </Tooltip>
+                </Box>
+                <Box display="flex">
+                  <Box p={1} flexGrow={1} justifyContent="flex-start" color="#757575">
+                    <Typography variant="subtitle2">
+                      {(this.state.coursePassInfo.minitask_solved + "/" + this.state.coursePassInfo.total_minitask)}
+                    </Typography>
+                  </Box>
+                  <Box p={1} color="#757575">
+                    {this.state.coursePassInfo.isCodePass ? <Chip label="Pass" style={{ background: "#43a047", color: "white" }} />
+                      :
+                      <React.Fragment>
+                        <Typography variant="subtitle2">
+                          {this.state.coursePassInfo.user_code_point} <EmojiNatureIcon />
+                        </Typography>
+                      </React.Fragment>}
+                  </Box>
+                </Box>
+              </React.Fragment>
+              :
+              <Box p={1} display="flex" justifyContent="center" color="#757575">
+                <Box order={2}>
+                  <Tooltip title="Loading" placement="top">
+                    <CircularProgress />
+                  </Tooltip>
+                </Box>
+              </Box>
+            }
             <Divider light />
             <div
               style={{
@@ -396,40 +441,6 @@ class CourseItem extends Component {
             </div>
           </Grid>
         </Grid>
-        {!this.state.isLoadingCourseInfo ?
-          <React.Fragment>
-            <Box justifyContent="flex-start" p={1} display="flex" color="#757575">
-              <Tooltip title={(this.state.coursePassInfo.total_minitask === 0) ? "0%" : (this.state.coursePassInfo.minitask_solved /
-                this.state.coursePassInfo.total_minitask) * 100 + "%"} placement="top">
-                <LinearProgress
-                  variant="determinate"
-                  value={this.state.coursePassInfo.total_minitask === 0 ? "0" :
-                    (this.state.coursePassInfo.minitask_solved /
-                      this.state.coursePassInfo.total_minitask) * 100
-                  }
-                  style={{ width: 250, height: 7 }}
-                />
-              </Tooltip>
-            </Box>
-            <Box justifyContent="flex-start" display="flex" color="#757575">
-              {(this.state.coursePassInfo.minitask_solved + "/" + this.state.coursePassInfo.total_minitask)}
-            </Box>
-          </React.Fragment>
-          :
-          <Box p={1} display="flex" color="#757575">
-            <Box order={1}>
-              <Tooltip title="Tiến độ" placement="top">
-                <LinearProgress variant="query" style={{ width: 250, height: 7 }} />
-              </Tooltip>
-            </Box>
-            {/* <Box order={2}>
-            <Typography variant="button" display="block" gutterBottom>
-              {this.state.coursePassInfo.minitask_solved + "/" +
-                this.state.coursePassInfo.total_minitask}
-            </Typography>
-          </Box> */}
-          </Box>
-        }
         <Divider light />
         {timer}
       </Grid>

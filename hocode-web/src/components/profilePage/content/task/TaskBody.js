@@ -78,6 +78,7 @@ class TaskBody extends Component {
     axios
       .get(`http://localhost:8081/api/v1/courses/${currentParams.courseId}`)
       .then(res => {
+        console.log(res.data);
         const course = res.data;
         var code;
         if ((new Date() < new Date(course.start_time))) {
@@ -136,8 +137,8 @@ class TaskBody extends Component {
         courseLoop =
           <React.Fragment>
             <Box justifyContent="center">
-              <Typography align="center" variant="h2">
-                Course hiện tại chưa được mở quay lại sau nhé! <InsertEmoticonIcon />
+              <Typography align="center" variant="h3">
+                Course hiện tại chưa được mở vui lòng quay lại vào {new Date(course.start_time).toISOString().replace(/T/, ' ').replace(/\..+/, '')} nhé! <InsertEmoticonIcon />
               </Typography>
             </Box>
           </React.Fragment>

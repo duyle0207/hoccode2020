@@ -20,8 +20,11 @@ type (
 
 type (
 	CoursePassInfo struct {
-		CourseID		string        `json:"course_id" bson:"course_id"`
-		MinitaskSoved 	int        `json:"minitask_solved" bson:"minitask_solved"`
-		TotalMiniTask	int        `json:"total_minitask" bson:"total_minitask"`
+		CourseID		string     	`json:"course_id" bson:"course_id"`
+		MinitaskSoved 	int        	`json:"minitask_solved" bson:"minitask_solved"`
+		TotalMiniTask	int        	`json:"total_minitask" bson:"total_minitask"`
+		UserCodePoint	int			`json:"user_code_point" bson:"user_code_point"`
+		ToTalPoint		int 		`json:"total_point" bson:"total_point"`
+		IsCodePass		bool		`json:"isCodePass" bson:"isCodePass"`
 	}
 )

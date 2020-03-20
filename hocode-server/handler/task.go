@@ -198,6 +198,18 @@ func (h *Handler) CreateTask(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, tn)
 }
 
+func GetMinitask_ID(id string, h *Handler) (minitask model.MiniTask){
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	db.DB(config.NameDb).C("minitasks").Find(bson.M{
+		"_id": bson.ObjectIdHex(id),
+	}).One(&minitask)
+
+	return minitask
+}
+
 func (h *Handler) IsPassTask(c echo.Context) (err error) {
 
 	user := c.Get("user").(*jwt.Token)
@@ -227,30 +239,38 @@ func (h *Handler) IsPassTask(c echo.Context) (err error) {
 		"course_id": course_id,
 	}).All(&task_list)
 
+	total_point := 0
 	for i:=0;i < len(task_list);i++{
 		total_minitask += len(GetTotalTaskMinitask(task_list[i].ID.Hex(), h))
-		fmt.Println("[LEN LEN]")
-		fmt.Println(len(GetTotalTaskMinitask(task_list[i].ID.Hex(), h)))
+		task_minitask := GetTotalTaskMinitask(task_list[i].ID.Hex(), h)
+		for j:=0;j<len(task_minitask);j++{
+			total_point += GetMinitask_ID(task_minitask[j].MiniTaskID, h).CodePoint
+		}
 	}
 
 	count_Completed_Minitask := 0
+	user_code_point := 0
 	for i:=0;i< len(user_minitask_list);i++{
-		fmt.Println(len(user_minitask_list[i].MiniTaskInfo))
 		for j:=0;j<len(user_minitask_list[i].MiniTaskInfo);j++{
 			if user_minitask_list[i].MiniTaskInfo[j].CourseID == course_id {
 				count_Completed_Minitask++
+				user_code_point += GetMinitask_ID(user_minitask_list[i].MiniTaskInfo[j].MiniTaskID, h).CodePoint
 			}
 		}
 	}
-	fmt.Println("[Completed Task]")
-	fmt.Println(count_Completed_Minitask)
 
 	course_pass_info := model.CoursePassInfo{}
 
 	course_pass_info.CourseID = course_id
 	course_pass_info.MinitaskSoved = count_Completed_Minitask
 	course_pass_info.TotalMiniTask = total_minitask
-
+	course_pass_info.ToTalPoint = total_point
+	course_pass_info.UserCodePoint = user_code_point
+	if total_point == user_code_point && total_minitask != 0{
+		course_pass_info.IsCodePass =  true
+	} else {
+		course_pass_info.IsCodePass = false
+	}
 	return c.JSON(http.StatusOK, course_pass_info)
 }
 

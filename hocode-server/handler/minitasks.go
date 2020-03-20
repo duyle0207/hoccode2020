@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strconv"
 	"time"
@@ -118,9 +117,11 @@ func (h *Handler) DeleteTaskMinitask(c echo.Context) (err error) {
 		// ID: bson.NewObjectId(),
 	}
 
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userID := claims["id"].(string)
+	//user := c.Get("user").(*jwt.Token)
+	//claims := user.Claims.(jwt.MapClaims)
+	//userID := claims["id"].(string)user := c.Get("user").(*jwt.Token)
+	//	//claims := user.Claims.(jwt.MapClaims)
+	//	//userID := claims["id"].(string)
 
 	if err = c.Bind(bk); err != nil {
 		return
@@ -156,40 +157,44 @@ func (h *Handler) DeleteTaskMinitask(c echo.Context) (err error) {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
 	}
 
-	user_minitask := &model.UserMiniTask{}
+	user_minitask := []*model.UserMiniTask{}
 	if err = db.DB(config.NameDb).C("user_minitask").Find(
-		bson.M{
-			"user_id": userID,
-		}).One(&user_minitask); err != nil {
+		bson.M{}).All(&user_minitask); err != nil {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
 	}
 
-	index := -1
-	for i := 0;i<len(user_minitask.MiniTaskInfo);i++{
-		if user_minitask.MiniTaskInfo[i].CourseID == course_id &&
-			user_minitask.MiniTaskInfo[i].MiniTaskID == minitask_id {
-			index = i
+	for j:=0;j<len(user_minitask);j++{
+		for i := 0;i<len(user_minitask[j].MiniTaskInfo);i++{
+			if user_minitask[j].MiniTaskInfo[i].CourseID == course_id &&
+				user_minitask[j].MiniTaskInfo[i].MiniTaskID == minitask_id &&
+				user_minitask[j].MiniTaskInfo[i].TaskID == task_id {
+				user_minitask[j].MiniTaskInfo = UpdateMinitaskInfo(i, user_minitask[j].MiniTaskInfo)
+				db.DB(config.NameDb).C("user_minitask").UpsertId(user_minitask[j].ID, user_minitask[j])
+			}
 		}
 	}
 
-	fmt.Println("[Index]")
-	fmt.Println(index)
 
-	user_minitask.MiniTaskInfo = UpdateMinitaskInfo(index, user_minitask.MiniTaskInfo)
+	//fmt.Println("[Index]")
+	//fmt.Println(index)
+
+	//if index != -1 {
+	//	//	//user_minitask.MiniTaskInfo = UpdateMinitaskInfo(index, user_minitask.MiniTaskInfo)
+	//	//}
 
 	//user_minitask.MiniTaskInfo = []*model.MiniTaskInfo{}
 
-	for x:=0;x< len(user_minitask.MiniTaskInfo);x++{
-		fmt.Println(user_minitask.MiniTaskInfo[x].MiniTaskID)
-	}
-
-	fmt.Println("[new Len]")
-	fmt.Println(len(user_minitask.MiniTaskInfo))
-
-	db.DB(config.NameDb).C("user_minitask").Update(
-		bson.M{
-		"user_id": userID,
-	},user_minitask)
+	//for x:=0;x< len(user_minitask.MiniTaskInfo);x++{
+	//	fmt.Println(user_minitask.MiniTaskInfo[x].MiniTaskID)
+	//}
+	//
+	//fmt.Println("[new Len]")
+	//fmt.Println(len(user_minitask.MiniTaskInfo))
+	//
+	//db.DB(config.NameDb).C("user_minitask").Update(
+	//	bson.M{
+	//	"user_id": userID,
+	//},user_minitask)
 
 	return c.JSON(http.StatusOK, bk)
 }
