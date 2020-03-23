@@ -207,19 +207,19 @@ func (h *Handler) TaskByCoursesID(c echo.Context) (err error) {
 // @Success 200 {array} model.Task
 // @Router /courses/{id}/tasks [get]
 
-func GetMiniTaskList(task_miniTask []*model.Task_Minitask , h *Handler) (miniTasks []*model.MiniTask) {
+func GetMiniTaskList(task_miniTask []*model.Task_Minitask, h *Handler) (miniTasks []*model.MiniTask) {
 
-	db:= h.DB.Clone()
+	db := h.DB.Clone()
 	defer db.Close()
 
-	for i:=0;i<len(task_miniTask); i++ {
+	for i := 0; i < len(task_miniTask); i++ {
 		miniTask := &model.MiniTask{}
 		db.DB(config.NameDb).C("minitasks").
 			Find(
 				bson.M{
 					"_id": bson.ObjectIdHex(task_miniTask[i].MiniTaskID),
 				},
-		).One(&miniTask)
+			).One(&miniTask)
 		fmt.Println(miniTask.MiniTaskName)
 		miniTasks = append(miniTasks, miniTask)
 	}
@@ -265,7 +265,7 @@ func (h *Handler) AuthTaskByCoursesID(c echo.Context) (err error) {
 		db.DB(config.NameDb).C("task_minitask").
 			Find(bson.M{
 				"task_id": ta[i].ID.Hex(),
-		}).All(&task_miniTask)
+			}).All(&task_miniTask)
 
 		mta := GetMiniTaskList(task_miniTask, h)
 
@@ -371,4 +371,63 @@ func (h *Handler) CreateCourse(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, pn)
 
+}
+
+// review course
+
+func (h *Handler) ReviewCourse(c echo.Context) (err error) {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	ID := claims["id"].(string)
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	ur := &model.User{}
+
+	if err = db.DB(config.NameDb).C("users").
+		// FindId(bson.ObjectIdHex(ID)).
+		Find(bson.M{
+			"_id": bson.ObjectIdHex(ID),
+			"del": bson.M{"$ne": true},
+		}).
+		One(&ur); err != nil {
+		if err == mgo.ErrNotFound {
+			return echo.ErrNotFound
+		}
+		return
+	}
+
+	bk := &model.Course{}
+
+	if err = db.DB(config.NameDb).C("course").
+		// FindId(bson.ObjectIdHex(id)).
+		Find(bson.M{
+			"id": ur.ID.Hex(),
+			//"config_id": configApp.ID.Hex(),
+			//"del":       bson.M{"$ne": true},
+		}).
+		One(&bk); err != nil {
+		if err == mgo.ErrNotFound {
+			// return echo.ErrNotFound
+			// return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
+
+		}
+		// returns
+	}
+	_, errUs := db.DB(config.NameDb).C("course").UpsertId(bk.ID, bk)
+	if errUs != nil {
+		// return echo.ErrInternalServerError
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: errUs}
+	}
+	bk.Agree = false
+
+	reviewCourseOut := &model.ReviewCourse{
+		User:    ur,
+		Courses: bk,
+	}
+
+	c.Response().Header().Set("x-total-count", strconv.Itoa(1))
+
+	return c.JSON(http.StatusOK, reviewCourseOut)
 }

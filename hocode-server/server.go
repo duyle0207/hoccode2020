@@ -85,12 +85,12 @@ func main() {
 	tlsConfig := &tls.Config{}
 
 	dialInfo := &mgo.DialInfo{
-		Addrs: []string{config.LinkDb},
+		Addrs:    []string{config.LinkDb},
 		Database: config.NameDb,
 		Username: config.Username,
 		Password: config.Password,
-		Timeout:60 * time.Second,
-		Source: config.Source,
+		Timeout:  60 * time.Second,
+		Source:   config.Source,
 	}
 	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
 		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
@@ -255,7 +255,6 @@ func main() {
 	rs.GET("/listUserCourse", h.GetListUserCourse)
 
 	rs.GET("/usercourse", h.GetUserCourse)
-
 	rs.GET("/completeminitask", h.GetUserCompleteMititask)
 
 	rs.GET("/courses/:id/tasks", h.AuthTaskByCoursesID)

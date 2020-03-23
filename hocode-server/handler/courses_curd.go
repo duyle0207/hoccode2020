@@ -169,6 +169,14 @@ func (h *Handler) UpdateCourses(c echo.Context) (err error) {
 	bk.UserCreate = name
 
 	_, errUs := db.DB(config.NameDb).C("course").UpsertId(bk.ID, bk)
+
+	if bk.Agree == true {
+		bk.Status = "Active"
+	}
+	if bk.Agree == false {
+		bk.Status = "Inactive"
+	}
+
 	if errUs != nil {
 		// return echo.ErrInternalServerError
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: errUs}

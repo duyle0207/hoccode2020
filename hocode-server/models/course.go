@@ -25,6 +25,10 @@ type (
 		Tasks         []*Task   `json:"tasks" bson:"tasks"`
 		Timestamp     time.Time `json:"timestamp" bson:"timestamp"`
 		Del           bool      `json:"del" bson:"del"`
+
+		// set status to public course.
+		Status string `json:"status" bson:"status"`
+		Agree  bool   `json:"agree" bson:"agree"`
 	}
 )
 type (
@@ -33,5 +37,10 @@ type (
 		TaskCount     int       `json:"task_count" bson:"task_count"`
 		TasksComplete int       `json:"tasks_complete" bson:"tasks_complete"`
 		Timestamp     time.Time `json:"timestamp" bson:"timestamp"`
+	}
+
+	ReviewCourse struct {
+		User    *User   `json:"user" bson:"user"`
+		Courses *Course `json:"course" bson:"course"`
 	}
 )

@@ -21,7 +21,8 @@ import {
 import {
   ModelCourseList,
   ModelCourseCreate,
-  ModelCourseEdit
+  ModelCourseEdit,
+  ModelCourseCreateForMod
 } from "./resources/ModelCourse";
 
 import {
@@ -71,7 +72,7 @@ const ReactAdmin = () => (
   >
     {_ => {
       const permissionslocal = localStorage.getItem("permissions");
-
+      console.log(permissionslocal);
       return [
         permissionslocal === "admin" ? (
           <Resource
@@ -91,12 +92,27 @@ const ReactAdmin = () => (
           />
         ) : null,
 
-        <Resource
+        permissionslocal === "admin" ? (
+          <Resource
           name="courses"
           list={ModelCourseList}
           create={ModelCourseCreate}
           edit={ModelCourseEdit}
-        />,
+        />
+        ) : (<Resource
+          name="courses"
+          list={ModelCourseList}
+          create={ModelCourseCreateForMod}
+          edit={ModelCourseEdit}
+        />
+
+        ),
+        // <Resource
+        //   name="courses"
+        //   list={ModelCourseList}
+        //   create={ModelCourseCreate}
+        //   edit={ModelCourseEdit}
+        // />,
         <Resource
           name="tasks"
           list={ModelTaskList}

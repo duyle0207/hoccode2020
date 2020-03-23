@@ -11,6 +11,7 @@ import { matchPath } from "react-router-dom";
 import HashLoader from "react-spinners/HashLoader";
 import { randomColor } from "../course/CourseItem";
 import TaskItem from "./TaskItem";
+import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import { connect } from "react-redux";
 import Card from '@material-ui/core/Card';
@@ -194,6 +195,51 @@ class TaskBody extends Component {
       value = '0' + value;
     }
     return value;
+  }
+
+  handleBtnAccepted() {
+    let location = this.props.location;
+
+    const currentParams = getParams(location.pathname);
+
+    var newcourse = this.state.course;
+    newcourse.status = "Active";
+    // console.log(newcourse);
+    this.setState({ course: newcourse });
+
+    axios
+      .put(
+        `http://localhost:8081/api/v1/curd/courses/${currentParams.courseId}`,
+        newcourse
+      )
+      .then(res => {
+        // const course = res.data;
+        // this.setState({ course: course });
+      });
+
+  }
+
+  handleBtnDeny(){
+    let location = this.props.location;
+
+    const currentParams = getParams(location.pathname);
+
+    var newcourse = this.state.course;
+    newcourse.status = "Inactive";
+    // console.log(newcourse);
+    this.setState({ course: newcourse });
+
+    axios
+      .put(
+        `http://localhost:8081/api/v1/curd/courses/${currentParams.courseId}`,
+        newcourse
+      )
+      .then(res => {
+        // const course = res.data;
+        // this.setState({ course: course });
+      });
+
+
   }
 
   render() {
@@ -443,6 +489,47 @@ class TaskBody extends Component {
                           </Typography>
                         </Box>
                       </Grid>
+
+                    <Grid
+                      item
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-start"
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                        style={{ marginRight: 4 }}
+                      >
+                        Tình trạng:
+                      </Typography>
+                      {/* <CircularProgress variant="determinate" value={100} />                   */}
+                      {course.status === "Active" ? null: (
+                        <div>
+                          <Button size="small"
+                                  variant="contained"
+                                  aria-label="small outlined button group"
+                                  color="primary"
+                                  onClick= {
+                                    () => this.handleBtnAccepted()
+                                  }>
+                                    Duyệt khóa học
+                          </Button>
+                          <Button size="small"
+                                  variant="contained"
+                                  aria-label="small outlined button group"
+                                  color="secondary"
+                                  onClick= {
+                                    () => this.handleBtnDeny()
+                                  }>
+                                    Từ chối
+                          </Button>
+                        </div>                       
+                      )}
+                    </Grid> 
                     </Grid>
                   </Grid>
                 </Paper>

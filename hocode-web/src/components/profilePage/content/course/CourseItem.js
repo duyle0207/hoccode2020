@@ -150,6 +150,12 @@ class CourseItem extends Component {
     const { classes, course } = this.props;
 
 
+    // check course statement -- Active or Inactive
+    let isActive;
+    if (course.status === "Inactive") {
+      isActive = <p>Cần xét duyệt</p>
+    }
+
     let timer;
     if (courseStatus === 0) {
       timer = <React.Fragment>
@@ -306,6 +312,20 @@ class CourseItem extends Component {
               >
                 {course.course_desc}
               </Typography>
+
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                component="p"
+                style={{
+                  height: 40,
+                  overflow: "hidden",
+                  color: "#CE280A",
+                  wordBreak: "break-word"
+                }}
+              >
+                {isActive}
+              </Typography>
             </div>
             {!this.state.isLoadingCourseInfo ?
               <React.Fragment>
@@ -436,7 +456,7 @@ class CourseItem extends Component {
                       </FacebookShareCount> */}
                     </FacebookShareButton>
                   </Box>
-                </Grid>
+                </Grid>           
               </Grid>
             </div>
           </Grid>
