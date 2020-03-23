@@ -22,6 +22,7 @@ import {
 import ModelCourseEditToolbar from "../customActions/ModelCourseEditToolbar";
 
 import ModelCourseFilter from "../filters/ModelCourseFilter";
+//import { Button } from "@material-ui/core";
 
 export const ModelCourseList = props => (
   <List
@@ -49,7 +50,6 @@ export const ModelCourseList = props => (
     </Datagrid>
   </List>
 );
-
 export const ModelCourseCreate = props => (
   <Create {...props} title="Tạo Chủ đề">
     <SimpleForm redirect="show">
@@ -61,9 +61,34 @@ export const ModelCourseCreate = props => (
       {/* <TextInput resettable                source="tasks"            /> */}
       {/* <TextInput resettable                source="timestamp"            /> */}
     </SimpleForm>
-  </Create>
+  </Create> 
 );
 
+// create another Create for Mod permission.
+export const ModelCourseCreateForMod = props => (
+  <Create {...props} title="Tạo Chủ đề">
+    <SimpleForm redirect="show">
+      <TextInput resettable source="course_name" />
+      <TextInput resettable source="background_image" />
+      <TextInput resettable multiline source="course_desc" />
+      {/* <BooleanInput                source="del"            /> */}
+      {/* <TextInput resettable                source="id"            /> */}
+      {/* <TextInput resettable                source="tasks"            /> */}
+      {/* <TextInput resettable                source="timestamp"            /> */}
+      
+      <button type="button" className="btn btn-default" 
+        variant="contained"
+        style={{ background: "#1ECD97", color: "#fff" }}
+      //  onClick={this.handleDialogCourseCheck}
+      >Yêu cầu xét duyệt</button>
+      
+    </SimpleForm>
+  </Create> 
+);
+
+// handleDialogCourseCheck = () => {
+  
+// }
 export const ModelCourseEdit = props => (
   <Edit {...props} title="Sửa Chủ đề">
     <SimpleForm toolbar={<ModelCourseEditToolbar />}>

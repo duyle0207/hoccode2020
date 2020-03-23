@@ -42,10 +42,10 @@ class Certificate extends Component {
         <div  className="container">
           <div className="row">
             <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6" style={{marginLeft: 100, marginTop: 80}}>
-                <img src="../logo_HCMUTE.png" height="80" width="80" />
+                <img src="../logo_HCMUTE.png" alt="" height="80" width="80" />
             </div>
             <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6" style={{position: 'absolute',right: 100, top: 80}}>
-                <img src="../logo.png" height="80" width="80" />
+                <img src="../logo.png" alt="" height="80" width="80" />
             </div>
           </div>
         </div>

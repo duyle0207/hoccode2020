@@ -27,16 +27,18 @@ func (h *Handler) GetTotalCourseMinitask(c echo.Context) (err error) {
 
 	total_course_minitask := 0
 
-	for i:=0;i< len(list_task);i++ {
+	for i := 0; i < len(list_task); i++ {
 		total_course_minitask += len(GetTotalTaskMinitask(list_task[i].ID.Hex(), h))
 	}
+	fmt.Println("[Total]")
+	fmt.Println(total_course_minitask)
 	return c.JSON(http.StatusOK, total_course_minitask)
 }
 
 func GetTotalTaskMinitask(task_id string, h *Handler) (task_minitask []*model.Task_Minitask) {
 
 	db := h.DB.Clone()
-	defer  db.Close()
+	defer db.Close()
 
 	db.DB(config.NameDb).C("task_minitask").
 		Find(bson.M{

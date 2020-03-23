@@ -61,6 +61,12 @@ class CourseItem extends Component {
 
   render() {
     const { classes, course } = this.props;
+
+    // check course statement -- Active or Inactive
+    let isActive;
+    if (course.status === "Inactive") {
+      isActive = <p>Cần xét duyệt</p>
+    }
     return (
       <Grid
         container
@@ -143,6 +149,20 @@ class CourseItem extends Component {
               >
                 {course.course_desc}
               </Typography>
+
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                component="p"
+                style={{
+                  height: 40,
+                  overflow: "hidden",
+                  color: "#CE280A",
+                  wordBreak: "break-word"
+                }}
+              >
+                {isActive}
+              </Typography>
             </div>
             <Divider light />
 
@@ -215,8 +235,6 @@ class CourseItem extends Component {
                     {this.state.totalMinitask}
                   </Typography>
                 </Grid>
-                
-
                 <Grid
                   item
                   xs
@@ -236,7 +254,7 @@ class CourseItem extends Component {
                       </FacebookShareCount> */}
                     </FacebookShareButton>
                   </Box>
-                </Grid>
+                </Grid>           
               </Grid>
             </div>
           </Grid>

@@ -21,12 +21,17 @@ const styles = {
 
   },
 };
+
+const permissionslocal = localStorage.getItem("permissions");
+console.log(permissionslocal);
+
 class CourseBody extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: true,
-      courses: []
+      courses: [],
+      courseActived : []
     };
   }
   getApi = async () => {
@@ -34,7 +39,16 @@ class CourseBody extends Component {
       axios.get(`http://localhost:8081/api/v1/courses`).then(res => {
         const courses = res.data;
         console.log(courses)
+        const courseIsActived = []
         this.setState({ courses });
+
+        for (let i = 0; i < courses.length; i++) {
+          const element = courses[i];
+          if ( element.status === "Active" ||element.status === " " ) {
+            courseIsActived.push(element);
+          }
+        }
+        this.setState({courseActived:courseIsActived });
       })]
     );
     this.setState({ isLoading: false })
@@ -44,9 +58,8 @@ class CourseBody extends Component {
   }
   render() {
     const { classes } = this.props;
-    const { courses, isLoading } = this.state;
+    const { courses, isLoading, courseActived } = this.state;
     let url = this.props.url;
-
     return (
       <Grid container className={classes.CourseContainer} justify="center">
         {isLoading ? <div className="sweet-loading" style={{ display: 'flex', alignItems: "center", justifyContent: 'center', width: '100%' }}>
@@ -58,9 +71,18 @@ class CourseBody extends Component {
             loading={isLoading}
           />
         </div> : (<React.Fragment><Grid item xs={12} sm={12} style={{ padding: "0px 60px" }}>
-          <Grid container spacing={2}>
+          {permissionslocal === "admin" ?
+           <Grid container spacing={2}>
             {courses.map((course) => <Grid key={course.id} item xs={12} sm={4} md={4}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
+          </Grid> : (
+            <Grid container spacing={2}>
+            {courseActived.map((course) => <Grid key={course.id} item xs={12} sm={4} md={4}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
           </Grid>
+          )
+          }
+          {/* <Grid container spacing={2}>
+            {courses.map((course) => <Grid key={course.id} item xs={12} sm={4} md={4}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
+          </Grid> */}
         </Grid></React.Fragment>)}
       </Grid>
     );
