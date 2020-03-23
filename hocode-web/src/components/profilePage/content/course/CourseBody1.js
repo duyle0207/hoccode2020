@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import CourseItem from './CourseItem';
 import "./coursebody.css";
+import { getUser } from "../../../../js/actions/userAction";
+import { connect } from "react-redux";
+
 
 import HashLoader from "react-spinners/HashLoader";
 const styles = {
@@ -71,7 +74,7 @@ class CourseBody extends Component {
             loading={isLoading}
           />
         </div> : (<React.Fragment><Grid item xs={12} sm={12} style={{ padding: "0px 60px" }}>
-          {permissionslocal === "admin" ?
+          {this.props.user.role === "admin" ?
            <Grid container spacing={2}>
             {courses.map((course) => <Grid key={course.id} item xs={12} sm={4} md={4}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
           </Grid> : (
@@ -89,4 +92,10 @@ class CourseBody extends Component {
   }
 }
 
-export default withStyles(styles)(CourseBody);
+const mapStateToProps = state => ({
+  auth: state.rootReducer.auth,
+  errors: state.rootReducer.errors,
+  user: state.rootReducer.user
+});
+
+export default withStyles(styles)(connect(mapStateToProps, { getUser })(CourseBody));
