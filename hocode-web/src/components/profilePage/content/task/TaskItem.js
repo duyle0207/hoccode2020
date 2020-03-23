@@ -107,7 +107,7 @@ class TaskItem extends Component {
                     margin: 0
                   }}
                 >
-                  {minitask.code_point},{minitask.status}
+                  {minitask.code_point}
                 </p>
               </div>
               <div>

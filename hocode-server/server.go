@@ -113,7 +113,6 @@ func main() {
 
 	e.POST("/createTaskMinTask", h.CreateTaskMinTask)
 
-	e.GET("/totalMinitask/:course_id", h.GetTotalCourseMinitask)
 
 	// e.GET("/users", h.GetUser)
 	// e.GET("/users/:id", h.GetUserByID)
@@ -150,6 +149,7 @@ func main() {
 
 	r.GET("/minitasks", h.Minitasks)
 	r.GET("/minitasks/:id", h.MinitasksByID)
+	r.GET("/totalMinitask/:course_id", h.GetTotalCourseMinitask)
 	r.GET("/getMinitasksByTaskID/:id", h.GetMiniTaskByTaskID)
 
 	r.GET("/profile", h.Profile)

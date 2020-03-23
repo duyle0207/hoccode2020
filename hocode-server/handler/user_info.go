@@ -210,6 +210,17 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		return
 	}
 
+	now := time.Now()
+	course_status := 0
+	fmt.Println(course.StartTime)
+
+	if now.Sub(course.StartTime).Seconds() < 0 {
+		course_status = -1
+	} else if course.StartTime.Sub(now).Seconds() < 0 && now.Sub(course.EndTime).Seconds() < 0 {
+		course_status = 0
+	} else if now.Sub(course.EndTime).Seconds() > 0 {
+		course_status = 1
+	}
 	// taskf := &model.Task{}
 
 	// if err = db.DB(config.NameDb).C("tasks").
@@ -281,6 +292,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		miniTaskIn.Status = "hoanthanh"
 		miniTaskIn.MiniTaskID = bodyUC.MiniTaskID
 		miniTaskIn.CourseID = course_id
+		miniTaskIn.TaskID = bodyUC.TaskID
 
 		// Cộng điểm cho user
 		mtf := &model.MiniTask{}
@@ -308,19 +320,24 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 
 		ur.CodePoint = ur.CodePoint + mtf.CodePoint
 		ur.Timestamp = time.Now()
-		if err = db.DB(config.NameDb).
-			C("users").
-			Update(bson.M{"_id": bson.ObjectIdHex(userID)}, ur); err != nil {
-			if err == mgo.ErrNotFound {
-				return echo.ErrNotFound
+		fmt.Println("[Course status]")
+		fmt.Println(course_status)
+		if course_status == 0 {
+			if err = db.DB(config.NameDb).
+				C("users").
+				Update(bson.M{"_id": bson.ObjectIdHex(userID)}, ur); err != nil {
+				if err == mgo.ErrNotFound {
+					return echo.ErrNotFound
+				}
+				return
 			}
-			return
 		}
 		userMiniTask.MiniTaskInfo = append(userMiniTask.MiniTaskInfo, miniTaskIn)
 	}
 
 	codePoint = ur.CodePoint
 	userMiniTask.Timestamp = time.Now()
+
 
 	if isInDBUserMiniTask {
 		if err = db.DB(config.NameDb).

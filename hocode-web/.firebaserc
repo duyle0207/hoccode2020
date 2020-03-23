@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "hocode-11412"
+    "default": "hocode-2020",
+    "y": "hocode-2020",
+    "firebase-react-deloy": "hocode-2020",
+    "firebase-react-deploy": "hocode-2020"
   }
 }

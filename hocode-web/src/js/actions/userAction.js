@@ -1,14 +1,16 @@
 import { ADD_CODEPOINT, GET_USER, CHANGE_USER_INFO,CHANGE_LOADING,SET_UNDEFINED_NEXT_MINITASK } from "./types";
 import axios from "axios";
 
-export const submitUpdateMinitask = (minitask_id, task_id, course_id) => dispatch => {
+export const submitUpdateMinitask = (minitask_id, task_id, course_id, courseStatus) => dispatch => {
   console.log({minitask_id: minitask_id,
     task_id: task_id,
-    course_id: course_id})
+    course_id: course_id,
+    course_status: courseStatus})
   axios
     .post(`http://localhost:8081/api/v1/auth/updateusercourse/${course_id}`, {
       minitask_id: minitask_id,
-      task_id: task_id
+      task_id: task_id,
+      course_status: courseStatus
     })
     .then(res => {
       console.log(res.data)

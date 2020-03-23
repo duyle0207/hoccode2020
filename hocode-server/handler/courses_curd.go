@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -114,6 +115,9 @@ func (h *Handler) UpdateCourses(c echo.Context) (err error) {
 		bk.ID = bson.NewObjectId()
 	}
 
+	fmt.Println("[Start_End_time]")
+	fmt.Println(bk.StartTime.String())
+	fmt.Println(bk.EndTime)
 	// Validation
 	// if bk.Title == "" || bk.Image == "" || bk.Content == "" {
 	// 	return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid title or image fields"}
@@ -204,6 +208,10 @@ func (h *Handler) CreateCourses(c echo.Context) (err error) {
 	if bk.ID == "" {
 		bk.ID = bson.NewObjectId()
 	}
+
+	fmt.Println("[Start_End_time]")
+	fmt.Println(bk.StartTime)
+	fmt.Println(bk.EndTime)
 
 	// Validation
 	// if bk.Title == "" || bk.Image == "" || bk.Content == "" {

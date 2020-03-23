@@ -24,6 +24,12 @@ import ModelCourseEditToolbar from "../customActions/ModelCourseEditToolbar";
 import ModelCourseFilter from "../filters/ModelCourseFilter";
 //import { Button } from "@material-ui/core";
 
+import { DateTimeInput } from 'react-admin-date-inputs2';
+
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+
+import MomentUtils from '@date-io/moment';
+
 export const ModelCourseList = props => (
   <List
     {...props}
@@ -50,16 +56,47 @@ export const ModelCourseList = props => (
     </Datagrid>
   </List>
 );
+
+const validateCourseCreate = (values) => {
+  const errors = {};
+  if (!values.course_name) {
+    errors.course_name = ['The course name is required'];
+  }
+  if (!values.background_image) {
+    errors.background_image = ['The background image is required'];
+  }
+  if (!values.start_time) {
+    errors.start_time = ['The start time is required'];
+  }
+  if (!values.end_time) {
+    errors.end_time = ['The end time is required'];
+  }
+  if (values.end_time - values.start_time <= 0) {
+    errors.end_time = ['The end time must be longer than start time']
+  }
+  return errors
+};
+
+
 export const ModelCourseCreate = props => (
   <Create {...props} title="Tạo Chủ đề">
-    <SimpleForm redirect="show">
+    <SimpleForm redirect="show" validate={validateCourseCreate} >
       <TextInput resettable source="course_name" />
       <TextInput resettable source="background_image" />
       <TextInput resettable multiline source="course_desc" />
-      {/* <BooleanInput                source="del"            /> */}
-      {/* <TextInput resettable                source="id"            /> */}
-      {/* <TextInput resettable                source="tasks"            /> */}
-      {/* <TextInput resettable                source="timestamp"            /> */}
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <DateTimeInput
+          source="start_time"
+          label="Start time"
+          options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
+          required
+        />
+        <DateTimeInput
+          source="end_time"
+          label="End time"
+          options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
+        />
+      </MuiPickersUtilsProvider>
     </SimpleForm>
   </Create> 
 );
@@ -86,19 +123,36 @@ export const ModelCourseCreateForMod = props => (
   </Create> 
 );
 
-// handleDialogCourseCheck = () => {
-  
-// }
+const required = (message = 'Required') =>
+    value => value ? undefined : message;
+
+const ageValidation = (value, allValues) => {
+  if (new Date(value)-new Date(allValues.start_time) <= 0) {
+      return 'End date must be longer than start date';
+  }
+}
+
 export const ModelCourseEdit = props => (
   <Edit {...props} title="Sửa Chủ đề">
     <SimpleForm toolbar={<ModelCourseEditToolbar />}>
       <TextInput resettable source="id" disabled />
-      <TextInput resettable source="course_name" />
-      <TextInput resettable source="background_image" />
-      <TextInput resettable multiline source="course_desc" />
-      {/* <BooleanInput                source="del"            /> */}
-      {/* <TextInput                source="tasks"            /> */}
-      {/* <TextInput                source="timestamp"            /> */}
+      <TextInput resettable source="course_name" validate={[required()]}/>
+      <TextInput resettable source="background_image" validate={[required()]}/>
+      <TextInput resettable multiline source="course_desc" validate={[required()]}/>
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <DateTimeInput
+          source="start_time"
+          label="Start time"
+          options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
+          validate={[required()]}
+        />
+        <DateTimeInput
+          source="end_time"
+          label="End time"
+          options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
+          validate={[required(),ageValidation]}
+        />
+      </MuiPickersUtilsProvider>
     </SimpleForm>
   </Edit>
 );

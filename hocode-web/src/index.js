@@ -7,8 +7,10 @@ import * as Sentry from '@sentry/browser';
 
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
     // dev code
+    console.log(process.env.NODE_ENV);
 } else {    
     // production code
+    console.log(process.env.NODE_ENV)
     Sentry.init({dsn: "https://cd5ce2da28be4dcfaea42bfa2f637fba@sentry.io/1827293"});
 }
 
