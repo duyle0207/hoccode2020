@@ -40,7 +40,6 @@ const titleCase = string => {
 class TaskItem extends Component {
   renderLevelMinitaskChip(minitask) {
     minitask.level = titleCase(minitask.level);
-    console.log(minitask.level)
     if (minitask.level === "Easy") {
       return (
         <Chip

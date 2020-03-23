@@ -103,9 +103,16 @@ export const ModelCourseCreate = props => (
 const required = (message = 'Required') =>
     value => value ? undefined : message;
 
-const ageValidation = (value, allValues) => {
-  if (new Date(value)-new Date(allValues.start_time) <= 0) {
-      return 'End date must be longer than start date';
+const endDateValidation = (value, allValues) => {
+  if (new Date(value)-new Date(allValues.start_time) <= 0 &&
+      new Date(value)-new Date()) {
+      return 'End date must be longer than start date and current';
+  }
+}
+
+const startDateValidation = (value, allValues) => {
+  if (new Date(value)-new Date() <= 0) {
+      return 'End date must be longer than current';
   }
 }
 
@@ -121,13 +128,13 @@ export const ModelCourseEdit = props => (
           source="start_time"
           label="Start time"
           options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
-          validate={[required()]}
+          validate={[required(),startDateValidation]}
         />
         <DateTimeInput
           source="end_time"
           label="End time"
           options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
-          validate={[required(),ageValidation]}
+          validate={[required(),endDateValidation]}
         />
       </MuiPickersUtilsProvider>
     </SimpleForm>

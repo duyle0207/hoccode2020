@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import HashLoader from "react-spinners/HashLoader";
 import Chip from "@material-ui/core/Chip";
 import Tooltip from "@material-ui/core/Tooltip";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = {
   paper: {
@@ -46,7 +47,8 @@ class Overview extends React.Component {
       courses: [],
       events: [],
       books: [],
-      daily_minitask: {}
+      daily_minitask: {},
+      isLoadingCoursePassInfo: true
     };
     this.getApi = this.getApi.bind(this);
   }
@@ -57,14 +59,14 @@ class Overview extends React.Component {
         console.log(courses);
         this.setState({ courses: courses.course_info });
         var c = this.state.courses;
-        this.state.courses.forEach((e,i) => {
+        this.state.courses.forEach((e, i) => {
           axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${e.course_id}`).then(res => {
             // console.log("[CoursePass]");
             // console.log(res.data);
             // c[i].progress = res.data.minitask_solved +"/"+res.data.total_minitask
             c[i].completed_tasks_count = res.data.minitask_solved
             c[i].total_tasks_count = res.data.total_minitask
-            this.setState({courses:c});
+            this.setState({ courses: c, isLoadingCoursePassInfo: false });
           });
         });
       }).catch(err => {
@@ -197,10 +199,13 @@ class Overview extends React.Component {
                                   title="Số lượng bài học đã hoàn thành"
                                   placement="top"
                                 >
-                                  <div style={{ color: "#9d9d9d" }}>
-                                    {course.completed_tasks_count}/
-                                {course.total_tasks_count}
-                                  </div>
+                                  {course.completed_tasks_count===0 && course.total_tasks_count===0 ?
+                                    <CircularProgress size={22} color="black"/>
+                                    :
+                                    <div style={{ color: "#9d9d9d" }}>
+                                      {course.completed_tasks_count}/
+                                      {course.total_tasks_count}
+                                    </div>}
                                 </Tooltip>
                               </Grid>
                               <Grid item>

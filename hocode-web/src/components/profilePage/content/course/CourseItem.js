@@ -79,10 +79,6 @@ class CourseItem extends Component {
       console.log(res.data);
       this.setState({ coursePassInfo: res.data, isLoadingCourseInfo: false });
     });
-    this.interval = setInterval(() => {
-      const date = this.calculateCountdown(this.props.course.end_time);
-      date ? this.setState(date) : this.stop();
-    }, 1000);
     var code;
     if ((new Date() < new Date(this.props.course.start_time))) {
       code = -1;
@@ -94,6 +90,10 @@ class CourseItem extends Component {
       code = 1;
     }
     this.setState({ courseStatus: code });
+    this.interval = setInterval(() => {
+      const date = this.calculateCountdown(code === -1 ? this.props.course.start_time : this.props.course.end_time);
+      date ? this.setState(date) : this.stop();
+    }, 1000);
   }
 
   calculateCountdown(endDate) {

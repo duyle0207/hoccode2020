@@ -180,6 +180,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		// 	uc.CourseInfo = []CourseInfo
 		// }
 		isInDB = false
+		fmt.Println("NOT FOUND")
 		// return
 	}
 
@@ -212,7 +213,6 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 
 	now := time.Now()
 	course_status := 0
-	fmt.Println(course.StartTime)
 
 	if now.Sub(course.StartTime).Seconds() < 0 {
 		course_status = -1
@@ -221,20 +221,6 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 	} else if now.Sub(course.EndTime).Seconds() > 0 {
 		course_status = 1
 	}
-	// taskf := &model.Task{}
-
-	// if err = db.DB(config.NameDb).C("tasks").
-	// 	Find(bson.M{
-	// 		"course_id": bodyUC.CourseID,
-	// 		"del":       bson.M{"$ne": true},
-	// 	}).
-	// 	One(&taskf); err != nil {
-	// 	if err == mgo.ErrNotFound {
-	// 		return echo.ErrNotFound
-	// 	}
-
-	// 	return
-	// }
 
 	userMiniTask := &model.UserMiniTask{}
 
@@ -243,6 +229,8 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 	isInDBUserMiniTask := true
 
 	codePoint := 0
+
+	minitask_point := 0
 
 	if err = db.DB(config.NameDb).C("user_minitask").
 		Find(bson.M{
@@ -309,14 +297,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 			}
 		}
 
-		// ur, eur := claims["data"].(model.User)
-
-		// if eur != true { return c.JSON(http.StatusBadRequest, eur)}
-
-		// preStatus := userMiniTask.MiniTaskInfo[uMiniTaskLocationC].Status
-
-		// if preStatus != "hoanthanh" {
-		// }
+		minitask_point = mtf.CodePoint
 
 		ur.CodePoint = ur.CodePoint + mtf.CodePoint
 		ur.Timestamp = time.Now()
@@ -329,7 +310,6 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 				if err == mgo.ErrNotFound {
 					return echo.ErrNotFound
 				}
-				return
 			}
 		}
 		userMiniTask.MiniTaskInfo = append(userMiniTask.MiniTaskInfo, miniTaskIn)
@@ -469,19 +449,42 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 	fmt.Println(uc)
 
 	if isInDB {
-
 		uc.Timestamp = time.Now()
-
+		fmt.Println("[Create new User course]")
 		if err = db.DB(config.NameDb).
 			C("user_course").
 			Update(bson.M{"user_id": uc.UserID}, uc); err != nil {
 			if err == mgo.ErrNotFound {
 				return echo.ErrInternalServerError
 			}
-
 			return
 		}
 
+		if course_status == 0 {
+			if err = db.DB(config.NameDb).
+				C("users").
+				Update(bson.M{"_id": bson.ObjectIdHex(userID)}, ur); err != nil {
+				if err == mgo.ErrNotFound {
+					return echo.ErrNotFound
+				}
+			}
+			user_course := &model.UserCourse{}
+
+			if err = db.DB(config.NameDb).
+				C("user_course").
+				Find(bson.M{
+					"user_id": userID,
+				}).One(&user_course); err != nil {
+				if err == mgo.ErrNotFound {
+					return echo.ErrNotFound
+				}
+			}
+			fmt.Printf("UserCourse: %s\n", user_course.ID)
+			fmt.Printf("Code Point: %d\n", minitask_point)
+			user_course.UserPoint = user_course.UserPoint + minitask_point
+			fmt.Printf("User code point: %d\n", user_course.UserPoint)
+			_, _ = db.DB(config.NameDb).C("user_course").UpsertId(user_course.ID, user_course)
+		}
 	} else {
 		uc.ID = bson.NewObjectId()
 		// Save in database
