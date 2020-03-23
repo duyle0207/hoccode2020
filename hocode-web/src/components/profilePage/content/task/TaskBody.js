@@ -482,7 +482,8 @@ class TaskBody extends Component {
                         </Grid>
                         <Box>
                           <Typography variant="cation" display="block" gutterBottom>
-                            Ngày bắt đầu: {new Date(course.start_time).toISOString().replace(/T/, ' ').replace(/\..+/, '')}
+                            {/* Ngày bắt đầu: {new Date(course.start_time).toISOString().replace(/T/, ' ').replace(/\..+/, '')} */}
+                            Ngày bắt đầu: {course.start_time}
                           </Typography>
                           <Typography variant="cation" display="block" gutterBottom>
                             Ngày kết thúc: {course.end_time}
