@@ -150,6 +150,12 @@ class CourseItem extends Component {
     const { classes, course } = this.props;
 
 
+    // check course statement -- Active or Inactive
+    let isActive;
+    if (course.status === "Inactive") {
+      isActive = <p>Cần xét duyệt</p>
+    }
+
     let timer;
     if (courseStatus === 0) {
       timer = <React.Fragment>

@@ -14,7 +14,7 @@ import TaskItem from "./TaskItem";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import { connect } from "react-redux";
-
+import CircularProgress from "@material-ui/core/CircularProgress";
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 
 const styles = {
@@ -354,8 +354,7 @@ class TaskBody extends Component {
                           </Button>
                         </div>                       
                       )}
-                      <CircularProgress variant="determinate" value={100} />
-                    </Grid> */}
+                    </Grid> 
                     </Grid>
                   </Grid>
                 </Paper>
