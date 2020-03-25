@@ -7,6 +7,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import "./homePage.css";
+import ShowChartIcon from '@material-ui/icons/ShowChart';
 
 const styles = {
   cardGrid: {
@@ -124,6 +125,31 @@ class CourseBody extends Component {
               </Grid>
 
               <Grid item>
+                <Link
+                  to="/leaderboard"
+                  style={{ textDecoration: "none", marginLeft: "30px" }}
+                >
+                  <Button
+                    style={{
+                      background: "#6589F9",
+                      color: "white",
+                      fontWeight: 600,
+                      boxShadow: "none",
+                      fontSize: "16px",
+                      paddingLeft: "20px",
+                      paddingRight: "20px",
+                  
+                      // width: "155px",
+                    }}
+                    startIcon={<ShowChartIcon />}
+                    variant="contained"
+                  >
+                    Xếp hạng
+                  </Button>
+                </Link>
+              </Grid>
+
+              <Grid item>
                 <a
                   href="/login"
                   style={{ textDecoration: "none", marginLeft: "30px" }}
@@ -195,7 +221,7 @@ class CourseBody extends Component {
                 >
                   {/* WELLCOME TO{" "} */}
                   {/* <span style={{ color: "#009688",  }}> */}
-                  WELLCOME TO HOCODE
+                  WELCOME TO HOCODE
                   {/* </span> */}
                 </Typography>
 

@@ -254,9 +254,22 @@ class CourseItem extends Component {
             justifyContent: "center",
             alignItems: "center",
             background: `url(${course.background_image}) no-repeat center`,
-            backgroundSize: "cover"
+            backgroundSize: "cover",
           }}
         >
+          {course.status === "Inactive" ? 
+          <Chip
+           label="Cần xét duyệt"
+           color="primary"
+           style={{
+             width: '80%',
+             height: '80%',
+             fontSize: '63px'
+           }}
+          />
+          :
+          ""
+          }
           {/* <img
             src={course.background_image}
             style={{
@@ -456,7 +469,7 @@ class CourseItem extends Component {
                       </FacebookShareCount> */}
                     </FacebookShareButton>
                   </Box>
-                </Grid>           
+                </Grid>
               </Grid>
             </div>
           </Grid>

@@ -87,3 +87,13 @@ func (h *Handler) UpdateUser(c echo.Context) (err error) {
 func (h *Handler) DeleteUser(c echo.Context) (err error) {
 	return c.String(http.StatusOK, "deleteUser")
 }
+
+func (h *Handler) GetGeneralLeaderBoard(c echo.Context) (err error){
+	db := h.DB.Clone()
+	defer db.Close()
+
+	general_leaderboard := []*model.User{}
+	db.DB(config.NameDb).C("users").Find(bson.M{}).Skip(0).Limit(10).Sort("-codepoint").All(&general_leaderboard)
+
+	return c.JSON(http.StatusOK, general_leaderboard)
+}

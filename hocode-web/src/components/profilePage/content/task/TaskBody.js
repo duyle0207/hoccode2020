@@ -80,7 +80,7 @@ class TaskBody extends Component {
 
     axios.get(`http://localhost:8081/api/v1/auth/usercourse`).then(res => {
       console.log(res.data);
-      this.setState({userCourse:res.data});
+      this.setState({ userCourse: res.data });
     });
 
     this.setState({ courseId: currentParams.courseId })
@@ -219,7 +219,7 @@ class TaskBody extends Component {
 
   }
 
-  handleBtnDeny(){
+  handleBtnDeny() {
     let location = this.props.location;
 
     const currentParams = getParams(location.pathname);
@@ -387,17 +387,47 @@ class TaskBody extends Component {
                           {timer}
                           <Box display="flex" color="#5c6bc0" justifyContent="flex-end">
                             <Typography variant="h4">
-                              {this.state.userCourse.user_point?this.state.userCourse.user_point:0} <EmojiNatureIcon />
+                              {this.state.userCourse.user_point ? this.state.userCourse.user_point : 0} <EmojiNatureIcon />
                             </Typography>
                           </Box>
                         </CardContent>
                       </Card>
                     </Grid>
-                    <Grid item xs={7} sm={7}>
-                      <Box mt={3} mb={2}>
-                        <Typography variant="h3" component="h3">
-                          {course.course_name}
-                        </Typography>
+                    <Grid item xs={8} sm={8}>
+                      <Box display="flex">
+                        <Box flexGrow={1} mt={3} mb={2}>
+                          <Typography variant="h3" component="h3">
+                            {course.course_name}
+                          </Typography>
+                        </Box>
+                        <Box mt={3} mb={2}>
+                          {course.status === "Active" ? null : (
+                            <Box display="flex">
+                              <Box p={1}>
+                                <Button size="small"
+                                  variant="contained"
+                                  aria-label="small outlined button group"
+                                  color="primary"
+                                  onClick={
+                                    () => this.handleBtnAccepted()
+                                  }>
+                                  Duyệt khóa học
+                                </Button>
+                              </Box>
+                              <Box p={1}>
+                                <Button size="small"
+                                  variant="contained"
+                                  aria-label="small outlined button group"
+                                  color="secondary"
+                                  onClick={
+                                    () => this.handleBtnDeny()
+                                  }>
+                                  Từ chối
+                                </Button>
+                              </Box>
+                            </Box>
+                          )}
+                        </Box>
                       </Box>
                       <Grid
                         item
@@ -491,46 +521,15 @@ class TaskBody extends Component {
                         </Box>
                       </Grid>
 
-                    <Grid
-                      item
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "flex-start"
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                        style={{ marginRight: 4 }}
+                      <Grid
+                        item
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "flex-start"
+                        }}
                       >
-                        Tình trạng:
-                      </Typography>
-                      {/* <CircularProgress variant="determinate" value={100} />                   */}
-                      {course.status === "Active" ? null: (
-                        <div>
-                          <Button size="small"
-                                  variant="contained"
-                                  aria-label="small outlined button group"
-                                  color="primary"
-                                  onClick= {
-                                    () => this.handleBtnAccepted()
-                                  }>
-                                    Duyệt khóa học
-                          </Button>
-                          <Button size="small"
-                                  variant="contained"
-                                  aria-label="small outlined button group"
-                                  color="secondary"
-                                  onClick= {
-                                    () => this.handleBtnDeny()
-                                  }>
-                                    Từ chối
-                          </Button>
-                        </div>                       
-                      )}
-                    </Grid> 
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Paper>

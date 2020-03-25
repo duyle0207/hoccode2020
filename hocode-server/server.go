@@ -113,7 +113,6 @@ func main() {
 
 	e.POST("/createTaskMinTask", h.CreateTaskMinTask)
 
-
 	// e.GET("/users", h.GetUser)
 	// e.GET("/users/:id", h.GetUserByID)
 	// e.POST("/users", h.SaveUser)
@@ -166,6 +165,8 @@ func main() {
 	r.GET("/daily", h.DailyMiniTask)
 
 	r.GET("/certs/search/:id", h.SearchCertsByID)
+
+	r.GET("/getGeneralLeaderBoard", h.GetGeneralLeaderBoard)
 
 	curd := e.Group("/api/v1/curd")
 

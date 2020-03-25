@@ -14,6 +14,7 @@ import { withStyles } from "@material-ui/styles";
 import Axios from "axios";
 import React from "react";
 import { Link } from "react-router-dom";
+import ShowChartIcon from '@material-ui/icons/ShowChart';
 
 
 const styles = theme => ({
@@ -87,7 +88,7 @@ class SearchCertPage extends React.Component {
       isLoading: false
     };
   }
-  componentDidMount() {}
+  componentDidMount() { }
 
   onSubmitSearch = () => {
     this.setState({ isLoading: true, rows: [] });
@@ -174,6 +175,31 @@ class SearchCertPage extends React.Component {
                       variant="contained"
                     >
                       Tra Chứng Chỉ
+                    </Button>
+                  </Link>
+                </Grid>
+
+                <Grid item>
+                  <Link
+                    to="/leaderboard"
+                    style={{ textDecoration: "none", marginLeft: "30px" }}
+                  >
+                    <Button
+                      style={{
+                        background: "#6589F9",
+                        color: "white",
+                        fontWeight: 600,
+                        boxShadow: "none",
+                        fontSize: "16px",
+                        paddingLeft: "20px",
+                        paddingRight: "20px",
+
+                        // width: "155px",
+                      }}
+                      startIcon={<ShowChartIcon />}
+                      variant="contained"
+                    >
+                      Xếp hạng
                     </Button>
                   </Link>
                 </Grid>
@@ -287,8 +313,8 @@ class SearchCertPage extends React.Component {
                     <CircularProgress size={64} style={{ margin: "32px" }} />
                   </div>
                 ) : (
-                  <> </>
-                )}
+                    <> </>
+                  )}
                 {this.state.rows.length === 0 && !this.state.isLoading ? (
                   <div
                     style={{
@@ -352,8 +378,8 @@ class SearchCertPage extends React.Component {
                     <p>No Data</p>
                   </div>
                 ) : (
-                  <></>
-                )}
+                    <></>
+                  )}
               </Paper>
             </Grid>
           </Grid>

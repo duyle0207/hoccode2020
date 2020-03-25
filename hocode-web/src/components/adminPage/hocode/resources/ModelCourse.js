@@ -15,7 +15,10 @@ import {
   //   BooleanField,
   EditButton,
   DeleteButton,
-  ImageField
+  ImageField,
+
+  ChipField,
+  DateField 
 } from "react-admin";
 //import { permitted } from '../utils';
 
@@ -30,6 +33,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import MomentUtils from '@date-io/moment';
 
+
 export const ModelCourseList = props => (
   <List
     {...props}
@@ -41,8 +45,8 @@ export const ModelCourseList = props => (
       {/* <TextField                source="id"                sortable={false}            /> */}
       <TextField source="course_name" sortable={false} />
       {/* <TextField source="course_desc" sortable={false} /> */}
-      <TextField source="total_minitask" sortable={false} />
-      {/* <TextField source="rating_value" sortable={false} /> */}
+      {/* <TextField source="total_minitask" sortable={false} /> */}
+      <ChipField source="user_create" />
       <ImageField
         className="thumbNailView"
         source="background_image"
@@ -50,7 +54,9 @@ export const ModelCourseList = props => (
       />
       {/* <BooleanField                source="del"                sortable={false}            /> */}
       {/* <                source="tasks"                sortable={false}            /> */}
-      {/* <TextField                source="timestamp"                sortable={false}            /> */}
+      <TextField source="status" sortable={false} />
+      <DateField source="start_time" />
+      <DateField source="end_time" />
       <EditButton />
       <DeleteButton />
     </Datagrid>
@@ -98,7 +104,7 @@ export const ModelCourseCreate = props => (
         />
       </MuiPickersUtilsProvider>
     </SimpleForm>
-  </Create> 
+  </Create>
 );
 
 // create another Create for Mod permission.
@@ -112,30 +118,30 @@ export const ModelCourseCreateForMod = props => (
       {/* <TextInput resettable                source="id"            /> */}
       {/* <TextInput resettable                source="tasks"            /> */}
       {/* <TextInput resettable                source="timestamp"            /> */}
-      
-      <button type="button" className="btn btn-default" 
+
+      <button type="button" className="btn btn-default"
         variant="contained"
         style={{ background: "#1ECD97", color: "#fff" }}
       //  onClick={this.handleDialogCourseCheck}
       >Yêu cầu xét duyệt</button>
-      
+
     </SimpleForm>
-  </Create> 
+  </Create>
 );
 
 const required = (message = 'Required') =>
-    value => value ? undefined : message;
+  value => value ? undefined : message;
 
 const endDateValidation = (value, allValues) => {
-  if (new Date(value)-new Date(allValues.start_time) <= 0 &&
-      new Date(value)-new Date()) {
-      return 'End date must be longer than start date and current';
+  if (new Date(value) - new Date(allValues.start_time) <= 0 &&
+    new Date(value) - new Date()) {
+    return 'End date must be longer than start date and current';
   }
 }
 
 const startDateValidation = (value, allValues) => {
-  if (new Date(value)-new Date() <= 0) {
-      return 'End date must be longer than current';
+  if (new Date(value) - new Date() <= 0) {
+    return 'End date must be longer than current';
   }
 }
 
@@ -143,21 +149,21 @@ export const ModelCourseEdit = props => (
   <Edit {...props} title="Sửa Chủ đề">
     <SimpleForm toolbar={<ModelCourseEditToolbar />}>
       <TextInput resettable source="id" disabled />
-      <TextInput resettable source="course_name" validate={[required()]}/>
-      <TextInput resettable source="background_image" validate={[required()]}/>
-      <TextInput resettable multiline source="course_desc" validate={[required()]}/>
+      <TextInput resettable source="course_name" validate={[required()]} />
+      <TextInput resettable source="background_image" validate={[required()]} />
+      <TextInput resettable multiline source="course_desc" validate={[required()]} />
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <DateTimeInput
           source="start_time"
           label="Start time"
           options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
-          validate={[required(),startDateValidation]}
+          validate={[required(), startDateValidation]}
         />
         <DateTimeInput
           source="end_time"
           label="End time"
           options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
-          validate={[required(),endDateValidation]}
+          validate={[required(), endDateValidation]}
         />
       </MuiPickersUtilsProvider>
     </SimpleForm>

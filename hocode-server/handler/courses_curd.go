@@ -213,6 +213,8 @@ func (h *Handler) CreateCourses(c echo.Context) (err error) {
 	fmt.Println(bk.StartTime)
 	fmt.Println(bk.EndTime)
 
+	bk.Status = "Inactive"
+
 	// Validation
 	// if bk.Title == "" || bk.Image == "" || bk.Content == "" {
 	// 	return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid title or image fields"}

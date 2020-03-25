@@ -18,6 +18,7 @@ import { setCurrentUser, logoutUser } from "./js/actions/authActions";
 import setAuthToken from "./js/utils/setAuthToken";
 import PrivateRoute from "./private-route/PrivateRoute";
 import jwt_decode from "jwt-decode";
+import LeaderBoard from "./components/leaderboard/LeaderboardPage";
 
 // Check for token to keep user logged in/ xet khi load lai trang
 if (localStorage.AuthToken) {
@@ -49,6 +50,7 @@ function App() {
             <Switch>
               <Route path="/" exact component={HomePage} />
               <Route path="/home" exact component={HomePage} />
+              <Route path="/leaderboard" exact component={LeaderBoard} />
               <Route path="/login" exact component={LoginPage} />
               <Route path="/signup" exact component={SignUpPage} />
               <Route path="/reactmde" exact component={ReactMde} />
