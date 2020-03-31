@@ -1,54 +1,113 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const app = express()
-const path = require('path')
-const port = 8080
-var run = require('./lib/runner').run
-const router = express.Router()
+const cluster = require('cluster');
 
-var code = `public class Solution {
+// Code to run if we're in the master process
+if (cluster.isMaster) {
 
-    public Solution() {}
+    // Count the machine's CPUs
+    var cpuCount = require('os').cpus().length;
 
-    public int conghaiso() {
-        return 3;
+    // Create a worker for each CPU
+    for (var i = 0; i < cpuCount; i += 1) {
+        cluster.fork();
     }
 
-}`;
+    // Listen for dying workers
+    cluster.on('exit', function (worker) {
 
-var test = `import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.junit.runners.JUnit4;
+        // Replace the dead worker, we're not sentimental
+        console.log('Worker %d died :(', worker.id);
+        cluster.fork();
 
-public class TestFixture {
-    public TestFixture() {}
-    @Test
-    public void myTestFunction() {
-        Solution s = new Solution();
-        assertEquals("conghaiso 2,2", 4, s.conghaiso(2, 2));
-        assertEquals("conghaiso 1,2", 3, s.conghaiso(1, 2));
-        assertEquals("conghaiso 100,101", 201, s.conghaiso(100, 101));
-    }
-}`;
-
-// router.get('/', (req, res) => {
-//     console.log("Hello index");
-//     res.sendFile(path.join(__dirname + '/index.html'));
-
-// })
-
-router.post('/', function (req, res) {
-    run({
-        language: 'java',
-        code: code,
-        fixture: test
-    }, function (buffer) {
-        res.json(buffer);
     });
-})
-// app.use(cookieParser())
-app.use(bodyParser.json())
 
-app.use(router)
+    // Code to run if we're in a worker process
+} else {
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+    const express = require('express');
+    const bodyParser = require('body-parser');
+    const cors = require('cors');
+    const compression = require('compression');
+    const path = require('path');
+    var run = require('./lib/runner').run
+
+
+    const app = express()
+    const port = 8080
+
+    const router = express.Router()
+
+    app.use(cors());
+    app.use(compression());
+
+    // app.use(cookieParser())
+    app.use(bodyParser.json())
+
+    router.get('/runner', (req, res) => {
+        res.sendFile(path.join(__dirname + '/index.html'));
+
+    })
+
+    router.post('/runner', function (req, res) {
+        run({
+            language: 'java',
+            code: req.body.code,
+            fixture: req.body.test,
+        }, function (buffer) {
+            const regex = RegExp(/<DESCRIBE::>(.*)<RUNCOUNT::>(.*)<GETFAILURECOUNT::>(.*)<COMPLETEDIN::>(.*)<GETALLFAILURE::>(.*)<GETALLFAILUREEND::>(.*)<GETIGNORECOUNT::>(.*)<WASSUCCESSFUL::>(.*)/gm);
+            const str = buffer.stdout.replace(/\n/g, '');
+
+            console.log("[str]")
+            console.log(str)
+            let m = regex.exec(str);
+            console.log("[m]")
+            console.log(m)
+
+            if (m !== null) {
+                var listFa = [];
+                var resm5 = m[5].split("<GETONEFAILURE::>");
+                for (let index = 0; index < resm5.length; index++) {
+                    const itemIn = resm5[index];
+                    if (itemIn !== "") {
+
+                        var resu = itemIn.split("<");
+                        var exp = resu[1].split(">")[0];
+                        var outt = resu[2].split(">")[0];
+
+
+                        listFa.push({
+                            INDEX: index,
+                            DETAIL: itemIn,
+                            NAMEFUNC: itemIn.split("(TestFixture): ")[0],
+                            EXPECTED: exp,
+                            EXPECTED_OUTPUT: outt,
+                        });
+                    }
+                }
+
+                let outP = {
+                    "DESCRIBE": m[1],
+                    "RUNCOUNT": m[2],
+                    "GETFAILURECOUNT": m[3],
+                    "COMPLETEDIN": m[4],
+                    "GETALLFAILURE": listFa,
+                    "GETIGNORECOUNT": m[7],
+                    "WASSUCCESSFUL": m[8],
+                }
+                buffer.stdout = outP;
+            }
+            res.json(buffer);
+        });
+    })
+
+    app.use(function (err, req, res, next) {
+        if (err.message === '404') {
+            res.status(404);
+            res.json({ error: err.message });
+        }
+    });
+
+
+    app.use(router)
+
+    app.listen(port, () => console.log(`Hocode app listening on port ${port}!`))
+}
