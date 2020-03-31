@@ -10,7 +10,7 @@ var code = `public class Solution {
 
     public Solution() {}
 
-    public int testthing() {
+    public int conghaiso() {
         return 3;
     }
 
