@@ -12,6 +12,7 @@ import HashLoader from "react-spinners/HashLoader";
 import Chip from "@material-ui/core/Chip";
 import Tooltip from "@material-ui/core/Tooltip";
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
 
 const styles = {
   paper: {
@@ -152,7 +153,7 @@ class Overview extends React.Component {
           </div>
         ) : (
             <React.Fragment>
-              <Grid item xs={12} sm={5} md={5}>
+              <Grid item xs={12} sm={3} md={4}>
                 <Paper className={classes.paper}>
                   <Grid container style={{ marginBottom: 15 }}>
                     <Grid item style={{ flexGrow: 1 }}>
@@ -191,7 +192,9 @@ class Overview extends React.Component {
                                       style={{ textDecoration: "none" }}
                                       to={`${url}/courses/${course.course_id}/tasks`}
                                     >
-                                      {course.course_name}
+                                      <Typography variant="subtitle1">
+                                        {course.course_name}
+                                      </Typography>
                                     </Link>
                                   </div>
                                 </Tooltip>
@@ -229,7 +232,7 @@ class Overview extends React.Component {
                     )}
                 </Paper>
               </Grid>
-              <Grid item xs={12} sm={7} md={7}>
+              <Grid item xs={12} sm={8} md={8}>
                 <Paper className={classes.paper}>
                   <Grid container style={{ marginBottom: 15 }}>
                     <Grid item style={{ flexGrow: 1 }}>
@@ -262,7 +265,7 @@ class Overview extends React.Component {
                               <Link
                                 className="item"
                                 style={{ textDecoration: "none" }}
-                                to={`/tasks/${daily_minitask.id}`}
+                                to={`/minitask/${daily_minitask.id}`}
                               >
                                 {daily_minitask.mini_task_name}
                               </Link>

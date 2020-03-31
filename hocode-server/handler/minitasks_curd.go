@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -30,6 +31,9 @@ func (h *Handler) GetListMiniTasks(c echo.Context) (err error) {
 	// page, _ := strconv.Atoi(c.QueryParam("page"))
 	offset, _ := strconv.Atoi(c.QueryParam("offset"))
 	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+
+	fmt.Println(offset)
+	fmt.Println(limit)
 
 	db := h.DB.Clone()
 	defer db.Close()

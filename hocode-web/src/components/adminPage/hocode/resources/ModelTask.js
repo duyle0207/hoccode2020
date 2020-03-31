@@ -20,6 +20,8 @@ import {
 } from "react-admin";
 import Skeleton from "@material-ui/lab/Skeleton";
 
+import Slide from '@material-ui/core/Slide';
+
 import axios from "axios";
 //import { permitted } from '../utils';
 
@@ -266,10 +268,10 @@ class ModelTaskEdit extends Component {
         }
       }
       else if (id.isNew === undefined && id.id === minitask.id) {
-        this.setState({isLoadingImportTask:true});
+        this.setState({ isLoadingImportTask: true });
         axios.delete(`http://localhost:8081/api/v1/curd/task_minitask/${this.props.id}/${id.id}/${this.state.task.course_id}`).then(res => {
           axios.get(`http://localhost:8081/api/v1/getMinitasksByTaskID/${this.props.id}`).then(res => {
-            this.setState({isLoadingImportTask:false});
+            this.setState({ isLoadingImportTask: false });
             axios
               .get(
                 `http://localhost:8081/api/v1/auth/courses/${this.state.task.course_id}/tasks`
@@ -476,222 +478,216 @@ class ModelTaskEdit extends Component {
 
     return (
       <React.Fragment>
-        {this.state.isLoadingImportTask ?
-          <div style={{height:'100%'}}>
-            <Skeleton />
-            <Skeleton animation={false} />
-            <Skeleton animation="wave" />
-          </div>
-          :
-          <React.Fragment>
+        <React.Fragment>
+          <Grid item xs={12}>
+            <Grid container justify="center" spacing={2}>
+              <Grid xs={4} item>
+                <Edit {...this.props} title="Sửa Chủ đề con">
+                  <SimpleForm toolbar={<ModelTaskEditToolbar />}>
+                    <TextInput resettable source="id" disabled />
+                    <TextInput source="task_name" />
+                    <TextInput source="background_image" />
+                    {this.state.isLoading ? (
+                      <Skeleton />
+                    ) : (
+                        <SelectInput source="course_id" choices={choicesCourse} />
+                      )}
+                  </SimpleForm>
+                </Edit>
+              </Grid>
+              <Grid xs={8} item>
+                <Paper >
+                  <Box height={375} bgcolor="#1F74BE" color="primary.contrastText" p={{ xs: 2, sm: 2, md: 2 }}>
+                    <Box display="flex">
+                      <Box p={1} flexGrow={1}>
+                        <Typography variant="h5" gutterBottom>
+                          Task's Minitask ({this.state.task_minitask.length})
+                      </Typography>
+                      </Box>
+                      <Box>
+                        {this.state.temp_task_minitask.length > 0 ?
+                          <Button variant="contained" color="#b39ddb" onClick={this.saveMinitaskList}>Import</Button> :
+                          ""
+                        }
+                      </Box>
+                    </Box>
+                    {this.state.temp_task_minitask.length > 0 ?
+                      <Card>
+                        <div style={{ overflow: 'auto', height: '300px' }}>
+                          <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
+                            <TableHead>
+                              <TableRow style={{
+                                backgroundColor: "#ffred5f5",
+                                height: "5px"
+                              }}>
+                                <TableCell>Minitask name</TableCell>
+                                {/* <TableCell align="right">Minitask name</TableCell> */}
+                                <TableCell align="right">Code point</TableCell>
+                                {/* <TableCell align="right">Minitask Desc</TableCell> */}
+                                <TableCell align="right">Level</TableCell>
+                                <TableCell align="right"></TableCell>
+                                <TableCell align="right"></TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {this.state.temp_task_minitask.map(row => (
+                                <TableRow bgcolor={row.isNew ? "#bbdefb" : ""} key={row.task_name}>
+                                  <TableCell component="th" scope="row">
+                                    {row.mini_task_name}
+                                  </TableCell>
+                                  {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
+                                  <TableCell align="right">{row.code_point}</TableCell>
+                                  {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
+                                  <TableCell align="right">
+                                    <Tooltip title="Độ khó" placement="top">
+                                      <div style={{ marginLeft: 10 }}>
+                                        {this.renderLevelMinitaskChip(row.level)}
+                                      </div>
+                                    </Tooltip>
+                                  </TableCell>
+                                  <TableCell align="right" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">View Desc</Button></TableCell>
+                                  <TableCell align="right">
+                                    <Button onClick={() => { this.removeMinitask(row) }} startIcon={<DeleteForeverIcon />} size="large" color="secondary"> Remove</Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </Card>
+                      :
+                      <Typography variant="subtitle1" gutterBottom>
+                        There are no minitask.
+                    </Typography>}
+                  </Box>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Box mt={3}>
             <Grid item xs={12}>
               <Grid container justify="center" spacing={2}>
-                <Grid xs={4} item>
-                  <Edit {...this.props} title="Sửa Chủ đề con">
-                    <SimpleForm toolbar={<ModelTaskEditToolbar />}>
-                      <TextInput resettable source="id" disabled />
-                      <TextInput source="task_name" />
-                      <TextInput source="background_image" />
-                      {this.state.isLoading ? (
-                        <Skeleton />
-                      ) : (
-                          <SelectInput source="course_id" choices={choicesCourse} />
-                        )}
-                    </SimpleForm>
-                  </Edit>
-                </Grid>
-                <Grid xs={8} item>
+                <Grid xs={12} item>
                   <Paper >
-                    <Box height={375} bgcolor="#1F74BE" color="primary.contrastText" p={{ xs: 2, sm: 2, md: 2 }}>
-                      <Box display="flex">
-                        <Box p={1} flexGrow={1}>
-                          <Typography variant="h5" gutterBottom>
-                            Task's Minitask ({this.state.task_minitask.length})
-                      </Typography>
-                        </Box>
-                        <Box>
-                          {this.state.temp_task_minitask.length > 0 ?
-                            <Button variant="contained" color="#b39ddb" onClick={this.saveMinitaskList}>Import</Button> :
-                            ""
-                          }
-                        </Box>
+                    <Box height={470} bgcolor="#ede7f6" color="black" p={{ xs: 2, sm: 2, md: 2 }}>
+                      <Typography variant="h5" color="black" gutterBottom>
+                        Minitask bank ({this.state.tempMinitaskList.length})
+                    </Typography>
+                      <Box my={1}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12}>
+                            <Grid container justify="center" spacing={2}>
+                              <Grid xs={2} item>
+                                <Paper component="form">
+                                  <IconButton aria-label="search">
+                                    <SearchIcon />
+                                  </IconButton>
+                                  <InputBase
+                                    placeholder="Search"
+                                    inputProps={{ 'aria-label': 'search google maps' }}
+                                    onChange={this.onChangeSearch}
+                                  />
+                                  <Divider orientation="vertical" />
+                                </Paper>
+                              </Grid>
+                              <Grid xs={1} bgcolor="white" item>
+                                <FormControl fullWidth={true}>
+                                  <InputLabel id="demo-simple-select-label">Level</InputLabel>
+                                  <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={this.state.sortByLevel}
+                                    onChange={this.onChangeSort}
+                                  >
+                                    <MenuItem value={10}>Easy</MenuItem>
+                                    <MenuItem value={20}>Medium</MenuItem>
+                                    <MenuItem value={30}>Hard</MenuItem>
+                                    <MenuItem value={40}>All</MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </Grid>
+                              <Grid xs={2} bgcolor="white" item>
+                                <Typography id="range-slider" gutterBottom>
+                                  Code point
+                              </Typography>
+                                <Slider
+                                  value={this.state.sliderValue}
+                                  onChange={this.onChangeSlider}
+                                  valueLabelDisplay="auto"
+                                  aria-labelledby="range-slider"
+                                  min={0}
+                                  max={200}
+                                />
+                              </Grid>
+                              <Grid xs={7} bgcolor="white" item></Grid>
+                            </Grid>
+                          </Grid>
+                        </Grid>
                       </Box>
-                      {this.state.temp_task_minitask.length > 0 ?
-                        <Card>
-                          <div style={{ overflow: 'auto', height: '300px' }}>
-                            <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
-                              <TableHead>
-                                <TableRow style={{
-                                  backgroundColor: "#ffred5f5",
-                                  height: "5px"
-                                }}>
-                                  <TableCell>Minitask name</TableCell>
-                                  {/* <TableCell align="right">Minitask name</TableCell> */}
-                                  <TableCell align="right">Code point</TableCell>
-                                  {/* <TableCell align="right">Minitask Desc</TableCell> */}
-                                  <TableCell align="right">Level</TableCell>
-                                  <TableCell align="right"></TableCell>
-                                  <TableCell align="right"></TableCell>
+                      <Card>
+                        <div style={{ overflow: 'auto', height: '340px' }}>
+                          <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell></TableCell>
+                                <TableCell>Minitask name</TableCell>
+                                <TableCell align="right">Code point</TableCell>
+                                <TableCell align="right">Level</TableCell>
+                                <TableCell align="right"></TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {this.state.tempMinitaskList.map(row => (
+                                <TableRow key={row.task_name}>
+                                  <TableCell align="center">
+                                    <Button
+                                      variant="outlined"
+                                      size="small"
+                                      startIcon={<KeyboardBackspaceIcon />}
+                                      aria-label="move selected right"
+                                      onClick={() => this.getMinitaskFromBank(row)}
+                                    >
+                                      {/* &lt; */}
+                                    </Button>
+                                  </TableCell>
+                                  <TableCell component="th" scope="row">
+                                    {row.mini_task_name}
+                                  </TableCell>
+                                  {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
+                                  <TableCell align="right">{row.code_point}</TableCell>
+                                  {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
+                                  <TableCell align="right">
+                                    <Tooltip title="Độ khó" placement="top">
+                                      <div style={{ marginLeft: 10 }}>
+                                        {/* {row.level} */}
+                                        {this.renderLevelMinitaskChip(row.level)}
+                                      </div>
+                                    </Tooltip>
+                                  </TableCell>
+                                  <TableCell align="center" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">View Desc</Button></TableCell>
                                 </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {this.state.temp_task_minitask.map(row => (
-                                  <TableRow bgcolor={row.isNew ? "#bbdefb" : ""} key={row.task_name}>
-                                    <TableCell component="th" scope="row">
-                                      {row.mini_task_name}
-                                    </TableCell>
-                                    {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
-                                    <TableCell align="right">{row.code_point}</TableCell>
-                                    {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
-                                    <TableCell align="right">
-                                      <Tooltip title="Độ khó" placement="top">
-                                        <div style={{ marginLeft: 10 }}>
-                                          {this.renderLevelMinitaskChip(row.level)}
-                                        </div>
-                                      </Tooltip>
-                                    </TableCell>
-                                    <TableCell align="right" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">View Desc</Button></TableCell>
-                                    <TableCell align="right">
-                                      <Button onClick={() => { this.removeMinitask(row) }} startIcon={<DeleteForeverIcon />} size="large" color="secondary"> Remove</Button>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        </Card>
-                        :
-                        <Typography variant="subtitle1" gutterBottom>
-                          There are no minitask.
-                    </Typography>}
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </Card>
                     </Box>
                   </Paper>
                 </Grid>
               </Grid>
             </Grid>
-            <Box mt={3}>
-              <Grid item xs={12}>
-                <Grid container justify="center" spacing={2}>
-                  <Grid xs={12} item>
-                    <Paper >
-                      <Box height={470} bgcolor="#ede7f6" color="black" p={{ xs: 2, sm: 2, md: 2 }}>
-                        <Typography variant="h5" color="black" gutterBottom>
-                          Minitask bank ({this.state.tempMinitaskList.length})
-                    </Typography>
-                        <Box my={1}>
-                          <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                              <Grid container justify="center" spacing={2}>
-                                <Grid xs={2} item>
-                                  <Paper component="form">
-                                    <IconButton aria-label="search">
-                                      <SearchIcon />
-                                    </IconButton>
-                                    <InputBase
-                                      placeholder="Search"
-                                      inputProps={{ 'aria-label': 'search google maps' }}
-                                      onChange={this.onChangeSearch}
-                                    />
-                                    <Divider orientation="vertical" />
-                                  </Paper>
-                                </Grid>
-                                <Grid xs={1} bgcolor="white" item>
-                                  <FormControl fullWidth={true}>
-                                    <InputLabel id="demo-simple-select-label">Level</InputLabel>
-                                    <Select
-                                      labelId="demo-simple-select-label"
-                                      id="demo-simple-select"
-                                      value={this.state.sortByLevel}
-                                      onChange={this.onChangeSort}
-                                    >
-                                      <MenuItem value={10}>Easy</MenuItem>
-                                      <MenuItem value={20}>Medium</MenuItem>
-                                      <MenuItem value={30}>Hard</MenuItem>
-                                      <MenuItem value={40}>All</MenuItem>
-                                    </Select>
-                                  </FormControl>
-                                </Grid>
-                                <Grid xs={2} bgcolor="white" item>
-                                  <Typography id="range-slider" gutterBottom>
-                                    Code point
-                              </Typography>
-                                  <Slider
-                                    value={this.state.sliderValue}
-                                    onChange={this.onChangeSlider}
-                                    valueLabelDisplay="auto"
-                                    aria-labelledby="range-slider"
-                                    min={0}
-                                    max={200}
-                                  />
-                                </Grid>
-                                <Grid xs={7} bgcolor="white" item></Grid>
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                        <Card>
-                          <div style={{ overflow: 'auto', height: '340px' }}>
-                            <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell></TableCell>
-                                  <TableCell>Minitask name</TableCell>
-                                  <TableCell align="right">Code point</TableCell>
-                                  <TableCell align="right">Level</TableCell>
-                                  <TableCell align="right"></TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {this.state.tempMinitaskList.map(row => (
-                                  <TableRow key={row.task_name}>
-                                    <TableCell align="center">
-                                      <Button
-                                        variant="outlined"
-                                        size="small"
-                                        startIcon={<KeyboardBackspaceIcon />}
-                                        aria-label="move selected right"
-                                        onClick={() => this.getMinitaskFromBank(row)}
-                                      >
-                                        {/* &lt; */}
-                                      </Button>
-                                    </TableCell>
-                                    <TableCell component="th" scope="row">
-                                      {row.mini_task_name}
-                                    </TableCell>
-                                    {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
-                                    <TableCell align="right">{row.code_point}</TableCell>
-                                    {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
-                                    <TableCell align="right">
-                                      <Tooltip title="Độ khó" placement="top">
-                                        <div style={{ marginLeft: 10 }}>
-                                          {/* {row.level} */}
-                                          {this.renderLevelMinitaskChip(row.level)}
-                                        </div>
-                                      </Tooltip>
-                                    </TableCell>
-                                    <TableCell align="center" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">View Desc</Button></TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </div>
-                        </Card>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                </Grid>
-              </Grid>
+          </Box>
+          <Modal visible={this.state.open} effect="fadeInDown" onClickAway={() => this.closeModal()}>
+            <Box p={2}>
+              <MDReactComponent text={this.state.minitaskDesc} />
             </Box>
-            <Modal visible={this.state.open} effect="fadeInDown" onClickAway={() => this.closeModal()}>
-              <Box p={2}>
-                <MDReactComponent text={this.state.minitaskDesc} />
-              </Box>
-            </Modal>
+          </Modal>
+          <Slide in={this.state.openErr} direction="up">
             <Modal visible={this.state.openErr} effect="fadeInDown" onClickAway={() => this.closeModalError()}>
               <Box p={2}>
                 <Typography variant="h5" color="error" gutterBottom>
                   Thông báo
-            </Typography>
+                </Typography>
                 <Box my={3}>
                   <Typography variant="h4" gutterBottom>
                     {this.state.errorMessage}
@@ -699,8 +695,8 @@ class ModelTaskEdit extends Component {
                 </Box>
               </Box>
             </Modal>
-          </React.Fragment>
-        }
+          </Slide>
+        </React.Fragment>
       </React.Fragment >
     );
   }

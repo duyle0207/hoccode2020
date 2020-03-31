@@ -29,7 +29,6 @@ const styles = {
     overflow: 'hidden',
     background: '#EEEEEE',
     cursor: 'pointer',
-
   },
 };
 
@@ -102,7 +101,7 @@ class CourseBody extends Component {
           />
         </div> : (
             <React.Fragment>
-              <Grid item xs={12} sm={12} style={{}}>
+              <Grid item xs={12} sm={12}>
                 {this.props.user.role === "admin" ?
                   <Box p={2}>
                     <FormControl style={{ width: '15%' }}>
@@ -124,11 +123,11 @@ class CourseBody extends Component {
                   ""
                 }
                 {this.props.user.role === "admin" ?
-                  <Grid container spacing={2}>
+                  <Grid container spacing={3}>
                     {coursesTemp.map((course) => <Grid key={course.id} item xs={12} sm={4} md={4}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
                   </Grid> : (
-                    <Grid container spacing={2}>
-                      {courseActived.map((course) => <Grid key={course.id} item xs={12} sm={4} md={4}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
+                    <Grid container spacing={3}>
+                      {courseActived.map((course) => <Grid key={course.id} item xs={12} sm={3} md={3}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
                     </Grid>
                   )
                 }

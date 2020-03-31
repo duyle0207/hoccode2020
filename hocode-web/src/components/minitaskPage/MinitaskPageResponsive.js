@@ -4,7 +4,6 @@ import MiniTaskPage from "./MiniTaskPage";
 import MiniTaskPageNoSplit from "./MiniTaskPageNoSplit";
 
 class MinitaskPageResponsive extends Component {
-
   render() {
     const {
         match

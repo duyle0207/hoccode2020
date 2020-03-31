@@ -63,7 +63,6 @@ function CustomizedMenus(props) {
         onClick={handleClick}
         style={{ color: "#282828" }}
       />
-
       <StyledMenu
         id="customized-menu"
         anchorEl={anchorEl}
@@ -71,7 +70,6 @@ function CustomizedMenus(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-    
         <StyledMenuItem>
           <AccountBoxIcon style={{ fontSize: 16 }} />
 

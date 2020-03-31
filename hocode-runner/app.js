@@ -1,5 +1,6 @@
 const cluster = require('cluster');
 
+console.log(cluster.isMaster);
 // Code to run if we're in the master process
 if (cluster.isMaster) {
 
@@ -41,6 +42,10 @@ if (cluster.isMaster) {
 
     // app.use(cookieParser())
     app.use(bodyParser.json())
+    
+    app.use(bodyParser.urlencoded({ extended: true }));
+
+    console.log(req.body)
 
     router.get('/runner', (req, res) => {
         res.sendFile(path.join(__dirname + '/index.html'));
@@ -48,6 +53,7 @@ if (cluster.isMaster) {
     })
 
     router.post('/runner', function (req, res) {
+
         run({
             language: 'java',
             code: req.body.code,

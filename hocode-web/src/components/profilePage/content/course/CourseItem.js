@@ -1,4 +1,4 @@
-import Avatar from "@material-ui/core/Avatar";
+// import Avatar from "@material-ui/core/Avatar";
 import { deepOrange, deepPurple, green, pink } from "@material-ui/core/colors";
 import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
@@ -37,7 +37,7 @@ const styles = {
     boxShadow:
       "0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)",
     overflow: "hidden",
-    background: "white",
+    background: "#FFFFFF",
     cursor: "pointer"
   },
   smallAvatar: {
@@ -151,10 +151,10 @@ class CourseItem extends Component {
 
 
     // check course statement -- Active or Inactive
-    let isActive;
-    if (course.status === "Inactive") {
-      isActive = <p>Cần xét duyệt</p>
-    }
+    // let isActive;
+    // if (course.status === "Inactive") {
+    //   isActive = <p>Cần xét duyệt</p>
+    // }
 
     let timer;
     if (courseStatus === 0) {
@@ -288,13 +288,13 @@ class CourseItem extends Component {
               style={{
                 margin: "0px 12px",
                 // textAlign: "center",
-                textTransform: "uppercase",
-                color: "#595959",
+                // textTransform: "uppercase",
+                color: "#3B3C54",
                 fontWeight: "bold"
                 // fontFamily: `'Yanone Kaffeesatz', sans-serif`
               }}
             >
-              <Typography gutterBottom variant="h5" component="h2">
+              <Typography gutterBottom variant="h5" component="h5">
                 {course.course_name}
               </Typography>
             </div>
@@ -325,20 +325,6 @@ class CourseItem extends Component {
               >
                 {course.course_desc}
               </Typography>
-
-              <Typography
-                variant="body1"
-                color="textSecondary"
-                component="p"
-                style={{
-                  height: 40,
-                  overflow: "hidden",
-                  color: "#CE280A",
-                  wordBreak: "break-word"
-                }}
-              >
-                {isActive}
-              </Typography>
             </div>
             {!this.state.isLoadingCourseInfo ?
               <React.Fragment>
@@ -356,13 +342,15 @@ class CourseItem extends Component {
                   </Tooltip>
                 </Box>
                 <Box display="flex">
-                  <Box p={1} flexGrow={1} justifyContent="flex-start" color="#757575">
+                  <Box p={2} flexGrow={1} justifyContent="flex-start" color="#757575">
                     <Typography variant="subtitle2">
                       {(this.state.coursePassInfo.minitask_solved + "/" + this.state.coursePassInfo.total_minitask)}
                     </Typography>
                   </Box>
                   <Box p={1} color="#757575">
-                    {this.state.coursePassInfo.isCodePass ? <Chip label="Pass" style={{ background: "#43a047", color: "white" }} />
+                    {this.state.coursePassInfo.isCodePass ? 
+                    // <Chip label="Pass" style={{ background: "#43a047", color: "white" }} />
+                      ""
                       :
                       <React.Fragment>
                         <Typography variant="subtitle2">
@@ -374,7 +362,7 @@ class CourseItem extends Component {
               </React.Fragment>
               :
               <Box p={1} display="flex" justifyContent="center" color="#757575">
-                <Box order={2}>
+                <Box>
                   <Tooltip title="Loading" placement="top">
                     <CircularProgress />
                   </Tooltip>
@@ -397,7 +385,7 @@ class CourseItem extends Component {
                 justify="center"
                 alignItems="center"
               >
-                <Grid
+                {/* <Grid
                   item
                   xs
                   style={{
@@ -419,17 +407,16 @@ class CourseItem extends Component {
                     color="textSecondary"
                     component="p"
                   >
-                    {/* {course.total_minitask} */}
                     {course.user_create ? course.user_create : "Hocode"}
                   </Typography>
-                </Grid>
+                </Grid> */}
                 <Grid
                   item
                   xs
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "flex-end"
+                    justifyContent: "flex-start"
                   }}
                 >
                   <LaptopIcon
@@ -440,7 +427,7 @@ class CourseItem extends Component {
                       boxSizing: "content-box",
                       borderRadius: "4px"
                     }}
-                    fontSize="small"
+                    fontSize="large"
                   />
                   <Typography
                     variant="body2"

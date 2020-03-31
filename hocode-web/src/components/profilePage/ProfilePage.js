@@ -82,7 +82,7 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
-    background: "#f3f3f3"
+    background: "#F1F1F1"
   },
   searchComponent: {
     padding: "2px 15px 2px 4px",
@@ -187,9 +187,10 @@ class ProfilePage extends React.Component {
               <MenuItem
                 selected={pathname === `${url}/course`}
                 onClick={this.onClickMenuItem(1)}
+                dense="true"
               >
                 <ImportContactsIcon style={{ fontSize: 16 }} />
-                <p style={{ fontSize: 14, marginLeft: "8px" }}>Chủ đề</p>
+                <p style={{ fontSize: 14, marginLeft: "8px" }}>Học tập</p>
               </MenuItem>
             </Link>
 
