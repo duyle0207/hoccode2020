@@ -18,6 +18,15 @@ type (
 )
 
 type (
+	UserCourseLeaderBoard struct {
+		UserInfo     		User        	`json:"user_info" bson:"user_info"`
+		CourseID     		string        	`json:"course_id" bson:"course_id"`
+		UserPoint			int 			`json:"user_point" bson:"user_point"`
+		IsCurrentAccount 	bool			`json:"is_current_account" bson:"is_current_account"`
+	}
+)
+
+type (
 	CourseInfo struct {
 		CourseID            string `json:"course_id" bson:"_id"`
 		CourseName          string `json:"course_name" bson:"course_name"`
@@ -26,6 +35,7 @@ type (
 		TotalTasksCount     int    `json:"total_tasks_count" bson:"TotalTasksCount"`
 		PassCourse          bool   `json:"pass_course" bson:"PassCourse"`
 		BackgroundImage     string `json:"background_image" bson:"background_image"`
+		CodePoint 			int    `json:"code_point" bson:"code_point"`
 	}
 )
 

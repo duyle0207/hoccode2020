@@ -75,7 +75,7 @@ class leaderboardPage extends Component {
                                 backgroundColor: "whitesmoke"
                             }}
                         >
-                            <Grid container className="header-homepage" style={{backgroundColor: "white"}}>
+                            <Grid container className="header-homepage" style={{ backgroundColor: "white" }}>
                                 <Grid
                                     className="HeaderLeftHome"
                                     item
@@ -224,12 +224,12 @@ class leaderboardPage extends Component {
                                         <Box p={1} style={{ width: '35%' }}>
                                             <Typography gutterBottom variant="h6" component="h2">
                                                 Tên
-                                    </Typography>
+                                        </Typography>
                                         </Box>
                                         <Box p={1} style={{ width: '30%' }}>
                                             <Typography gutterBottom variant="h6" component="h2">
                                                 Điểm
-                                    </Typography>
+                                        </Typography>
                                         </Box>
                                     </Box>
                                     <Divider light />

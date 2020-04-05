@@ -123,7 +123,8 @@ class MiniTaskPage extends Component {
   }
   updateUserCode(value) {
     // is props of <codeEditor/> to update usercode wwhen edit in editor
-    this.setState({ userCode: value });
+    console.log( "//" + new Date() + "\n" + value );
+    this.setState({ userCode: "//" + new Date() + "\n" + value });
   }
 
   beautifyCode(value) {
@@ -316,11 +317,6 @@ class MiniTaskPage extends Component {
     } = this.props;
     console.log(params.taskId)
     console.log(this.state.minitask.task_id);
-    this.props.submitUpdateMinitask(
-      this.state.minitask.id,
-      params.taskId,
-      params.courseId
-    );
 
     this.setState((state, props) => ({
       isLoading: true
@@ -345,12 +341,13 @@ class MiniTaskPage extends Component {
 
     axios
       .post("http://codejava.tk/runner", {
-        code: code,
+        code: code + "\n\n// "+ new Date() + "\n\n// "+ new Date(),
         test: junit4
       })
       .then(
         function (response) {
-          console.log(response);
+          console.log(response.data.stdout);
+          console.log(response.data.stderr==="");
           const error = response.data.stderr;
           const stdout = response.data.stdout;
           this.setState((state, props) => ({
@@ -367,7 +364,8 @@ class MiniTaskPage extends Component {
             // process alert success and add code point
             this.props.submitUpdateMinitask(
               this.state.minitask.id,
-              this.state.minitask.task_id
+              params.taskId,
+              params.courseId
             );
 
             Swal.fire({

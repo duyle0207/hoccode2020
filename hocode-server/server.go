@@ -247,6 +247,8 @@ func main() {
 	rs.Use(middleware.JWT([]byte("secret")))
 	rs.GET("", h.TestAuth)
 
+	rs.GET("/getCourseLeaderBoard/:course_id", h.GetCourseLeaderBoard)
+
 	rs.GET("/reviewcert", h.ReviewCert)
 	rs.GET("/viewcert", h.ViewCertUser)
 
@@ -261,6 +263,8 @@ func main() {
 	rs.GET("/courses/:id/tasks", h.AuthTaskByCoursesID)
 
 	rs.POST("/updateusercourse/:course_id", h.UpdateUserCourse)
+
+
 
 	rs.POST("/nextminitask", h.NextMiniTask)
 

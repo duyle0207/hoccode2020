@@ -1,1 +1,8 @@
-aaa
+import java.lang.Math; 
+ public class Solution {
+    public Solution(){}
+    public int returnY(int y)
+{ 
+    return y;
+}
+    }

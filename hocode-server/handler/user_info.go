@@ -315,7 +315,10 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		userMiniTask.MiniTaskInfo = append(userMiniTask.MiniTaskInfo, miniTaskIn)
 	}
 
-	codePoint = ur.CodePoint
+	userTemp := &model.User{}
+	db.DB(config.NameDb).C("users").Find(bson.M{"_id": bson.ObjectIdHex(userID)}).One(&userTemp)
+
+	codePoint = userTemp.CodePoint
 	userMiniTask.Timestamp = time.Now()
 
 
@@ -482,6 +485,11 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 			fmt.Printf("UserCourse: %s\n", user_course.ID)
 			fmt.Printf("Code Point: %d\n", minitask_point)
 			user_course.UserPoint = user_course.UserPoint + minitask_point
+			for i := range user_course.CourseInfo {
+				if user_course.CourseInfo[i].CourseID == course_id {
+					user_course.CourseInfo[i].CodePoint = user_course.CourseInfo[i].CodePoint + minitask_point
+				}
+			}
 			fmt.Printf("User code point: %d\n", user_course.UserPoint)
 			_, _ = db.DB(config.NameDb).C("user_course").UpsertId(user_course.ID, user_course)
 		}

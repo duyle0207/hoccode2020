@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/duyle0207/hoccode2020/config"
@@ -96,4 +98,56 @@ func (h *Handler) GetGeneralLeaderBoard(c echo.Context) (err error){
 	db.DB(config.NameDb).C("users").Find(bson.M{}).Skip(0).Limit(10).Sort("-codepoint").All(&general_leaderboard)
 
 	return c.JSON(http.StatusOK, general_leaderboard)
+}
+
+func (h *Handler) GetCourseLeaderBoard(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	course_id := c.Param("course_id")
+
+	user_course_leaderboard := []*model.UserCourseLeaderBoard{}
+
+	user_course := []*model.UserCourse{}
+	db.DB(config.NameDb).C("user_course").Find(bson.M{}).All(&user_course)
+
+	for i := range user_course {
+		for j := range user_course[i].CourseInfo {
+			if(user_course[i].CourseInfo[j].CourseID == course_id) {
+				u := &model.UserCourseLeaderBoard{
+					UserInfo:  GetUserByID(h, user_course[i].UserID),
+					CourseID:  course_id,
+					UserPoint: user_course[i].CourseInfo[j].CodePoint,
+					IsCurrentAccount: userID == user_course[i].UserID,
+				}
+				user_course_leaderboard = append(user_course_leaderboard, u)
+			}
+		}
+	}
+
+	sort.Slice(user_course_leaderboard, func(i, j int) bool {
+		return user_course_leaderboard[i].UserPoint > user_course_leaderboard[j].UserPoint
+	})
+
+	if len(user_course_leaderboard) >= 10 {
+		user_course_leaderboard = user_course_leaderboard[:10]
+	}
+
+	return c.JSON(http.StatusOK, user_course_leaderboard)
+}
+
+func GetUserByID(h *Handler, user_id string) model.User {
+	db := h.DB.Clone()
+	defer db.Close()
+
+    user := model.User{}
+    db.DB(config.NameDb).C("users").Find(bson.M{
+		"_id": bson.ObjectIdHex(user_id),
+	}).One(&user)
+
+    return user
 }
