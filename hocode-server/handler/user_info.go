@@ -253,6 +253,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 			}
 		}
 	}
+
 	ur := &model.User{}
 
 	if err = db.DB(config.NameDb).
@@ -276,6 +277,8 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		userMiniTask.MiniTaskInfo[uMiniTaskLocationC].MiniTaskID = bodyUC.MiniTaskID
 
 	} else {
+
+		fmt.Println("[Cộng điểm]")
 		miniTaskIn := &model.MiniTaskInfo{}
 		miniTaskIn.Status = "hoanthanh"
 		miniTaskIn.MiniTaskID = bodyUC.MiniTaskID
@@ -303,6 +306,7 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 		ur.Timestamp = time.Now()
 		fmt.Println("[Course status]")
 		fmt.Println(course_status)
+		fmt.Println("[Point]")
 		if course_status == 0 {
 			if err = db.DB(config.NameDb).
 				C("users").
@@ -453,7 +457,6 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 
 	if isInDB {
 		uc.Timestamp = time.Now()
-		fmt.Println("[Create new User course]")
 		if err = db.DB(config.NameDb).
 			C("user_course").
 			Update(bson.M{"user_id": uc.UserID}, uc); err != nil {
@@ -503,6 +506,36 @@ func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {
 			return echo.ErrInternalServerError
 		}
 
+		if course_status == 0 {
+			if err = db.DB(config.NameDb).
+				C("users").
+				Update(bson.M{"_id": bson.ObjectIdHex(userID)}, ur); err != nil {
+				if err == mgo.ErrNotFound {
+					return echo.ErrNotFound
+				}
+			}
+			user_course := &model.UserCourse{}
+
+			if err = db.DB(config.NameDb).
+				C("user_course").
+				Find(bson.M{
+					"user_id": userID,
+				}).One(&user_course); err != nil {
+				if err == mgo.ErrNotFound {
+					return echo.ErrNotFound
+				}
+			}
+			fmt.Printf("UserCourse: %s\n", user_course.ID)
+			fmt.Printf("Code Point: %d\n", minitask_point)
+			user_course.UserPoint = user_course.UserPoint + minitask_point
+			for i := range user_course.CourseInfo {
+				if user_course.CourseInfo[i].CourseID == course_id {
+					user_course.CourseInfo[i].CodePoint = user_course.CourseInfo[i].CodePoint + minitask_point
+				}
+			}
+			fmt.Printf("User code point: %d\n", user_course.UserPoint)
+			_, _ = db.DB(config.NameDb).C("user_course").UpsertId(user_course.ID, user_course)
+		}
 	}
 
 	userCourseOut := &model.UserCourseOut{
