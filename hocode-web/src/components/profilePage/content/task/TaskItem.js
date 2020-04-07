@@ -216,6 +216,19 @@ class TaskItem extends Component {
               />
             </div>
           </Tooltip>
+          <Tooltip title="Số lượt làm còn lại" placement="top">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginLeft: 10
+              }}
+            
+            > {minitask.numbers_doing > 0 ? (
+              <p><b style={{color:"red"}}>{minitask.numbers_doing}</b> <i>lượt</i></p>
+            ): (<b><i style={{color:"red"}}>Hết lượt</i></b>)} 
+            </div>   
+          </Tooltip>
         </Link>
       );
     } else if (minitask.status === "yeucaumokhoa") {

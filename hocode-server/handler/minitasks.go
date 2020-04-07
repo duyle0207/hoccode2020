@@ -39,8 +39,8 @@ func (h *Handler) SearchMinitasks(c echo.Context) (err error) {
 
 	if err = db.DB(config.NameDb).C("minitasks").
 		Find(bson.M{
-			"mini_task_name": bson.RegEx{mini_task_name, ""} ,
-			"del": bson.M{"$ne": true},
+			"mini_task_name": bson.RegEx{mini_task_name, ""},
+			"del":            bson.M{"$ne": true},
 		}).
 		Skip(offset).
 		Limit(limit).
@@ -66,11 +66,11 @@ func (h *Handler) GetMiniTaskByTaskID(c echo.Context) (err error) {
 	db.DB(config.NameDb).C("task_minitask").
 		Find(bson.M{
 			"task_id": taskID,
-	}).All(&task_minitask)
+		}).All(&task_minitask)
 
 	miniTaskList := []*model.MiniTask{}
 
-	for i:=0;i<len(task_minitask); i++ {
+	for i := 0; i < len(task_minitask); i++ {
 		miniTask := &model.MiniTask{}
 		db.DB(config.NameDb).C("minitasks").
 			Find(
@@ -152,7 +152,7 @@ func (h *Handler) DeleteTaskMinitask(c echo.Context) (err error) {
 	if err = db.DB(config.NameDb).C("task_minitask").Remove(
 		bson.M{
 			"mini_task_id": bk.MiniTaskID,
-			"task_id": bk.TaskID,
+			"task_id":      bk.TaskID,
 		}); err != nil {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
 	}
@@ -163,8 +163,8 @@ func (h *Handler) DeleteTaskMinitask(c echo.Context) (err error) {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
 	}
 
-	for j:=0;j<len(user_minitask);j++{
-		for i := 0;i<len(user_minitask[j].MiniTaskInfo);i++{
+	for j := 0; j < len(user_minitask); j++ {
+		for i := 0; i < len(user_minitask[j].MiniTaskInfo); i++ {
 			if user_minitask[j].MiniTaskInfo[i].CourseID == course_id &&
 				user_minitask[j].MiniTaskInfo[i].MiniTaskID == minitask_id &&
 				user_minitask[j].MiniTaskInfo[i].TaskID == task_id {
@@ -173,7 +173,6 @@ func (h *Handler) DeleteTaskMinitask(c echo.Context) (err error) {
 			}
 		}
 	}
-
 
 	//fmt.Println("[Index]")
 	//fmt.Println(index)
@@ -200,7 +199,7 @@ func (h *Handler) DeleteTaskMinitask(c echo.Context) (err error) {
 }
 
 func UpdateMinitaskInfo(index int, MinitaskInfo []*model.MiniTaskInfo) (minitaskInfo []*model.MiniTaskInfo) {
-	minitaskInfo = append(MinitaskInfo[:index],MinitaskInfo[index+1:]...)
+	minitaskInfo = append(MinitaskInfo[:index], MinitaskInfo[index+1:]...)
 	return minitaskInfo
 }
 
@@ -255,7 +254,6 @@ func (h *Handler) MinitasksByID(c echo.Context) (err error) {
 		if err == mgo.ErrNotFound {
 			return echo.ErrNotFound
 		}
-
 		return
 	}
 
@@ -388,7 +386,7 @@ func (h *Handler) DailyMiniTask(c echo.Context) (err error) {
 		return
 	}
 
-	for i:=0;i<len(mta);i++ {
+	for i := 0; i < len(mta); i++ {
 		fmt.Println(mta[i].TaskId)
 		fmt.Println(bson.ObjectIdHex(mta[i].TaskId))
 		fmt.Println("")
@@ -415,7 +413,7 @@ func (h *Handler) DailyMiniTask(c echo.Context) (err error) {
 		}
 		mta[i].Avatar = tf.BackgroundImage
 	}
-	for i:=0;i<len(mta);i++ {
+	for i := 0; i < len(mta); i++ {
 		fmt.Println(i)
 		fmt.Println(mta[i].Avatar)
 		fmt.Println(i)

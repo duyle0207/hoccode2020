@@ -68,7 +68,8 @@ class CreateMiniTaskBody extends Component {
       tasksOption: [],
       course_id: "", // ban đầu khi gọi api thì set state để cái này có giá trị mặc định
       task_id: "",
-      code_point: 0
+      code_point: 0,
+      numbers_doing: 0 // số lượt làm tính điểm cho bài thực hành
     };
     this.output_type_func = React.createRef();
     this.courses_ref = React.createRef();
@@ -154,6 +155,7 @@ class CreateMiniTaskBody extends Component {
       mini_task_desc: this.state.mini_task_desc,
       level: this.state.level,
       code_point: parseInt(this.state.code_point),
+      numbers_doing: parseInt(this.state.numbers_doing),
       input_list: this.state.inputList
     };
     axios
@@ -347,6 +349,14 @@ class CreateMiniTaskBody extends Component {
                   <div>Số đậu:</div>
                   <input
                     name="code_point"
+                    className="input-createminitask"
+                    onChange={this.handleSimpleInputChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={6}>
+                  <div>Số lượt tính điểm:</div>
+                  <input
+                    name="numbers_doing"
                     className="input-createminitask"
                     onChange={this.handleSimpleInputChange}
                   />
