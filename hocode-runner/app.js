@@ -4,13 +4,19 @@ console.log(cluster.isMaster);
 // Code to run if we're in the master process
 if (cluster.isMaster) {
 
+    console.log("yeah");
     // Count the machine's CPUs
     var cpuCount = require('os').cpus().length;
+    console.log(cpuCount);
 
     // Create a worker for each CPU
     for (var i = 0; i < cpuCount; i += 1) {
         cluster.fork();
     }
+
+    cluster.on('online', function(worker) {
+        console.log('Worker ' + worker.process.pid + ' is online');
+    });
 
     // Listen for dying workers
     cluster.on('exit', function (worker) {
@@ -45,7 +51,6 @@ if (cluster.isMaster) {
     
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    console.log(req.body)
 
     router.get('/runner', (req, res) => {
         res.sendFile(path.join(__dirname + '/index.html'));
@@ -53,7 +58,7 @@ if (cluster.isMaster) {
     })
 
     router.post('/runner', function (req, res) {
-
+        console.log(`Process Id ${process.pid}`);
         run({
             language: 'java',
             code: req.body.code,

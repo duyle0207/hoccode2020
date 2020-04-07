@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import Split from "react-split";
 import MiniTaskDesc from "./body/MiniTaskDesc";
 import MiniTaskHeader from "./header/MiniTaskHeader";
-import CodeEditor from "./body/CodeEditor";
+// import CodeEditor from "./body/CodeEditor";
 import ResultPanel from "./body/ResultPanel";
 import TestsPanel from "./body/TestsPanel";
 import Snackbar from '@material-ui/core/Snackbar';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 import "./minitask.css";
 //import MediaQuery from "react-responsive";
@@ -18,11 +20,34 @@ import { connect } from "react-redux";
 
 import js_beautify from "js-beautify";
 
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+
+import DescriptionIcon from '@material-ui/icons/Description';
+
 import {
   submitUpdateMinitask,
   setUndefinedNextMinitask
 } from "../../js/actions/userAction";
 import HashLoader from "react-spinners/HashLoader";
+
+//Code editor
+import AceEditor from "react-ace";
+// import brace from 'brace';
+import 'brace/theme/github';
+import 'brace/theme/twilight';
+import 'brace/theme/monokai';
+
+import "ace-builds/src-min-noconflict/ext-language_tools";
+import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/snippets/java";
+
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+
+import Checkbox from '@material-ui/core/Checkbox';
+import Slide from '@material-ui/core/Slide';
+// import Typography from '@material-ui/core/Typography';
 
 class MiniTaskPage extends Component {
   constructor(props) {
@@ -39,6 +64,8 @@ class MiniTaskPage extends Component {
       // variable for numbers of doing with get code point.
       numbers_doing: 0,
       completedMinitask: []
+      theme: "textmate",
+      isAutocomplete: false,
     };
 
     this.executeCode = this.executeCode.bind(this);
@@ -142,6 +169,7 @@ class MiniTaskPage extends Component {
   }
   updateUserCode(value) {
     // is props of <codeEditor/> to update usercode wwhen edit in editor
+    console.log(value);
     this.setState({ userCode: value });
   }
 
@@ -162,6 +190,14 @@ class MiniTaskPage extends Component {
   handleCloseSnack = () => {
     this.setState({ open: false });
   };
+
+  handleChangeTheme = (event) => {
+    this.setState({ theme: event.target.value })
+  }
+
+  handleChangeAutoComplete = () => {
+    this.setState({ isAutocomplete: !this.state.isAutocomplete });
+  }
 
   resetCode() {
     const swalWithBootstrapButtons = Swal.mixin({
@@ -363,12 +399,13 @@ class MiniTaskPage extends Component {
 
     axios
       .post("http://codejava.tk/runner", {
-        code: code,
+        code: code + "\n\n// " + new Date() + "\n\n// " + new Date(),
         test: junit4
       })
       .then(
         function (response) {
-          console.log(response);
+          console.log(response.data.stdout);
+          console.log(response.data.stderr === "");
           const error = response.data.stderr;
           const stdout = response.data.stdout;
           this.setState((state, props) => ({
@@ -450,7 +487,7 @@ class MiniTaskPage extends Component {
       );
   }
   render() {
-    const { minitask, result } = this.state;
+    const { minitask, result, theme } = this.state;
     const { isLoadingComponent } = this.state;
     const {
       match: { params }
@@ -536,6 +573,7 @@ class MiniTaskPage extends Component {
                           mini_task_desc={minitask.mini_task_desc}
                           code_point={minitask.code_point}
                           level={minitask.level}
+                          minitaskName={minitask.mini_task_name}
                         />
                       </div>
                       <div className="split-panel-second ">
@@ -554,11 +592,66 @@ class MiniTaskPage extends Component {
                           >
                             <div>
                               <div className="codeEditor">
-                                <CodeEditor
+                                {/* <CodeEditor
                                   userCode={this.state.userCode}
                                   updateUserCode={this.updateUserCode}
-                                />
-                                <div
+                                /> */}
+                                <Box display="flex" p={1} bgcolor="background.paper">
+                                  <Slide in={true} {...(true ? { timeout: 700 } : {})}>
+                                    <Box ml={1}>
+                                      <InputLabel id="demo-simple-select-label">Theme</InputLabel>
+                                      <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={theme}
+                                        onChange={this.handleChangeTheme}
+                                        style={{ width: 100 }}
+                                      >
+                                        <MenuItem value={"textmate"}>Textmate</MenuItem>
+                                        <MenuItem value={"github"}>Github</MenuItem>
+                                        <MenuItem value={"monokai"}>Monokai</MenuItem>
+                                      </Select>
+                                    </Box>
+                                  </Slide>
+                                  <Slide in={true} {...(true ? { timeout: 1400 } : {})}>
+                                    <Box ml={3} width="100%">
+                                      <InputLabel id="demo-simple-select-label">Autocomplete</InputLabel>
+                                      <Checkbox
+                                        checked={this.state.isAutocomplete}
+                                        color="primary"
+                                        onChange={this.handleChangeAutoComplete}
+                                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                                      />
+                                    </Box>
+                                  </Slide>
+                                  <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
+                                    <Box p={1} flexShrink={0}>
+                                      <Button variant="contained" onClick={this.resetCode} startIcon={<RotateLeftIcon />} disabled={this.state.isLoading} color="primary">
+                                        Reset code
+                                    </Button>
+                                    </Box>
+                                  </Slide>
+                                </Box>
+                                <Box mt={1} style={{ height: '100%' }}>
+                                  <AceEditor
+                                    mode="java"
+                                    theme={theme}
+                                    onChange={this.updateUserCode}
+                                    // name="blah2"
+                                    fontSize={14}
+                                    showPrintMargin={true}
+                                    // editorProps={{ $blockScrolling: true }}
+                                    enableBasicAutocompletion={this.state.isAutocomplete}
+                                    enableLiveAutocompletion={this.state.isAutocomplete}
+                                    enableSnippets={true}
+                                    value={this.state.userCode}
+                                    showLineNumbers={true}
+                                    width="100%"
+                                    height="500px"
+                                    tabSize={2}
+                                  />
+                                </Box>
+                                {/* <div
                                   className="reset_code"
                                   style={{
                                     position: "absolute",
@@ -579,8 +672,8 @@ class MiniTaskPage extends Component {
                                   >
                                     Reset code
                                 </button>
-                                </div>
-                                <div
+                                </div> */}
+                                {/* <div
                                   className="reset_code"
                                   style={{
                                     position: "absolute",
@@ -603,7 +696,7 @@ class MiniTaskPage extends Component {
                                   >
                                     Beautifier code
                                 </button>
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                             <div className="resultPanel">
@@ -654,16 +747,22 @@ class MiniTaskPage extends Component {
                           </button> */}
                           </div>
                           {this.state.isUserStudy ?
-                            <div style={{ marginLeft: 10 }}>
-                              <button
+                            <Box p={2}>
+                              {/* <button
                                 onClick={this.submitCode}
                                 className={`submitCode_btn ${this.state.isLoading &&
                                   "disable_btn"}`}
                                 disabled={this.state.isLoading}
                               >
                                 Nộp bài
-                              </button>
-                            </div>
+                              </button> */}
+                              <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
+                                <Button variant="contained" startIcon={<DescriptionIcon />}
+                                  style={{ backgroundColor: "#7BC043" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
+                                  Nộp bài
+                                </Button>
+                              </Slide>
+                            </Box>
                             :
                             ""
                           }

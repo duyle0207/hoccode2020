@@ -10,7 +10,7 @@ export const submitUpdateMinitask = (minitask_id, task_id, course_id, courseStat
     .post(`http://localhost:8081/api/v1/auth/updateusercourse/${course_id}`, {
       minitask_id: minitask_id,
       task_id: task_id,
-      course_status: courseStatus
+      course_id: course_id
     })
     .then(res => {
       console.log(res.data)

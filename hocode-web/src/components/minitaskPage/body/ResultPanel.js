@@ -47,7 +47,6 @@ function a11yProps(index) {
 function LinkTab(props) {
   return (
     <Tab
-    
       style={{ minHeight: "100%", minWidth: "200px" }}
       component="a"
       onClick={event => {
@@ -283,7 +282,7 @@ export default function ResultPanel(props) {
     >
       <Tabs
         style={{ minHeight: "30px" }}
-        variant="fullWidth"
+        // variant="fullWidth"
         value={value}
         onChange={handleChange}
         aria-label="nav tabs example"

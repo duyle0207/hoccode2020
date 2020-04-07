@@ -8,6 +8,9 @@ import { logoutUser } from "../../../js/actions/authActions";
 import { getUser } from "../../../js/actions/userAction";
 import "./minitaskHeader.css";
 import UserMenu from "./UserMenu";
+import Typography from '@material-ui/core/Typography';
+// import Slide from '@material-ui/core/Slide';
+// import Slide from '@material-ui/core/Slide';
 
 class MiniTaskHeader extends Component {
   onLogout = e => {
@@ -45,7 +48,7 @@ class MiniTaskHeader extends Component {
             ></img>
           </Link>
         </div>
-        <div className="minitaskName_mobi">{this.props.minitaskName}</div>{" "}
+        <Typography className="minitaskName_mobi">{this.props.minitaskName}</Typography>{" "}
         {/*minitask name */}
         <div className="nav-wrapper">
           <div className="desktop-hide1">
@@ -72,13 +75,7 @@ class MiniTaskHeader extends Component {
               }}
             >
               <KeyboardBackspaceIcon style={{ fontSize: 16 }} />
-            <p style={{ fontSize: 14, marginLeft: "3px" }}>Back</p>
-            </div>
-            <div
-              className="miniTask_name"
-              style={{ display: "flex", justifyContent: "center", flexGrow: 1 }}
-            >
-              <div>{this.props.minitaskName}</div>
+              <p style={{ fontSize: 14, marginLeft: "3px" }}>Back</p>
             </div>
           </div>
 
@@ -105,7 +102,7 @@ class MiniTaskHeader extends Component {
                 }}
               >
                 <PersonIcon style={{ fontSize: 16 }} />
-                <Link to="/profile"  style={{ fontSize: 14, marginLeft: "3px",textDecoration:"none",    fontFamily:' Nunito Sans, sans-serif' }} >Trang cá nhân</Link>
+                <Link to="/profile" style={{ fontSize: 14, marginLeft: "3px", textDecoration: "none", fontFamily: ' Nunito Sans, sans-serif' }} >Trang cá nhân</Link>
               </div>
             </div>
             <div className="desktop-hide">

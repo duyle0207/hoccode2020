@@ -317,7 +317,7 @@ class MiniTaskPage extends Component {
             isLoading: false
           }));
 
-          if (this.state.result.stdout.WASSUCCESSFUL === "true") {
+          if (this.state.result.stdout.WASSUCCESSFUL === "true" || response.data.stdout.includes("SUCCESSFUL")) {
             // process alert success and add code point
             this.props.submitUpdateMinitask(
               this.state.minitask.id,

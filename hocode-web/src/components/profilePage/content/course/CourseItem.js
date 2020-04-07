@@ -15,6 +15,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import EmojiNatureIcon from "@material-ui/icons/EmojiNature";
 import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Fade from '@material-ui/core/Fade';
 
 import {
   // FacebookShareCount,
@@ -257,18 +258,18 @@ class CourseItem extends Component {
             backgroundSize: "cover",
           }}
         >
-          {course.status === "Inactive" ? 
-          <Chip
-           label="Cần xét duyệt"
-           color="primary"
-           style={{
-             width: '80%',
-             height: '80%',
-             fontSize: '63px'
-           }}
-          />
-          :
-          ""
+          {course.status === "Inactive" ?
+            <Chip
+              label="Cần xét duyệt"
+              color="primary"
+              style={{
+                width: '80%',
+                height: '80%',
+                fontSize: '63px'
+              }}
+            />
+            :
+            ""
           }
           {/* <img
             src={course.background_image}
@@ -331,14 +332,16 @@ class CourseItem extends Component {
                 <Box justifyContent="flex-start" p={1} display="flex" color="#757575">
                   <Tooltip title={(this.state.coursePassInfo.total_minitask === 0) ? "0%" : (this.state.coursePassInfo.minitask_solved /
                     this.state.coursePassInfo.total_minitask) * 100 + "%"} placement="top">
-                    <LinearProgress
-                      variant="determinate"
-                      value={this.state.coursePassInfo.total_minitask === 0 ? "0" :
-                        (this.state.coursePassInfo.minitask_solved /
-                          this.state.coursePassInfo.total_minitask) * 100
-                      }
-                      style={{ width: '100%', height: 7 }}
-                    />
+                    <Fade in={!this.state.isLoadingCourseInfo} {...(true ? { timeout: 1000 } : {})}>
+                      <LinearProgress
+                        variant="determinate"
+                        value={this.state.coursePassInfo.total_minitask === 0 ? "0" :
+                          (this.state.coursePassInfo.minitask_solved /
+                            this.state.coursePassInfo.total_minitask) * 100
+                        }
+                        style={{ width: '100%', height: 7 }}
+                      />
+                    </Fade>
                   </Tooltip>
                 </Box>
                 <Box display="flex">
@@ -348,8 +351,8 @@ class CourseItem extends Component {
                     </Typography>
                   </Box>
                   <Box p={1} color="#757575">
-                    {this.state.coursePassInfo.isCodePass ? 
-                    // <Chip label="Pass" style={{ background: "#43a047", color: "white" }} />
+                    {this.state.coursePassInfo.isCodePass ?
+                      // <Chip label="Pass" style={{ background: "#43a047", color: "white" }} />
                       ""
                       :
                       <React.Fragment>

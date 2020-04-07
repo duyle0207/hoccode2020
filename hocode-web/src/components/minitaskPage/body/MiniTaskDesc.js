@@ -2,13 +2,17 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/styles";
 import ReactMarkdown from "react-markdown";
 import "./minitaskdesc.css";
+import Slide from '@material-ui/core/Slide';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+
 const styles = {
   DescContainer: {
     background: "#ffffff",
     position: "relative",
     //overflowY: "scroll",
     height: "100%",
-    overflow:"auto",
+    overflow: "auto",
     //overflowX: "hidden",
     borderRadius: "4px",
     boxShadow:
@@ -23,19 +27,23 @@ class MiniTaskDesc extends Component {
     const { classes } = this.props;
     return (
       <div className={classes.DescContainer}>
-        <div style={{fontFamily:` "Share Tech Mono", monospace `,display:'flex',color:'#44BFA3'}}>
-        <div style={{flexGrow:1,marginRight:10}}>Độ khó: {this.props.level}</div>
-          <div style={{marginRight:'10px'}}>{this.props.code_point}</div>
-          
+        <Slide in={true} direction="right" {...(true ? { timeout: 800 } : {})}>
+          <Box my={1}>
+            <Typography variant="h6">{this.props.minitaskName}</Typography>
+          </Box>
+        </Slide>
+        <div style={{ fontFamily: ` "Share Tech Mono", monospace `, display: 'flex', color: '#44BFA3' }}>
+          <div style={{ flexGrow: 1, marginRight: 10 }}>Độ khó: {this.props.level}</div>
+          <div style={{ marginRight: '10px' }}>{this.props.code_point}</div>
         </div>
         <div className="md_desc" style={{ padding: "16px" }}> {/* minitask description */}
-          <ReactMarkdown 
+          <ReactMarkdown
             escapeHtml={false}
-            source={this.props.mini_task_desc} 
+            source={this.props.mini_task_desc}
             renderers={{
               linkReference: reference => {
                 if (!reference.href) {
-                 
+
                   return `[${reference.children[0].props.children}]`;
                 }
                 return <a href={reference.$ref}>{reference.children}</a>;

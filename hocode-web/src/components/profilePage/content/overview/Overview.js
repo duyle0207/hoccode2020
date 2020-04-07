@@ -127,7 +127,7 @@ class Overview extends React.Component {
   }
 
   render() {
-    const { isLoading } = this.state;
+    const { isLoading, isLoadingCoursePassInfo } = this.state;
     const { classes } = this.props;
     let url = this.props.url;
 
@@ -202,7 +202,7 @@ class Overview extends React.Component {
                                   title="Số lượng bài học đã hoàn thành"
                                   placement="top"
                                 >
-                                  {course.completed_tasks_count===0 && course.total_tasks_count===0 ?
+                                  {isLoadingCoursePassInfo ?
                                     <CircularProgress size={22} color="black"/>
                                     :
                                     <div style={{ color: "#9d9d9d" }}>
@@ -212,7 +212,7 @@ class Overview extends React.Component {
                                 </Tooltip>
                               </Grid>
                               <Grid item>
-                                <Tooltip title="Tiến độ" placement="top">
+                                <Tooltip title="Tiến độ" placement="top">  
                                   <LinearProgress
                                     variant="determinate"
                                     value={

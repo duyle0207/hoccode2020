@@ -21,6 +21,30 @@ import EmojiNatureIcon from "@material-ui/icons/EmojiNature";
 
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Fade from '@material-ui/core/Fade';
+import CourseLeaderBoard from '../courseLeaderBoard/CourseLeaderBoard';
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Box
+      p={1}
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Fade in={!(value !== index)} {...(true ? { timeout: 1000 } : {})}>{children}</Fade>}
+    </Box>
+  );
+}
+
 const styles = {
   card: {
     height: 150,
@@ -30,7 +54,7 @@ const styles = {
   TasksContainer: {
     // paddingTop: 30,
 
-    minHeight: "100vh"
+    // minHeight: "87vh"
   }
 };
 const getParams = pathname => {
@@ -55,11 +79,16 @@ class TaskBody extends Component {
       hours: 0,
       min: 0,
       sec: 0,
+      value: 0,
     };
   }
 
   componentWillUnmount() {
     this.stop();
+  }
+
+  handleChangeValue = (event, newValue) => {
+    this.setState({ value: newValue });
   }
 
   componentDidMount() {
@@ -68,9 +97,11 @@ class TaskBody extends Component {
     const currentParams = getParams(location.pathname);
     console.log(currentParams);
 
+    this.setState({courseId: currentParams.courseId});
+
     axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${currentParams.courseId}`).then(res => {
       console.log("[CoursePass]")
-      this.setState({ coursPassInfo: res.data });
+      this.setState({ coursPassInfo: res.data, courseId: currentParams.courseId });
       console.log(res.data);
     });
 
@@ -79,11 +110,21 @@ class TaskBody extends Component {
     });
 
     axios.get(`http://localhost:8081/api/v1/auth/usercourse`).then(res => {
-      console.log(res.data);
-      this.setState({ userCourse: res.data });
+      var isFound = false;
+      for (var i = 0; i < res.data.course_info.length; i++) {
+        if (res.data.course_info[i].course_id === currentParams.courseId) {
+          isFound = true;
+        }
+        if (isFound) {
+          this.setState({ userCourse: res.data.course_info[i].code_point });
+          break;
+        }
+      }
+      if(!isFound) {
+        this.setState({ userCourse: 0 });
+      }
+      console.log(this.state.userCourse);
     });
-
-    this.setState({ courseId: currentParams.courseId })
 
     axios
       .get(
@@ -95,6 +136,8 @@ class TaskBody extends Component {
         let tasks1 = tasks.reverse();
         this.setState({ tasks: tasks1, isLoading: false });
       });
+
+    
 
     axios
       .get(`http://localhost:8081/api/v1/courses/${currentParams.courseId}`)
@@ -244,7 +287,7 @@ class TaskBody extends Component {
 
   render() {
     const { classes } = this.props;
-    const { tasks, course, courseStatus, days, hours, min, sec } = this.state;
+    const { tasks, course, courseStatus, value, days, hours, min, sec } = this.state;
     const { isLoading } = this.state;
     let courseLoop;
     if (courseStatus === -1) {
@@ -373,13 +416,13 @@ class TaskBody extends Component {
           </div>
         ) : (
             <React.Fragment>
-              <Grid item xs={12} sm={12} style={{ marginBottom: 30 }}>
-                <Paper>
-                  <Grid container style={{ padding: 30 }} spacing={2}>
+              <Grid item xs={12} sm={12} style={{ marginBottom: 0 }}>
+                <Paper >
+                  <Grid container style={{ padding: 20 }} spacing={2}>
                     <Grid item xs={4} sm={4}>
                       <Card>
                         <CardMedia
-                          style={{ height: 220 }}
+                          style={{ height: 120 }}
                           image={this.state.course.background_image}
                           title="Contemplative Reptile"
                         />
@@ -387,7 +430,7 @@ class TaskBody extends Component {
                           {timer}
                           <Box display="flex" color="#5c6bc0" justifyContent="flex-end">
                             <Typography variant="h4">
-                              {this.state.userCourse.user_point ? this.state.userCourse.user_point : 0} <EmojiNatureIcon />
+                              {this.state.userCourse} <EmojiNatureIcon />
                             </Typography>
                           </Box>
                         </CardContent>
@@ -534,8 +577,32 @@ class TaskBody extends Component {
                   </Grid>
                 </Paper>
               </Grid>
-              <Grid item xs={12} sm={6} style={{ padding: "0px 10px" }}>
-                {courseLoop}
+              <Box p={1}>
+
+              </Box>
+              <Grid xs={12} justify="center" >
+                <AppBar position="static" style={{ backgroundColor: "#FAFAFA", color: "#242424" }}>
+                  <Tabs value={value} onChange={this.handleChangeValue} variant="fullWidth"
+                    indicatorColor="primary"
+                    aria-label="simple tabs example">
+                    <Tab label="Bài tập" />
+                    <Tab label="Xếp hạng" />
+                  </Tabs>
+                </AppBar>
+                <TabPanel value={value} index={0}>
+                  <Box display="flex" justifyContent="center" p={1} className="Hello">
+                    <Grid item xs={12} sm={6} >
+                      {courseLoop}
+                    </Grid>
+                  </Box>
+                </TabPanel>
+                <TabPanel value={value} index={1}>
+                  <Box display="flex" justifyContent="center" p={1} className="Hello">
+                    <Grid item xs={12} sm={12} >
+                      <CourseLeaderBoard courseId={this.state.courseId}/>
+                    </Grid>
+                  </Box>
+                </TabPanel>
               </Grid>
             </React.Fragment>
           )}
