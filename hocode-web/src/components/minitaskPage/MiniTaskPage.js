@@ -595,8 +595,8 @@ class MiniTaskPage extends Component {
                                     value={this.state.userCode}
                                     showLineNumbers={true}
                                     width="100%"
-                                    height="500px"
-                                    tabSize={2}
+                                    // height="50%"
+                                    tabSize={0}
                                   />
                                 </Box>
                                 {/* <div
