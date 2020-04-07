@@ -172,8 +172,6 @@ class LoginPage extends React.Component {
       remember: true
     }
 
-    console.log(userData);
-
     axios
       .post("http://localhost:8081/api/v1/isNewAccount", userData)
       .then(res => {
@@ -207,13 +205,13 @@ class LoginPage extends React.Component {
   }
 
   responseGoogle = (response) => {
-    console.log(response);
+    console.log(response.Qt.jL);
     console.log(response.profileObj.email);
     console.log(response.accessToken);
 
     const userData = {
       email: response.profileObj.email,
-      avt: "https://lh3.googleusercontent.com/a-/AOh14Gi0t34hOD66OuZT-weICO7pHbpEs6g1Ni8ZcqXr6w=s96-c",
+      avt: response.profileObj.imageUrl,
       password: response.profileObj.email +
         response.profileObj.googleId,
       firstName: response.profileObj.givenName,

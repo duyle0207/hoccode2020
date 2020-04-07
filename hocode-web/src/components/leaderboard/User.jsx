@@ -17,7 +17,7 @@ class User extends Component {
                                 {rank}
                             </Typography>
                         </Box>
-                        <Avatar alt="Cindy Baker" src={user.socialAccount === "facebook" || user.socialAccount === "google0" ? user.avt : user.avatar} />
+                        <Avatar alt="Cindy Baker" src={user.socialAccount === "facebook" || user.socialAccount === "google" ? user.avt : user.avatar} />
                         <Box p={1} style={{ width: '34%' }}>
                             <Typography gutterBottom variant="overline" component="h2">
                                 {user.firstname + " " + user.lastname}

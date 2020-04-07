@@ -388,11 +388,11 @@ func (h *Handler) DailyMiniTask(c echo.Context) (err error) {
 		return
 	}
 
-	for i:=0;i<len(mta);i++ {
-		fmt.Println(mta[i].TaskId)
-		fmt.Println(bson.ObjectIdHex(mta[i].TaskId))
-		fmt.Println("")
-	}
+	//for i:=0;i<len(mta);i++ {
+	//	fmt.Println(mta[i].TaskId)
+	//	fmt.Println(bson.ObjectIdHex(mta[i].TaskId))
+	//	fmt.Println("")
+	//}
 
 	for i := 0; i < len(mta); i++ {
 
@@ -419,6 +419,6 @@ func (h *Handler) DailyMiniTask(c echo.Context) (err error) {
 		fmt.Println(i)
 		fmt.Println(mta[i].Avatar)
 		fmt.Println(i)
-	}
+	}	
 	return c.JSON(http.StatusOK, mta)
 }
