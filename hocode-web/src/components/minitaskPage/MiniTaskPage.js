@@ -121,7 +121,7 @@ class MiniTaskPage extends Component {
           userCode: minitask.template_code
         }));
       } */
-      console.log(this.state.user_minitask_practice);
+        console.log(this.state.user_minitask_practice);
         this.setState((state, props) => ({
           userCode: (this.state.isUserStudy && this.state.user_minitask_practice.status === "done") ?
             this.state.user_minitask_practice.user_code : minitask.template_code
@@ -379,6 +379,11 @@ class MiniTaskPage extends Component {
     } = this.props;
     console.log(params.taskId)
     console.log(this.state.minitask.task_id);
+    // this.props.submitUpdateMinitask(
+    //   this.state.minitask.id,
+    //   params.taskId,
+    //   params.courseId
+    // );
 
     this.setState((state, props) => ({
       isLoading: true
@@ -532,49 +537,56 @@ class MiniTaskPage extends Component {
             console.log(listID);
             if (completed !== null && listID.indexOf(this.state.minitask.id) === -1) {
               var newNumbers = this.state.minitask;
-              newNumbers.numbers_doing = this.state.numbers_doing - 1
-              this.setState({ minitask: newNumbers });
-              axios
-                .put(
-                  `http://localhost:8081/api/v1/curd/minitasks/${this.state.minitask.id}`,
-                  newNumbers
-                )
-                .then(res => {
-                  // const course = res.data;
-                  // this.setState({ course: course });
-                });
-              console.log(this.state.numbers_doing);
-            }
+              var completed = this.state.completedMinitask
+              var listID = [];
+              for (var i in completed) {
+                listID.push(completed[i].id)
+              }
+              console.log(listID);
+              if (completed !== null && listID.indexOf(this.state.minitask.id) === -1) {
+                var newNumbers = this.state.minitask;
+                newNumbers.numbers_doing = this.state.numbers_doing - 1
+                this.setState({ minitask: newNumbers });
+                axios
+                  .put(
+                    `http://localhost:8081/api/v1/curd/minitasks/${this.state.minitask.id}`,
+                    newNumbers
+                  )
+                  .then(res => {
+                    // const course = res.data;
+                    // this.setState({ course: course });
+                  });
+                console.log(this.state.numbers_doing);
+              }
 
-            if (this.state.numbers_doing > 0) {
-              this.props.submitUpdateMinitask(
-                this.state.minitask.id,
-                this.state.minitask.task_id,
-                params.courseId
-              );
-              Swal.fire({
-                type: "success",
-                title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
-                width: 600,
-                padding: "3em",
-                customClass: "hidden_alert",
-                backdrop: `
+              if (this.state.numbers_doing > 0) {
+                this.props.submitUpdateMinitask(
+                  this.state.minitask.id,
+                  this.state.minitask.task_id,
+                  params.courseId
+                );
+                Swal.fire({
+                  type: "success",
+                  title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
+                  width: 600,
+                  padding: "3em",
+                  customClass: "hidden_alert",
+                  backdrop: `
                   rgba(0,0,123,0.4)
                   url("${require("./giphy.gif")}") 
                   center center
                   no-repeat
                 `
-              });
-              toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
-                containerId: "B"
-              });
-            } else {
-              toast("Bạn làm đúng nhưng hết lượt cộng điểm cho bài thực hành này", {
-                containerId: "B"
-              });
+                });
+                toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
+                  containerId: "B"
+                });
+              } else {
+                toast("Bạn làm đúng nhưng hết lượt cộng điểm cho bài thực hành này", {
+                  containerId: "B"
+                });
+              }
             }
-
-
           }
         }.bind(this)
       )
