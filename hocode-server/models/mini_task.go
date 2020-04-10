@@ -1,8 +1,9 @@
 package model
 
 import (
-	"gopkg.in/mgo.v2/bson"
 	"time"
+
+	"gopkg.in/mgo.v2/bson"
 )
 
 type (
@@ -28,6 +29,8 @@ type (
 		TaskId    string    `json:"task_id" bson:"task_id"`
 		Timestamp time.Time `json:"timestamp" bson:"timestamp"`
 		Del       bool      `json:"del" bson:"del"`
+
+		Numbers_doing int `json:"numbers_doing" bson:"numbers_doing"`
 	}
 )
 

@@ -51,6 +51,7 @@ export const getUser = () => dispatch => {
   axios
     .get("http://localhost:8081/auth/userinfo")
     .then(res => {
+      console.log(res);
       dispatch({
         type: GET_USER,
         payload: res.data

@@ -29,13 +29,15 @@ import PrintBody from "./content/print/PrintBody";
 import TaskBody from "./content/task/TaskBody";
 import AppBarContent from "./header/AppBarContent";
 import NavRight from "./navRight/NavRight";
+import PracticePage from "../practicePage/PracticePage";
 import "./profilepage.css";
+import KeyboardIcon from '@material-ui/icons/Keyboard';
 
 const drawerWidth = 240;
 const styles = theme => ({
   root: {
     display: "flex",
-    background:"#fff"
+    background: "#fff"
   },
   drawerMain: {
     [theme.breakpoints.up("sm")]: {
@@ -52,7 +54,7 @@ const styles = theme => ({
     padding: "16px 32px",
     position: "relative", // sticky
     // marginTop: "65px",
-    overflow:"hidden",
+    overflow: "hidden",
     flexShrink: 0,
     [theme.breakpoints.up("md")]: {
       display: "block"
@@ -178,8 +180,19 @@ class ProfilePage extends React.Component {
                 selected={pathname === `${url}/overview` || pathname === `${url}` || pathname === `${url}/`}
                 onClick={this.onClickMenuItem(1)}
               >
-                <AppsIcon style={{ fontSize: 16 }} />
+                <AppsIcon style={{ fontSize: 18 }} />
                 <p style={{ fontSize: 14, marginLeft: "8px" }}>Trang chủ</p>
+              </MenuItem>
+            </Link>
+
+            <Link to={`${url}/practice`}>
+              <MenuItem
+                selected={pathname === `${url}/practice`}
+                onClick={this.onClickMenuItem(1)}
+                dense="true"
+              >
+                <KeyboardIcon style={{ fontSize: 16 }} />
+                <p style={{ fontSize: 14, marginLeft: "8px" }}>Luyện tập</p>
               </MenuItem>
             </Link>
 
@@ -206,19 +219,19 @@ class ProfilePage extends React.Component {
               </MenuItem>
             </Link>
             {this.props.user.role === "mod" ||
-            this.props.user.role === "admin" ? (
-              <Link to={`/admin`}>
-                <MenuItem
-                  selected={pathname === `${url}/admin`}
-                  onClick={this.onClickMenuItem(1)}
-                >
-                  <BallotIcon style={{ fontSize: 16 }} />
-                  <p style={{ fontSize: 14, marginLeft: "8px" }}>Quản lý</p>
-                </MenuItem>
-              </Link>
-            ) : (
-              ""
-            )}
+              this.props.user.role === "admin" ? (
+                <Link to={`/admin`}>
+                  <MenuItem
+                    selected={pathname === `${url}/admin`}
+                    onClick={this.onClickMenuItem(1)}
+                  >
+                    <BallotIcon style={{ fontSize: 16 }} />
+                    <p style={{ fontSize: 14, marginLeft: "8px" }}>Quản lý</p>
+                  </MenuItem>
+                </Link>
+              ) : (
+                ""
+              )}
 
             {/* <Link to={`${url}/account`}>
             <MenuItem
@@ -317,6 +330,9 @@ class ProfilePage extends React.Component {
             <Route path={`${path}/overview`}>
               <Overview url={url} />
             </Route>
+            <Route path={`${path}/practice`}>
+              <PracticePage url={url} />
+            </Route>
             <Route path={`${path}/course`}>
               <CourseBody url={url} />
             </Route>
@@ -324,7 +340,7 @@ class ProfilePage extends React.Component {
               <TaskBody location={this.props.location} />
             </Route>
             <Route path={`${path}/print`}>
-              <PrintBody  userData={this.props.user}/>
+              <PrintBody userData={this.props.user} />
             </Route>
             {/* <Route path={`${path}/admin`}>
               <ReactAdmin />

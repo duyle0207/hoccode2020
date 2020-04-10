@@ -28,6 +28,7 @@ class MiniTaskHeader extends Component {
   componentDidMount() {
     console.log(this.props.history);
     this.props.getUser();
+    console.log(this.props.user);
   }
 
   render() {

@@ -61,12 +61,18 @@ class MiniTaskPage extends Component {
       isLoadingComponent: true,
       open: false,
       isUserStudy: true,
+      // variable for numbers of doing with get code point.
+      numbers_doing: 0,
+      completedMinitask: [],
       theme: "textmate",
       isAutocomplete: false,
+      user_minitask_practice: {},
+      isLoadingCode: true,
     };
 
     this.executeCode = this.executeCode.bind(this);
     this.submitCode = this.submitCode.bind(this);
+    this.submitCodePractice = this.submitCodePractice.bind(this);
     this.updateUserCode = this.updateUserCode.bind(this);
     this.resetCode = this.resetCode.bind(this);
     this.createFileTest = this.createFileTest.bind(this);
@@ -78,20 +84,23 @@ class MiniTaskPage extends Component {
     var { history } = this.props;
     console.log(this.state.minitask);
     var pathname = history.location.pathname;
-    console.log(pathname.includes("minitask"));
-    if (pathname.includes("minitask")) {
-      this.setState({ isUserStudy: false });
-    }
-
+    console.log(pathname);
     const {
       match: { params }
     } = this.props;
+
+    if (pathname.startsWith("/minitask")) {
+      this.setState({ isUserStudy: false });
+    }
+
     console.log(params);
     axios
       .get(`http://localhost:8081/api/v1/minitasks/${params.minitaskId}`)
       .then(res => {
         const minitask = res.data;
         document.title = minitask.mini_task_name;
+        const numbers = minitask.numbers_doing
+        console.log(numbers);
         this.setState((state, props) => ({
           minitask: minitask,
           isLoadingComponent: false
@@ -112,9 +121,23 @@ class MiniTaskPage extends Component {
           userCode: minitask.template_code
         }));
       } */
+      console.log(this.state.user_minitask_practice);
         this.setState((state, props) => ({
-          userCode: minitask.template_code
+          userCode: (this.state.isUserStudy && this.state.user_minitask_practice.status === "done") ?
+            this.state.user_minitask_practice.user_code : minitask.template_code
         }));
+        console.log(this.state.userCode);
+
+        this.setState({ numbers_doing: numbers });
+        console.log(this.state.numbers_doing);
+      });
+
+    axios
+      .get(`http://localhost:8081/api/v1/auth/completeminitask`)
+      .then(res => {
+        const completed = res.data;
+        this.setState({ completedMinitask: completed })
+        console.log(this.state.completedMinitask);
       });
     // setTimeout(()=>{console.log(this.state.minitask.mini_task_desc)},2000)
   }
@@ -133,6 +156,7 @@ class MiniTaskPage extends Component {
         )
         .then(res => {
           const minitask = res.data;
+          const numbers = minitask.numbers_doing
           this.setState((state, props) => ({
             minitask: minitask,
             isLoadingComponent: false
@@ -142,8 +166,11 @@ class MiniTaskPage extends Component {
           }));
 
           this.setState((state, props) => ({
-            userCode: minitask.template_code
+            userCode: (this.state.isUserStudy && this.state.user_minitask_practice.status === "done") ?
+              this.state.user_minitask_practice.user_code : minitask.template_code
           }));
+          console.log(this.state.userCode);
+          this.setState({ numbers_doing: numbers });
         });
       // do something
     }
@@ -337,6 +364,102 @@ class MiniTaskPage extends Component {
       );
   }
 
+  submitCodePractice() {
+    this.setState((state, props) => ({
+      result: {}
+    }));
+    const { minitask } = this.state;
+    //console.log(this.state.userCode);
+    let junit4 = this.createFileTest(minitask);
+
+    let code = `import java.lang.Math; \n public class Solution {\n    public Solution(){}\n    ${this.state.userCode}\n    }`;
+
+    const {
+      match: { params }
+    } = this.props;
+    console.log(params.taskId)
+    console.log(this.state.minitask.task_id);
+
+    this.setState((state, props) => ({
+      isLoading: true
+    }));
+
+    console.log(code);
+    console.log(junit4);
+
+    axios
+      .post("http://codejava.tk/runner", {
+        code: code + "\n\n// " + new Date() + "\n\n// " + new Date(),
+        test: junit4
+      })
+      .then(
+        function (response) {
+          console.log(response.data.stdout);
+          console.log(response.data.stderr === "");
+          const error = response.data.stderr;
+          const stdout = response.data.stdout;
+          this.setState((state, props) => ({
+            result: {
+              error: error,
+              stdout: stdout
+            }
+          }));
+          this.setState((state, props) => ({
+            isLoading: false
+          }));
+
+          if (this.state.result.stdout.WASSUCCESSFUL === "true") {
+            axios.post("http://localhost:8081/api/v1/curd/runPracticeCode", {
+              id: "",
+              user_id: "",
+              minitask_id: this.state.minitask.id,
+              status: "done",
+              user_code: code,
+            }).then(res => {
+              console.log(res.data);
+            });
+            Swal.fire({
+              type: "success",
+              title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
+              width: 600,
+              padding: "3em",
+              customClass: "hidden_alert",
+              backdrop: `
+                rgba(0,0,123,0.4)
+                url("${require("./giphy.gif")}") 
+                center center
+                no-repeat
+              `
+            });
+            toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
+              containerId: "B"
+            });
+          } else {
+            axios.post("http://localhost:8081/api/v1/curd/runPracticeCode", {
+              id: "",
+              user_id: "",
+              minitask_id: this.state.minitask.id,
+              status: "tried",
+              user_code: "",
+            }).then(res => {
+              console.log(res.data);
+            });
+          }
+        }.bind(this)
+      )
+      .catch(
+        function (error) {
+          this.setState((state, props) => ({
+            isLoading: false,
+            result: {
+              errorRuntime: error
+            }
+          }));
+          console.log(error);
+        }.bind(this)
+      );
+  }
+
   submitCode() {
     this.setState((state, props) => ({
       result: {}
@@ -352,6 +475,11 @@ class MiniTaskPage extends Component {
     } = this.props;
     console.log(params.taskId)
     console.log(this.state.minitask.task_id);
+    // this.props.submitUpdateMinitask(
+    //   this.state.minitask.id,
+    //   params.taskId,
+    //   params.courseId
+    // );
 
     this.setState((state, props) => ({
       isLoading: true
@@ -396,29 +524,57 @@ class MiniTaskPage extends Component {
           }));
 
           if (this.state.result.stdout.WASSUCCESSFUL === "true") {
-            // process alert success and add code point
-            this.props.submitUpdateMinitask(
-              this.state.minitask.id,
-              params.taskId,
-              params.courseId
-            );
+            var completed = this.state.completedMinitask
+            var listID = [];
+            for (var i in completed) {
+              listID.push(completed[i].id)
+            }
+            console.log(listID);
+            if (completed !== null && listID.indexOf(this.state.minitask.id) === -1) {
+              var newNumbers = this.state.minitask;
+              newNumbers.numbers_doing = this.state.numbers_doing - 1
+              this.setState({ minitask: newNumbers });
+              axios
+                .put(
+                  `http://localhost:8081/api/v1/curd/minitasks/${this.state.minitask.id}`,
+                  newNumbers
+                )
+                .then(res => {
+                  // const course = res.data;
+                  // this.setState({ course: course });
+                });
+              console.log(this.state.numbers_doing);
+            }
 
-            Swal.fire({
-              type: "success",
-              title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
-              width: 600,
-              padding: "3em",
-              customClass: "hidden_alert",
-              backdrop: `
-                rgba(0,0,123,0.4)
-                url("${require("./giphy.gif")}") 
-                center center
-                no-repeat
-              `
-            });
-            toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
-              containerId: "B"
-            });
+            if (this.state.numbers_doing > 0) {
+              this.props.submitUpdateMinitask(
+                this.state.minitask.id,
+                this.state.minitask.task_id,
+                params.courseId
+              );
+              Swal.fire({
+                type: "success",
+                title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
+                width: 600,
+                padding: "3em",
+                customClass: "hidden_alert",
+                backdrop: `
+                  rgba(0,0,123,0.4)
+                  url("${require("./giphy.gif")}") 
+                  center center
+                  no-repeat
+                `
+              });
+              toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
+                containerId: "B"
+              });
+            } else {
+              toast("Bạn làm đúng nhưng hết lượt cộng điểm cho bài thực hành này", {
+                containerId: "B"
+              });
+            }
+
+
           }
         }.bind(this)
       )
@@ -435,7 +591,7 @@ class MiniTaskPage extends Component {
       );
   }
   render() {
-    const { minitask, result, theme } = this.state;
+    const { minitask, result, theme, isLoadingCode } = this.state;
     const { isLoadingComponent } = this.state;
     const {
       match: { params }
@@ -480,7 +636,7 @@ class MiniTaskPage extends Component {
               history={this.props.history}
             />
           </div>
-          {isLoadingComponent ? (
+          {isLoadingComponent && isLoadingCode ? (
             <div
               className="sweet-loading"
               style={{
@@ -712,7 +868,22 @@ class MiniTaskPage extends Component {
                               </Slide>
                             </Box>
                             :
-                            ""
+                            <Box p={2}>
+                              {/* <button
+                                onClick={this.submitCode}
+                                className={`submitCode_btn ${this.state.isLoading &&
+                                  "disable_btn"}`}
+                                disabled={this.state.isLoading}
+                              >
+                                Nộp bài
+                              </button> */}
+                              <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
+                                <Button variant="contained" startIcon={<DescriptionIcon />}
+                                  style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodePractice} disabled={this.state.isLoading} color="primary">
+                                  Nộp bài
+                                </Button>
+                              </Slide>
+                            </Box>
                           }
 
                           {this.props.user.next_minitask !== undefined ? (
