@@ -537,55 +537,47 @@ class MiniTaskPage extends Component {
             console.log(listID);
             if (completed !== null && listID.indexOf(this.state.minitask.id) === -1) {
               var newNumbers = this.state.minitask;
-              var completed = this.state.completedMinitask
-              var listID = [];
-              for (var i in completed) {
-                listID.push(completed[i].id)
-              }
-              console.log(listID);
-              if (completed !== null && listID.indexOf(this.state.minitask.id) === -1) {
-                var newNumbers = this.state.minitask;
-                newNumbers.numbers_doing = this.state.numbers_doing - 1
-                this.setState({ minitask: newNumbers });
-                axios
-                  .put(
-                    `http://localhost:8081/api/v1/curd/minitasks/${this.state.minitask.id}`,
-                    newNumbers
-                  )
-                  .then(res => {
-                    // const course = res.data;
-                    // this.setState({ course: course });
-                  });
-                console.log(this.state.numbers_doing);
-              }
+              newNumbers.numbers_doing = this.state.numbers_doing - 1
+              this.setState({ minitask: newNumbers });
+              axios
+                .put(
+                  `http://localhost:8081/api/v1/curd/minitasks/${this.state.minitask.id}`,
+                  newNumbers
+                )
+                .then(res => {
+                  // const course = res.data;
+                  // this.setState({ course: course });
+                });
 
-              if (this.state.numbers_doing > 0) {
-                this.props.submitUpdateMinitask(
-                  this.state.minitask.id,
-                  this.state.minitask.task_id,
-                  params.courseId
-                );
-                Swal.fire({
-                  type: "success",
-                  title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
-                  width: 600,
-                  padding: "3em",
-                  customClass: "hidden_alert",
-                  backdrop: `
+              console.log(this.state.numbers_doing);
+            }
+
+            if (this.state.numbers_doing > 0) {
+              this.props.submitUpdateMinitask(
+                this.state.minitask.id,
+                this.state.minitask.task_id,
+                params.courseId
+              );
+              Swal.fire({
+                type: "success",
+                title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
+                width: 600,
+                padding: "3em",
+                customClass: "hidden_alert",
+                backdrop: `
                   rgba(0,0,123,0.4)
                   url("${require("./giphy.gif")}") 
                   center center
                   no-repeat
                 `
-                });
-                toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
-                  containerId: "B"
-                });
-              } else {
-                toast("Bạn làm đúng nhưng hết lượt cộng điểm cho bài thực hành này", {
-                  containerId: "B"
-                });
-              }
+              });
+              toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
+                containerId: "B"
+              });
+            } else {
+              toast("Bạn làm đúng nhưng hết lượt cộng điểm cho bài thực hành này", {
+                containerId: "B"
+              });
             }
           }
         }.bind(this)

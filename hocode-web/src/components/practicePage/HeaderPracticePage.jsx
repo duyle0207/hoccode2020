@@ -41,7 +41,6 @@ class HeaderPracticePage extends Component {
             searchKeyWord: "",
             status: '',
             level: '',
-            isFilter: false,
             tempData: [],
             isLoadingFilterData: false,
         };
@@ -69,7 +68,7 @@ class HeaderPracticePage extends Component {
                 ];
 
                 const allTask = [
-                    { key: 'Todo', value: chartInfo.todo },
+                    { key: 'Todo', value: chartInfo.todo - (chartInfo.solved+chartInfo.attempted) },
                     { key: 'Attempted', value: chartInfo.attempted },
                     { key: 'Solved', value: chartInfo.solved },
                 ];
@@ -131,7 +130,7 @@ class HeaderPracticePage extends Component {
 
     render() {
         const { data: chartData, allTask: chartAllTask, minitaskList, chartInfo, isLoadingData, page, totalPage,
-            searchKeyWord, status, level, isFilter, isLoadingFilterData } = this.state;
+            searchKeyWord, status, level, isLoadingFilterData } = this.state;
 
         const list = minitaskList.map((minitask, index) => {
             return <Minitask index={index} minitask={minitask} />
@@ -265,11 +264,18 @@ class HeaderPracticePage extends Component {
                                                 </Box>
                                             </Box>
                                             :
-                                            <Grid container xs={12} spacing={2}>
-                                                {list}
-                                            </Grid>
+                                            minitaskList.length === 0 ?
+                                                <Box p={5} display="flex" justifyContent="center">
+                                                    <Box>
+                                                        <Typography variant="h2">Không có dữ liệu</Typography>
+                                                    </Box>
+                                                </Box>
+                                                :
+                                                <Grid container xs={12} spacing={2}>
+                                                    {list}
+                                                </Grid>
                                         }
-                                        {status===""&&level===""&&searchKeyWord.trim()==="" ?
+                                        {status === "" && level === "" && searchKeyWord.trim() === "" ?
                                             <Fade in={!isLoadingData} {...(true ? { timeout: 1400 } : {})}>
                                                 <Box p={2} display="flex" justifyContent="center">
                                                     <Box>
@@ -300,7 +306,7 @@ class HeaderPracticePage extends Component {
                                             <Box display="flex" justifyContent="center" p={1} alignItems="center">
                                                 <Box mx={1}>
                                                     <Typography variant="overline" style={{ color: "#42A5F5" }}>
-                                                        To do: {chartInfo.todo}
+                                                        To do: {chartInfo.todo - (chartInfo.solved+chartInfo.attempted)}
                                                     </Typography>
                                                 </Box>
                                                 <Box mx={1}>
@@ -334,17 +340,17 @@ class HeaderPracticePage extends Component {
                                             <Box display="flex" justifyContent="center" p={2} alignItems="center">
                                                 <Box mx={1}>
                                                     <Typography variant="overline" style={{ color: "#9CCC65" }}>
-                                                        Đơn giản: {chartInfo.easy + "/" + chartInfo.total_easy}
+                                                        Easy: {chartInfo.easy + "/" + chartInfo.total_easy}
                                                     </Typography>
                                                 </Box>
                                                 <Box mx={1}>
                                                     <Typography variant="overline" style={{ color: "#42A5F5" }}>
-                                                        Trung bình: {chartInfo.medium + "/" + chartInfo.total_medium}
+                                                        Medium: {chartInfo.medium + "/" + chartInfo.total_medium}
                                                     </Typography>
                                                 </Box>
                                                 <Box mx={1}>
                                                     <Typography variant="overline" style={{ color: "#FF7043" }}>
-                                                        Phức tạp: {chartInfo.hard + "/" + chartInfo.total_hard}
+                                                        Hard: {chartInfo.hard + "/" + chartInfo.total_hard}
                                                     </Typography>
                                                 </Box>
                                             </Box>
