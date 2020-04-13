@@ -55,3 +55,18 @@ type (
 		CodePoint    int           `json:"codepoint" bson:"codepoint"`
 	}
 )
+
+type (
+	ChartInfo struct {
+		Solved   		int   	`json:"solved" bson:"solved"`
+		Todo			int 	`json:"todo" bson:"todo"`
+		Attempted   	int     `json:"attempted" bson:"attempted"`
+		Easy 			int 	`json:"easy" bson:"easy"`
+		Medium 			int 	`json:"medium" bson:"medium"`
+		Hard 			int 	`json:"hard" bson:"hard"`
+		TotalEasy 		int 	`json:"total_easy" bson:"total_easy"`
+		TotalMedium 	int 	`json:"total_medium" bson:"total_medium"`
+		TotalHard 		int 	`json:"total_hard" bson:"total_hard"`
+	}
+)
+

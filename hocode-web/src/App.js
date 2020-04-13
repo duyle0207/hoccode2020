@@ -19,7 +19,7 @@ import setAuthToken from "./js/utils/setAuthToken";
 import PrivateRoute from "./private-route/PrivateRoute";
 import jwt_decode from "jwt-decode";
 import LeaderBoard from "./components/leaderboard/LeaderboardPage";
-
+import PracticePage from "./components/practicePage/PracticePage";
 // Check for token to keep user logged in/ xet khi load lai trang
 if (localStorage.AuthToken) {
   // Set auth token header auth
@@ -57,6 +57,7 @@ function App() {
               <Route path="/searchcert" component={SearchCertPage} />
 
               <PrivateRoute path="/courses" exact component={CoursePage} />
+              <PrivateRoute path="/practice" exact component={PracticePage} />
               <PrivateRoute
                 path="/courses/:courseId/tasks"
                 component={TaskPage}

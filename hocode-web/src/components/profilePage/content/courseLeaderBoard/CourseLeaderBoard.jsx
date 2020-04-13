@@ -77,7 +77,10 @@ class CourseLeaderBoard extends Component {
                                         </Box>
                                     </Box>
                                     <Divider light />
-                                    {courseLeaderBoard.length!==0 ? leaderBoard : <Typography variant="caption">Chưa có người dùng nào tham gia</Typography>}
+                                    {courseLeaderBoard.length!==0 ? leaderBoard : 
+                                    <Box p={3}>
+                                        <Typography variant="h2">Chưa có người dùng nào tham gia</Typography>
+                                    </Box>}
                                 </Box>
                             </Fade>
                         </React.Fragment>

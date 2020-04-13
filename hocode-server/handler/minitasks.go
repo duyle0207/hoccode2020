@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
+
 	"github.com/duyle0207/hoccode2020/config"
 
 	model "github.com/duyle0207/hoccode2020/models"
@@ -34,12 +36,14 @@ func (h *Handler) SearchMinitasks(c echo.Context) (err error) {
 	offset, _ := strconv.Atoi(c.QueryParam("offset"))
 	limit, _ := strconv.Atoi(c.QueryParam("limit"))
 
+	fmt.Println(limit)
+
 	db := h.DB.Clone()
 	defer db.Close()
 
 	if err = db.DB(config.NameDb).C("minitasks").
 		Find(bson.M{
-			"mini_task_name": bson.RegEx{mini_task_name, ""},
+			"mini_task_name": bson.RegEx{mini_task_name, "i"},
 			"del":            bson.M{"$ne": true},
 		}).
 		Skip(offset).
@@ -48,6 +52,169 @@ func (h *Handler) SearchMinitasks(c echo.Context) (err error) {
 		All(&minitaskList); err != nil {
 		return
 	}
+	len, _ := db.DB(config.NameDb).C("minitasks").Count()
+	c.Response().Header().Set("x-total-count", strconv.Itoa(len))
+
+	return c.JSON(http.StatusOK, minitaskList)
+}
+
+func (h *Handler) SearchMinitasksPracticePage(c echo.Context) (err error) {
+
+	minitaskList := []*model.MiniTask{}
+
+	page, _ := strconv.Atoi(c.Param("page"))
+	mini_task_name := c.Param("mini_task_name")
+	mini_task_status := c.Param("status")
+	mini_task_level := c.Param("level")
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	fmt.Println("[Level]")
+	fmt.Println(mini_task_level)
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	if mini_task_status == "" && mini_task_level != "" { // Except status
+		db.DB(config.NameDb).C("minitasks").
+			Find(bson.M{
+				"mini_task_name": bson.RegEx{mini_task_name, "i"},
+				"level":          mini_task_level,
+				"del":            bson.M{"$ne": true},
+			}).
+			Skip(page).
+			Limit(16).
+			Sort("-timestamp").
+			All(&minitaskList)
+		return c.JSON(http.StatusOK, minitaskList)
+	} else if mini_task_status != "" && mini_task_level != "" { // Full condition
+		result := []*model.MiniTask{}
+		db.DB(config.NameDb).C("minitasks").
+			Find(bson.M{
+				"mini_task_name": bson.RegEx{mini_task_name, "i"},
+				"level":          mini_task_level,
+				"del":            bson.M{"$ne": true},
+			}).
+			Skip(page).
+			Limit(16).
+			Sort("-timestamp").
+			All(&minitaskList)
+
+		user_minitask_practice := []*model.UserMinitaskPractice{}
+		db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+			"user_id": userID,
+		}).All(&user_minitask_practice)
+
+		fmt.Println(len(minitaskList))
+
+		if mini_task_status == "normal" {
+			for i := range minitaskList {
+				count := 0
+				for j := range user_minitask_practice {
+					if minitaskList[i].ID == bson.ObjectIdHex(user_minitask_practice[j].MiniTaskID) {
+						count++
+					}
+				}
+				if count == 0 {
+					result = append(result, minitaskList[i])
+				}
+			}
+		} else {
+			for i := range minitaskList {
+				for j := range user_minitask_practice {
+					if minitaskList[i].ID == bson.ObjectIdHex(user_minitask_practice[j].MiniTaskID) {
+						if user_minitask_practice[j].Status == mini_task_status {
+							minitaskList[i].Status = mini_task_status
+							result = append(result, minitaskList[i])
+						}
+					}
+				}
+			}
+		}
+
+		return c.JSON(http.StatusOK, result)
+	} else if mini_task_status != "" && mini_task_level == "" { // Except level
+		result := []*model.MiniTask{}
+		db.DB(config.NameDb).C("minitasks").
+			Find(bson.M{
+				"mini_task_name": bson.RegEx{mini_task_name, "i"},
+				//"level": mini_task_level,
+				"del": bson.M{"$ne": true},
+			}).
+			Skip(page).
+			Limit(16).
+			Sort("-timestamp").
+			All(&minitaskList)
+
+		fmt.Println("Dont care level")
+
+		user_minitask_practice := []*model.UserMinitaskPractice{}
+		db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+			"user_id": userID,
+		}).All(&user_minitask_practice)
+
+		if mini_task_status == "normal" {
+			for i := range minitaskList {
+				count := 0
+				for j := range user_minitask_practice {
+					if minitaskList[i].ID == bson.ObjectIdHex(user_minitask_practice[j].MiniTaskID) {
+						count++
+					}
+				}
+				if count == 0 {
+					result = append(result, minitaskList[i])
+				}
+			}
+		} else {
+			for i := range minitaskList {
+				for j := range user_minitask_practice {
+					if minitaskList[i].ID == bson.ObjectIdHex(user_minitask_practice[j].MiniTaskID) {
+						if user_minitask_practice[j].Status == mini_task_status {
+							minitaskList[i].Status = mini_task_status
+							result = append(result, minitaskList[i])
+						}
+					}
+				}
+			}
+		}
+
+		return c.JSON(http.StatusOK, result)
+	} else if mini_task_status == "" && mini_task_level == "" { // Except all
+
+		db.DB(config.NameDb).C("minitasks").
+			Find(bson.M{
+				"mini_task_name": bson.RegEx{mini_task_name, "i"},
+				//"level": mini_task_level,
+				//"del":            bson.M{"$ne": true},
+			}).
+			Skip(0).
+			Limit(16).
+			All(&minitaskList)
+
+		user_mini_task := []*model.UserMinitaskPractice{}
+		db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+			"user_id": userID,
+		}).All(&user_mini_task)
+
+		for i := range minitaskList {
+			for j := range user_mini_task {
+				if minitaskList[i].ID == bson.ObjectIdHex(user_mini_task[j].MiniTaskID) {
+					if user_mini_task[j].Status == "done" {
+						minitaskList[i].Status = "done"
+					} else if user_mini_task[j].Status == "tried" {
+						minitaskList[i].Status = "tried"
+					} else {
+						minitaskList[i].Status = "normal"
+					}
+				}
+			}
+		}
+
+		return c.JSON(http.StatusOK, minitaskList)
+	}
+
 	len, _ := db.DB(config.NameDb).C("minitasks").Count()
 	c.Response().Header().Set("x-total-count", strconv.Itoa(len))
 
@@ -225,6 +392,192 @@ func (h *Handler) Minitasks(c echo.Context) (err error) {
 
 	c.Response().Header().Set("x-total-count", strconv.Itoa(len(mta)))
 	return c.JSON(http.StatusOK, mta)
+}
+
+func (h *Handler) GetAllMinitask(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	page, _ := strconv.Atoi(c.Param("page"))
+	fmt.Println(page)
+
+	mini_tasks := []*model.MiniTask{}
+
+	db.DB(config.NameDb).C("minitasks").
+		Find(bson.M{}).
+		Skip(page).
+		Limit(16).
+		Sort("-timestamps").All(&mini_tasks)
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	user_mini_task := []*model.UserMinitaskPractice{}
+	db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+		"user_id": userID,
+	}).All(&user_mini_task)
+
+	for i := range mini_tasks {
+		for j := range user_mini_task {
+			if mini_tasks[i].ID == bson.ObjectIdHex(user_mini_task[j].MiniTaskID) {
+				if user_mini_task[j].Status == "done" {
+					mini_tasks[i].Status = "done"
+				} else if user_mini_task[j].Status == "tried" {
+					mini_tasks[i].Status = "tried"
+				} else {
+					mini_tasks[i].Status = "normal"
+				}
+			}
+		}
+	}
+
+	return c.JSON(http.StatusOK, mini_tasks)
+}
+
+func (h *Handler) GetUserPracticeCode(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	minitask_id := c.Param("minitask_id")
+
+	user_minitask_practice := &model.UserMinitaskPractice{}
+
+	db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+		"user_id":     userID,
+		"minitask_id": minitask_id,
+	}).One(&user_minitask_practice)
+
+	return c.JSON(http.StatusOK, user_minitask_practice)
+}
+
+func (h *Handler) RunCodePractice(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	user_minitask_practice := &model.UserMinitaskPractice{}
+
+	if err = c.Bind(&user_minitask_practice); err != nil {
+		return
+	}
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	user_minitask_practice_temp := &model.UserMinitaskPractice{}
+
+	db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+		"user_id":     userID,
+		"minitask_id": user_minitask_practice.MiniTaskID,
+	}).One(&user_minitask_practice_temp)
+
+	if user_minitask_practice.ID == "" {
+		user_minitask_practice.ID = bson.NewObjectId()
+	}
+
+	if user_minitask_practice_temp.ID == "" {
+
+		user_minitask_practice.UserID = userID
+
+		user_minitask_practice.Timestamp = time.Now()
+
+		db.DB(config.NameDb).C("user_minitask_practice").UpsertId(user_minitask_practice.ID, user_minitask_practice)
+
+	} else {
+		if user_minitask_practice_temp.Status == "tried" && user_minitask_practice.Status == "done" {
+			user_minitask_practice_temp.Status = "done"
+			user_minitask_practice_temp.UserCode = user_minitask_practice.UserCode
+			db.DB(config.NameDb).C("user_minitask_practice").UpsertId(user_minitask_practice_temp.ID, user_minitask_practice_temp)
+		}
+	}
+
+	return c.JSON(http.StatusOK, user_minitask_practice)
+}
+
+func (h *Handler) GetTotalMinitask(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	totalMinitask, _ := db.DB(config.NameDb).C("minitasks").
+		Find(bson.M{}).Count()
+
+	return c.JSON(http.StatusOK, totalMinitask)
+}
+
+func (h *Handler) GetChartInfo(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	// Solved minitask
+	solved := []*model.UserMinitaskPractice{}
+	db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+		"user_id": userID,
+		"status":  "done",
+	}).All(&solved)
+
+	//	All mini task
+	minitask := []*model.MiniTask{}
+	db.DB(config.NameDb).C("minitasks").Find(bson.M{}).All(&minitask)
+
+	// Attempted mini task
+	attempted := []*model.UserMinitaskPractice{}
+	db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+		"user_id": userID,
+		"status":  "tried",
+	}).All(&attempted)
+
+	easy_mini_task_solved := 0
+	medium_mini_task_solved := 0
+	hard_mini_task_solved := 0
+	for i := range solved {
+		for j := range minitask {
+			if bson.ObjectIdHex(solved[i].MiniTaskID) == minitask[j].ID {
+				if minitask[j].Level == "easy" {
+					easy_mini_task_solved++
+				} else if minitask[j].Level == "hard" {
+					hard_mini_task_solved++
+				} else if minitask[j].Level == "medium" {
+					medium_mini_task_solved++
+				}
+			}
+		}
+	}
+
+	total_easy := 0
+	total_medium := 0
+	total_hard := 0
+	for j := range minitask {
+		if minitask[j].Level == "easy" {
+			total_easy++
+		} else if minitask[j].Level == "hard" {
+			total_hard++
+		} else if minitask[j].Level == "medium" {
+			total_medium++
+		}
+	}
+
+	chart_info := &model.ChartInfo{
+		Solved:      len(solved),
+		Todo:        len(minitask),
+		Attempted:   len(attempted),
+		Easy:        easy_mini_task_solved,
+		Medium:      medium_mini_task_solved,
+		Hard:        hard_mini_task_solved,
+		TotalEasy:   total_easy,
+		TotalMedium: total_medium,
+		TotalHard:   total_hard,
+	}
+
+	return c.JSON(http.StatusOK, chart_info)
 }
 
 // MinitasksByID godoc
@@ -422,6 +775,6 @@ func (h *Handler) DailyMiniTask(c echo.Context) (err error) {
 		fmt.Println(i)
 		fmt.Println(mta[i].Avatar)
 		fmt.Println(i)
-	}	
+	}
 	return c.JSON(http.StatusOK, mta)
 }

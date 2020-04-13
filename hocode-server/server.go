@@ -147,9 +147,9 @@ func main() {
 	r.GET("/tasks/:id", h.TaskByID)
 
 	r.GET("/minitasks", h.Minitasks)
+	r.GET("/getAllMinitask/:page",h.GetAllMinitask)
+	r.GET("/getTotalMinitask",h.GetTotalMinitask)
 	r.GET("/minitasks/:id", h.MinitasksByID)
-	r.GET("/totalMinitask/:course_id", h.GetTotalCourseMinitask)
-	r.GET("/getMinitasksByTaskID/:id", h.GetMiniTaskByTaskID)
 
 	r.GET("/profile", h.Profile)
 	r.POST("/profile", h.CreateProfile)
@@ -176,6 +176,12 @@ func main() {
 	curd.Use(middleware.JWT([]byte("secret")))
 
 	// CURD
+	curd.GET("/getAllMinitask/:page",h.GetAllMinitask)
+	curd.GET("/getTotalMinitask",h.GetTotalMinitask)
+	curd.POST("/runPracticeCode", h.RunCodePractice)
+	curd.GET("/getUserMinitaskPractice/:minitask_id", h.GetUserPracticeCode)
+	curd.GET("/getChartInfo",h.GetChartInfo)
+
 	curd.GET("/configs", h.GetListConfigs)
 	curd.GET("/configs/byname/:id", h.GetConfigByName)
 	curd.GET("/configs/:id", h.GetOneConfigs)
@@ -219,7 +225,8 @@ func main() {
 	curd.POST("/tasks", h.CreateTasks)
 	curd.DELETE("/tasks/:id", h.DeleteTasks)
 
-	curd.GET("/searchMinitasks/:mini_task_name", h.SearchMinitasks)
+	e.GET("/searchMinitasks/:mini_task_name/", h.SearchMinitasks)
+	curd.GET("/searchMinitasksPracticePage/:mini_task_name/:status/:level/", h.SearchMinitasksPracticePage)
 	curd.GET("/minitasks", h.GetListMiniTasks)
 	curd.GET("/minitasks/:id", h.GetOneMiniTasks)
 	curd.PUT("/minitasks/:id", h.UpdateMiniTasks)
