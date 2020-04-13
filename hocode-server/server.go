@@ -168,6 +168,9 @@ func main() {
 
 	r.GET("/getGeneralLeaderBoard", h.GetGeneralLeaderBoard)
 
+	// send email
+	r.POST("/sendmail", h.SendEmail)
+
 	curd := e.Group("/api/v1/curd")
 
 	curd.Use(middleware.JWT([]byte("secret")))
@@ -263,8 +266,6 @@ func main() {
 	rs.GET("/courses/:id/tasks", h.AuthTaskByCoursesID)
 
 	rs.POST("/updateusercourse/:course_id", h.UpdateUserCourse)
-
-
 
 	rs.POST("/nextminitask", h.NextMiniTask)
 

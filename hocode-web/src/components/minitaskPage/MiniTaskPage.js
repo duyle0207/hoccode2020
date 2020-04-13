@@ -63,7 +63,7 @@ class MiniTaskPage extends Component {
       isUserStudy: true,
       // variable for numbers of doing with get code point.
       numbers_doing: 0,
-      completedMinitask: []
+      completedMinitask: [],
       theme: "textmate",
       isAutocomplete: false,
     };
@@ -647,7 +647,7 @@ class MiniTaskPage extends Component {
                                     value={this.state.userCode}
                                     showLineNumbers={true}
                                     width="100%"
-                                    height="500px"
+                                    height="200px"
                                     tabSize={2}
                                   />
                                 </Box>

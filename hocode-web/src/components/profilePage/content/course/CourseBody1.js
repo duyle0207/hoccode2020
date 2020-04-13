@@ -80,9 +80,12 @@ class CourseBody extends Component {
     else if (status === -1) {
       const courseFilter = courses.filter(e => e.status === "Inactive");
       this.setState({ coursesTemp: courseFilter, courseStatus: -1 });
-    } if (status === 1) {
+    } else if (status === 1) {
       const courseFilter = courses.filter(e => e.status === "Active");
       this.setState({ coursesTemp: courseFilter, courseStatus: 1 });
+    } if (status === 2) {
+      const courseFilter = courses.filter(e => e.status === "Pedding");
+      this.setState({ coursesTemp: courseFilter, courseStatus: 2 });
     }
   }
 
@@ -116,6 +119,7 @@ class CourseBody extends Component {
                         <MenuItem value={0}>Tất cả</MenuItem>
                         <MenuItem value={1}>Đã duyệt</MenuItem>
                         <MenuItem value={-1}>Cần xét duyệt</MenuItem>
+                        <MenuItem value={2}>Đang xét duyệt</MenuItem>
                       </Select>
                     </FormControl>
                   </Box>
