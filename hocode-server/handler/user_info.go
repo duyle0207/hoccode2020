@@ -68,6 +68,8 @@ func (h *Handler) GetUserCourseProfile(c echo.Context) (err error) {
 	db := h.DB.Clone()
 	defer db.Close()
 
+	courses := []*model.Course{}
+
 	if err = db.DB(config.NameDb).C("user_course").
 		Find(bson.M{
 			"user_id": ID,
@@ -77,12 +79,11 @@ func (h *Handler) GetUserCourseProfile(c echo.Context) (err error) {
 		if err == mgo.ErrNotFound {
 			// return echo.ErrNotFound
 			uc.CourseInfo = []*model.CourseInfo{}
-			return c.JSON(http.StatusOK, uc)
+			return c.JSON(http.StatusOK, courses)
 		}
 		return
 	}
 
-	courses := []*model.Course{}
 	for i :=range uc.CourseInfo {
 		fmt.Println(i)
 		if i<3 {

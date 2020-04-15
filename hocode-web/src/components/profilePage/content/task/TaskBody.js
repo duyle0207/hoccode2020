@@ -74,7 +74,7 @@ class TaskBody extends Component {
       totalMinitask: 0,
       coursPassInfo: {},
       courseStatus: '',
-      userCourse: {},
+      userCourse: 0,
       days: 0,
       hours: 0,
       min: 0,
@@ -82,7 +82,7 @@ class TaskBody extends Component {
       value: 0,
       // value to check show form reasons
       showForm: false,
-      reason: 'Please write some reasons....'
+      reason: ''
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -115,6 +115,7 @@ class TaskBody extends Component {
     
     // get course name 
     var nameCourse = this.state.course.course_name;
+    // eslint-disable-next-line no-useless-concat
     let msg_deny = "Subject: Thông báo từ Hocode\r\n" + "Khóa học " + nameCourse + " của bạn không được ban quản trị xét duyệt.\r\n"
     let reasonsText =  "Lí do: " + this.state.reason
     var content = msg_deny + reasonsText
@@ -358,7 +359,7 @@ class TaskBody extends Component {
     return (
       <div style={{borderRadius:"5px", backgroundColor:"#f2f2f2", padding: "20px", margin: "0 auto"}} className="container">
         <form  onSubmit={this.handleSubmit}>
-          <label>Reasons</label>
+          <label>Góp ý:</label>
           <textarea 
           style={{height:200,
                 width:"100%", padding:"12px",
@@ -376,9 +377,9 @@ class TaskBody extends Component {
               padding: "12px 12px",
               border: "none", 
               borderRadius: "4px",
-              cursor:PointerEvent
+              cursor:PointerEvent,
             }}
-          type="submit" value="Submit" />
+          type="submit" value="Submit"  placeholder="Ý kiến góp ý..."/>
           <button style={{
             backgroundColor: "#4CAF50",
             color: "white",
@@ -537,7 +538,7 @@ class TaskBody extends Component {
                           {timer}
                           <Box display="flex" color="#5c6bc0" justifyContent="flex-end">
                             <Typography variant="h4">
-                              {this.state.userCourse} <EmojiNatureIcon />
+                              {this.state.userCourse? this.state.userCourse : 0} <EmojiNatureIcon />
                             </Typography>
                           </Box>
                         </CardContent>
@@ -572,7 +573,7 @@ class TaskBody extends Component {
                                   onClick={
                                     () => { this.handleBtnDeny() }
                                   }>
-                                  Từ chối
+                                  Góp ý
                                 </Button>
                               </Box>
                             </Box>

@@ -255,7 +255,7 @@ class PrintBody extends Component {
                 spacing={2}
                 style={{ height: "100%", maxHeight: "352px" }}
               >
-                <Grid item xs={12} sm={3} md={3}>
+                <Grid item xs={12} sm={4} md={4}>
                   <Paper
                     style={{
                       height: "351px",
@@ -294,7 +294,7 @@ class PrintBody extends Component {
                               </Typography>
                             </Box>
                             <Box mb={1} ml={1}>
-                              <Typography variant="overline">Email: {this.props.user.email}</Typography>
+                              <Typography variant="overline" >Email: {this.props.user.email}</Typography>
                             </Box>
                             <Box mb={1} ml={1}>
                               <Typography variant="overline">Điểm: {this.props.user.codepoint}</Typography>
@@ -321,7 +321,7 @@ class PrintBody extends Component {
                     </Grid>
                   </Paper>
                 </Grid>
-                <Grid item xs={12} sm={9} md={9}>
+                <Grid item xs={12} sm={8} md={8}>
                   <Paper
                     style={{
                       minHeight: 350,
@@ -339,7 +339,13 @@ class PrintBody extends Component {
                     </Grid>
                     <Box p={2}>
                       <Grid container spacing={2}>
-                        {courseList}
+                        {courseList.length===0?
+                        <Box p={1}>
+                          <Typography variant="h3">Bạn chưa tham gia khóa học nào</Typography>
+                        </Box>
+                        : 
+                        courseList
+                        }
                       </Grid>
                     </Box>
                   </Paper>
