@@ -80,9 +80,50 @@ class TaskBody extends Component {
       min: 0,
       sec: 0,
       value: 0,
+      // value to check show form reasons
+      showForm: false,
+      reason: 'Please write some reasons....'
     };
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  handleChange(event) {
+    this.setState({reason: event.target.value});
+  }
+
+  handleSubmit(event) {
+    this.setState({showForm: false});
+
+    let location = this.props.location;
+    const currentParams = getParams(location.pathname);
+
+    var newcourse = this.state.course;
+    newcourse.status = "Pedding";
+    // console.log(newcourse);
+    this.setState({ course: newcourse });
+
+    axios
+      .put(
+        `http://localhost:8081/api/v1/curd/courses/${currentParams.courseId}`,
+        newcourse
+      )
+      .then(res => {
+        // const course = res.data;
+        // this.setState({ course: course });
+      });
+    
+    // get course name 
+    var nameCourse = this.state.course.course_name;
+    let msg_deny = "Subject: Thông báo từ Hocode\r\n" + "Khóa học " + nameCourse + " của bạn không được ban quản trị xét duyệt.\r\n"
+    let reasonsText =  "Lí do: " + this.state.reason
+    var content = msg_deny + reasonsText
+    console.log(msg_deny)
+    this.handleSendEmail(content)
+
+    alert('Thông báo đã gửi đi !');
+    event.preventDefault();
+  }
   componentWillUnmount() {
     this.stop();
   }
@@ -240,6 +281,38 @@ class TaskBody extends Component {
     return value;
   }
 
+  // covert string utf8 to bytes array
+  string2Bin(str) {
+    var utf8 = unescape(encodeURIComponent(str));
+    var result = [];
+    for (var i = 0; i < utf8.length; i++) {
+      result.push(utf8.charCodeAt(i));
+    }
+    return result;
+  }
+
+  
+  // handle send email after click buttons. 
+  handleSendEmail(msg) {
+    var to_mail = []
+    // to_mail.push("nqhien026@gmail.com")
+    // to_mail.push("16110070@student.hcmute.edu.vn")
+    to_mail.push(this.state.course.user_create)
+    var Message = this.string2Bin(msg)
+    var mail = {}
+    mail["Message"] = Message
+    mail["To"] = to_mail
+    console.log(mail)
+    axios
+      .post(
+        `http://localhost:8081/api/v1/sendmail`,
+        mail
+      )
+      .then(response => {
+        
+      });
+  }
+
   handleBtnAccepted() {
     let location = this.props.location;
 
@@ -259,32 +332,66 @@ class TaskBody extends Component {
         // const course = res.data;
         // this.setState({ course: course });
       });
-
+    
+     // get course name 
+    var nameCourse = this.state.course.course_name;
+    let msg_accept = "Khóa học" + nameCourse + " của bạn đã được ban quản trị xét duyệt thành công"
+    console.log(msg_accept)
+    this.handleSendEmail(msg_accept)
   }
 
   handleBtnDeny() {
-    let location = this.props.location;
-
-    const currentParams = getParams(location.pathname);
-
-    var newcourse = this.state.course;
-    newcourse.status = "Inactive";
-    // console.log(newcourse);
-    this.setState({ course: newcourse });
-
-    axios
-      .put(
-        `http://localhost:8081/api/v1/curd/courses/${currentParams.courseId}`,
-        newcourse
-      )
-      .then(res => {
-        // const course = res.data;
-        // this.setState({ course: course });
-      });
-
-
+    this.setState({showForm: true})
+    
   }
 
+  // show alert 
+  showAlert() {
+    alert("Thông tin kiểm duyệt đã gửi cho người tạo khóa học !")
+  }
+
+  handleCancel() {
+    this.setState({showForm: false})
+  }
+  // show form reasons 
+  showFormReasons = () => {
+    return (
+      <div style={{borderRadius:"5px", backgroundColor:"#f2f2f2", padding: "20px", margin: "0 auto"}} className="container">
+        <form  onSubmit={this.handleSubmit}>
+          <label>Reasons</label>
+          <textarea 
+          style={{height:200,
+                width:"100%", padding:"12px",
+                border:"1px solid #ccc",
+                borderTopLeftRadius:4,
+                boxSizing: "border-box",
+                marginTop:6,
+                marginBottom: 16,
+                resize:"vertical"
+          }} id="reasons" name="reasons" value={this.state.reason} onChange={this.handleChange} />
+          <input
+            style={{
+              backgroundColor: "#4CAF50",
+              color: "white",
+              padding: "12px 12px",
+              border: "none", 
+              borderRadius: "4px",
+              cursor:PointerEvent
+            }}
+          type="submit" value="Submit" />
+          <button style={{
+            backgroundColor: "#4CAF50",
+            color: "white",
+            padding: "12px 12px",
+            border: "none", 
+            borderRadius: "4px",
+            cursor:PointerEvent,
+            position:"relative", marginLeft:"10px"
+          }} onClick={() => this.handleCancel()} >Cancel</button>
+        </form>
+      </div>      
+    );
+  }
   render() {
     const { classes } = this.props;
     const { tasks, course, courseStatus, value, days, hours, min, sec } = this.state;
@@ -452,7 +559,7 @@ class TaskBody extends Component {
                                   aria-label="small outlined button group"
                                   color="primary"
                                   onClick={
-                                    () => this.handleBtnAccepted()
+                                    () => { this.handleBtnAccepted(); this.showAlert();}
                                   }>
                                   Duyệt khóa học
                                 </Button>
@@ -463,7 +570,7 @@ class TaskBody extends Component {
                                   aria-label="small outlined button group"
                                   color="secondary"
                                   onClick={
-                                    () => this.handleBtnDeny()
+                                    () => { this.handleBtnDeny() }
                                   }>
                                   Từ chối
                                 </Button>
@@ -606,7 +713,9 @@ class TaskBody extends Component {
               </Grid>
             </React.Fragment>
           )}
+        {this.state.showForm ? this.showFormReasons(): null}
       </Grid>
+      
     );
   }
 }

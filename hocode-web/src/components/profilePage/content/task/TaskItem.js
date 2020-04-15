@@ -84,58 +84,68 @@ class TaskItem extends Component {
             alignItems: "center"
           }}
         >
-          <Tooltip title="Tên bài thực hành" placement="top-start">
-            <div style={{ flexGrow: 1 }}> {minitask.mini_task_name}</div>
-          </Tooltip>
-          <Tooltip title="Số đậu" placement="top">
-            <div
-              style={{
-                fontSize: 12,
-                margin: "0px 4px",
-                color: "#4978cc",
-                marginLeft: 10,
-                height: 30
-              }}
-              className="centerDiv"
-            >
-              <div>
-                <p
+          <Grid container item xs={12} sm={12} spacing={2} direction="row" alignItems="center" justify="center">
+            <Grid container item xs={3} sm={3}  spacing={1}>
+              <Tooltip title="Tên bài thực hành" placement="top-start">
+                <div style={{ flexGrow: 1 }}> {minitask.mini_task_name}</div>
+              </Tooltip>
+            </Grid>
+            <Grid container item xs={3} sm={3} spacing={1}>
+              <Tooltip title="Số đậu" placement="top">
+                <div
                   style={{
-                    textAlign: "center",
-                    verticalAlign: "middle",
-                    lineHeight: "30px",
-                    margin: 0
+                    fontSize: 12,
+                    margin: "0px 4px",
+                    color: "#4978cc",
+                    // marginLeft: 10,
+                    height: 30
                   }}
+                  className="centerDiv"
                 >
-                  {minitask.code_point}
-                </p>
+                  <div>
+                    <p
+                      style={{
+                        textAlign: "center",
+                        verticalAlign: "middle",
+                        lineHeight: "30px",
+                        margin: 0
+                      }}
+                    >
+                      {minitask.code_point}
+                    </p>
+                  </div>
+                  <div>
+                    <EmojiNatureIcon style={{ fontSize: 24, marginRight: 1 }} />
+                  </div>
+                </div>
+              </Tooltip>
+            </Grid>
+            <Grid container item xs={3} sm={3} spacing={1}>
+              <Tooltip title="Độ khó" placement="top">
+                <div className="level-minitask" style={{ marginLeft: 0 }}>
+                  {this.renderLevelMinitaskChip(minitask)}
+                </div>
+              </Tooltip>
+            </Grid>
+            <Grid container item xs={3} sm={3} spacing={1}>
+              <Tooltip title="Hoàn thành" placement="top">
+              <div
+                style={{
+                  width: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  // marginLeft: 10
+                }}
+              >
+                <img
+                  style={{ width: "100%" }}
+                  src={require("../icons/hoanthanh.svg")}
+                  alt="Kiwi standing on oval"
+                />
               </div>
-              <div>
-                <EmojiNatureIcon style={{ fontSize: 24, marginRight: 1 }} />
-              </div>
-            </div>
-          </Tooltip>
-          <Tooltip title="Độ khó" placement="top">
-            <div className="level-minitask" style={{ marginLeft: 0 }}>
-              {this.renderLevelMinitaskChip(minitask)}
-            </div>
-          </Tooltip>
-          <Tooltip title="Hoàn thành" placement="top">
-            <div
-              style={{
-                width: "20px",
-                display: "flex",
-                alignItems: "center",
-                marginLeft: 10
-              }}
-            >
-              <img
-                style={{ width: "100%" }}
-                src={require("../icons/hoanthanh.svg")}
-                alt="Kiwi standing on oval"
-              />
-            </div>
-          </Tooltip>
+            </Tooltip>
+            </Grid>
+          </Grid>
         </Link>
       );
     } else if (minitask.status === "chuahoanthanh" && minitask.vitri === true) {
@@ -175,61 +185,76 @@ class TaskItem extends Component {
             alignItems: "center"
           }}
         >
-          <Tooltip title="Tên bài thực hành" placement="top-start">
-            <div style={{ flexGrow: 1 }}>{minitask.mini_task_name}</div>
-          </Tooltip>
-          <Tooltip title="Số đậu" placement="top">
-            <div
-              style={{
-                fontSize: 12,
-                margin: "0px 4px",
-                color: "#4978cc",
-                marginLeft: 10
-              }}
-            >
-              {minitask.code_point}
-              <EmojiNatureIcon style={{ fontSize: 16, marginRight: 1 }} />
-            </div>
-          </Tooltip>
-          <Tooltip title="Độ khó" placement="top">
-            <div className="level-minitask" style={{ marginLeft: 10 }}>
-              {" "}
-              {this.renderLevelMinitaskChip(minitask)}
-            </div>
-          </Tooltip>
-          <Tooltip title="Chưa hoàn thành" placement="top">
-            <div
-              style={{
-                width: "20px",
-                display: "flex",
-                alignItems: "center",
-                marginLeft: 10
-              }}
-            >
-              <img
-                style={{
-                  width: "100%",
-                  backgroundColor: "#F5F5F5",
-                  borderRadius: "50%"
-                }}
-                src={require("../icons/chuahoanthanh.svg")}
-                alt="Kiwi standing on oval"
-              />
-            </div>
-          </Tooltip>
-          <Tooltip title="Số lượt làm còn lại" placement="top">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginLeft: 10
-              }}
+          <Grid container xs={12} sm={12} spacing={3} direction="row" justify="center" alignItems="center" >
+            <Grid container item xs={4} sm={4}  spacing={1} direction="row" justify="center" alignItems="center" >
+              <Tooltip title="Tên bài thực hành" placement="top-start">
+                <div style={{ flexGrow: 1 }}>{minitask.mini_task_name}</div>
+              </Tooltip>
+            </Grid>
+            <Grid container item xs={2} sm={2}  spacing={1} >
+              <Tooltip title="Số đậu" placement="top">
+                <div
+                  style={{
+                    fontSize: 12,
+                    margin: "0px 4px",
+                    color: "#4978cc",
+                    marginLeft: 10
+                  }}
+                >
+                  {minitask.code_point}
+                  <EmojiNatureIcon style={{ fontSize: 16, marginRight: 1 }} />
+                </div>
+              </Tooltip>
+            </Grid>
+            <Grid container item xs={2} sm={2}  spacing={1} >
+              <Tooltip title="Độ khó" placement="top">
+                <div className="level-minitask" style={{ marginLeft: 10 }}>
+                  {" "}
+                  {this.renderLevelMinitaskChip(minitask)}
+                </div>
+              </Tooltip>
+            </Grid>
+            <Grid container item xs={2} sm={2}>
+              <Tooltip title="Chưa hoàn thành" placement="top">
+                <div
+                  style={{
+                    width: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    marginLeft: 10
+                  }}
+                >
+                  <img
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#F5F5F5",
+                      borderRadius: "50%"
+                    }}
+                    src={require("../icons/chuahoanthanh.svg")}
+                    alt="Kiwi standing on oval"
+                  />
+                </div>
+              </Tooltip>       
+            </Grid>  
+            <Grid container item xs={2} sm={2}>
+              <Tooltip title="Số lượt làm còn lại" placement="top">
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginLeft: 0
+                    }}
+                  
+                  > {minitask.numbers_doing > 0 ? (
+                    <p><b style={{color:"red"}}>{minitask.numbers_doing}</b> <i>lượt</i></p>
+                  ): (<b><i style={{color:"red"}}>Hết lượt</i></b>)} 
+                  </div>   
+              </Tooltip>
+            </Grid>
+              
             
-            > {minitask.numbers_doing > 0 ? (
-              <p><b style={{color:"red"}}>{minitask.numbers_doing}</b> <i>lượt</i></p>
-            ): (<b><i style={{color:"red"}}>Hết lượt</i></b>)} 
-            </div>   
-          </Tooltip>
+                     
+          </Grid>
         </Link>
       );
     } else if (minitask.status === "yeucaumokhoa") {

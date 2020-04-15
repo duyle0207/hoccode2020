@@ -145,7 +145,7 @@ class CourseItem extends Component {
     }
     return value;
   }
-
+ 
   render() {
     const { days, hours, min, sec, courseStatus } = this.state;
     const { classes, course } = this.props;
@@ -157,6 +157,28 @@ class CourseItem extends Component {
     //   isActive = <p>Cần xét duyệt</p>
     // }
 
+    let chip; 
+    if (course.status === " " || course.status === "Inactive"){
+      chip = (<Chip
+      label="Cần xét duyệt"
+      color="primary"
+      style={{
+        width: '80%',
+        height: '80%',
+        fontSize: '63px'
+      }}
+      />)
+    } else if (course.status === "Pedding") {
+      chip =( <Chip
+      label="Đang xét duyệt"
+      color="primary"
+      style={{
+        width: '80%',
+        height: '80%',
+        fontSize: '63px'
+      }}
+      />)
+    }
     let timer;
     if (courseStatus === 0) {
       timer = <React.Fragment>
@@ -258,7 +280,7 @@ class CourseItem extends Component {
             backgroundSize: "cover",
           }}
         >
-          {course.status === "Inactive" ?
+          {/* { course.status === "Pedding"  ?
             <Chip
               label="Cần xét duyệt"
               color="primary"
@@ -270,7 +292,8 @@ class CourseItem extends Component {
             />
             :
             ""
-          }
+          } */}
+          {chip}
           {/* <img
             src={course.background_image}
             style={{

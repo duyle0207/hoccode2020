@@ -179,6 +179,9 @@ func main() {
 
 	r.GET("/getGeneralLeaderBoard", h.GetGeneralLeaderBoard)
 
+	// send email
+	r.POST("/sendmail", h.SendEmail)
+
 	curd := e.Group("/api/v1/curd")
 
 	curd.Use(middleware.JWT([]byte("secret")))
