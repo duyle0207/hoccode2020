@@ -4,8 +4,8 @@ import React, { Component } from "react";
 import Paper from "@material-ui/core/Paper";
 import { connect } from "react-redux";
 import Typography from "@material-ui/core/Typography";
-import { Link } from "react-router-dom";
-import Divider from "@material-ui/core/Divider";
+// import { Link } from "react-router-dom";
+// import Divider from "@material-ui/core/Divider";
 import Certificate from "./Certificate";
 import ReactToPrint from "react-to-print";
 import Dialog from "@material-ui/core/Dialog";
@@ -14,8 +14,15 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
 import HashLoader from "react-spinners/HashLoader";
+import Box from "@material-ui/core/Box";
+import PersonIcon from '@material-ui/icons/Person';
+import EditIcon from '@material-ui/icons/Edit';
+import IconButton from '@material-ui/core/IconButton';
+import Course from './Course';
+import Practice from './Practice';
+import Slide from '@material-ui/core/Fade';
 
-const styles = {};
+// const styles = {};
 
 class PrintBody extends Component {
   constructor(props) {
@@ -24,37 +31,42 @@ class PrintBody extends Component {
       minitasks: [],
       openDialogCertificate: false,
       isLoading: true,
-      certificateViewStart:{},
+      certificateViewStart: {},
       certificate: {},
       review_point: 0,
       user_codepoint: 0,
-      isLoadingCert: false
+      isLoadingCert: false,
+      user_course: [],
+      user_practice_info: {},
     };
   }
 
   getApi = async () => {
     await Promise.all([
-      axios
-        .get(`http://localhost:8081/api/v1/curd/configs/byname/hocode`)
-        .then(res => {
-          console.log(res.data);
-          const certificateConfig = res.data;
+      // axios
+      //   .get(`http://localhost:8081/api/v1/curd/configs/byname/hocode`)
+      //   .then(res => {
+      //     console.log(res.data);
+      //     const certificateConfig = res.data;
 
-          this.setState({ review_point: certificateConfig.review_point });
-        }),
+      //     this.setState({ review_point: certificateConfig.review_point });
+      //   }),
       axios.get("http://localhost:8081/auth/userinfo").then(res => {
         console.log(res.data);
         this.setState({ user_codepoint: res.data.codepoint });
       }),
-      axios.get(`http://localhost:8081/auth/completeminitask`).then(res => {
-        const minitasks = res.data;
-        console.log(minitasks);
-        this.setState({ minitasks });
-      }),
       axios.get(`http://localhost:8081/api/v1/auth/viewcert`).then(res => {
         const certificate = res.data;
-        console.log(res.data); 
-        this.setState({certificateViewStart: certificate });
+        console.log(res.data);
+        this.setState({ certificateViewStart: certificate });
+      }),
+      axios.get(`http://localhost:8081/api/v1/auth/usercourseProfile`).then(res => {
+        console.log(res.data);
+        this.setState({ user_course: res.data });
+      }),
+      axios.get(`http://localhost:8081/api/v1/curd/getChartInfo`).then(res => {
+        console.log(res.data);
+        this.setState({ user_practice_info: res.data })
       })
     ]);
     this.setState({ isLoading: false });
@@ -71,9 +83,9 @@ class PrintBody extends Component {
       axios.get(`http://localhost:8081/api/v1/auth/reviewcert`).then(res => {
         const certificate = res.data;
         console.log(res.data);
-        this.setState({ certificateViewStart:certificate });
+        this.setState({ certificateViewStart: certificate });
         this.setState({ isLoadingCert: false });
-       
+
       })
     ]);
   };
@@ -84,131 +96,138 @@ class PrintBody extends Component {
     //this.getCertificate();
   };
   handleDialogCertificateCheck = () => {
-  
+
     this.getCertificate();
   };
 
   handleDialogCertificateClose = () => {
     this.setState({ openDialogCertificate: false });
   };
-  renderButtonCertificate(certificateViewStart){
-    if(certificateViewStart.cert !== undefined){
-      if(certificateViewStart.cert.status === "Inactive" || certificateViewStart.cert.status === ""){
+  renderButtonCertificate(certificateViewStart) {
+    if (certificateViewStart.cert !== undefined) {
+      if (certificateViewStart.cert.status === "Inactive" || certificateViewStart.cert.status === "") {
         return (
           <Button
-          variant="contained"
-          style={{ background: "#1ECD97", color: "#fff" }}
-         onClick={this.handleDialogCertificateCheck}
-        >
-          Xét chứng chỉ
-        </Button>
+            variant="contained"
+            style={{ background: "#1ECD97", color: "#fff" }}
+            onClick={this.handleDialogCertificateCheck}
+          >
+            Xét chứng chỉ
+          </Button>
         );
       }
-      else if(certificateViewStart.cert.status === "Active"){
+      else if (certificateViewStart.cert.status === "Active") {
         return (
           <Button
-          variant="contained"
-          style={{ background: "#1ECD97", color: "#fff" }}
-          onClick={this.handleDialogCertificateOpen}
-        >
-          Xem chứng chỉ
-        </Button>
+            variant="contained"
+            style={{ background: "#1ECD97", color: "#fff" }}
+            onClick={this.handleDialogCertificateOpen}
+          >
+            Xem chứng chỉ
+          </Button>
         );
       }
-      else{
+      else {
         return (
           <Button
-          variant="contained"
-          style={{ background: "#1ECD97", color: "#fff" }}
-          onClick={this.handleDialogCertificateOpen}
-          disabled = {true}
-        >
-           Đang xét chứng chỉ
-        </Button>
+            variant="contained"
+            style={{ background: "#1ECD97", color: "#fff" }}
+            onClick={this.handleDialogCertificateOpen}
+            disabled={true}
+          >
+            Đang xét chứng chỉ
+          </Button>
         );
       }
     }
 
   }
 
-  renderDialog = (certificate) =>{
-    if(certificate.cert !== undefined){
-     if(certificate.cert.status === "Inactive" || certificate.cert.status === "" ){
-       return (
-        <DialogContent dividers>
-        <Typography
-        variant="body2"
-        color="textSecondary"
-        component="p"
-        style={{ marginLeft: 4, textAlign: "center" }}
-      >
-        Bạn sẽ nhận được chứng chỉ nếu số đậu của bạn lớn hơn{" "}
-        {this.state.review_point}
-      </Typography>
-      </DialogContent>
-       )
-     }
-     else if(certificate.cert.status === "Active"){
-       return(      <>
-
-        <DialogContent dividers>
-          
-          <Grid container spacing={2}>
-            <Grid
-              item
-              xs={12}
-              md={12}
-              sm={12}
-              style={{ display: "flex", alignItems: "center" }}
+  renderDialog = (certificate) => {
+    if (certificate.cert !== undefined) {
+      if (certificate.cert.status === "Inactive" || certificate.cert.status === "") {
+        return (
+          <DialogContent dividers>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              style={{ marginLeft: 4, textAlign: "center" }}
             >
-              <Certificate
-                ref={el => (this.CertificateRef = el)}
-                Certificate={this.state.certificateViewStart}
+              Bạn sẽ nhận được chứng chỉ nếu số đậu của bạn lớn hơn{" "}
+              {this.state.review_point}
+            </Typography>
+          </DialogContent>
+        )
+      }
+      else if (certificate.cert.status === "Active") {
+        return (<>
+
+          <DialogContent dividers>
+
+            <Grid container spacing={2}>
+              <Grid
+                item
+                xs={12}
+                md={12}
+                sm={12}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <Certificate
+                  ref={el => (this.CertificateRef = el)}
+                  Certificate={this.state.certificateViewStart}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogTitle
+            id="customized-dialog-title"
+            onClose={this.handleDialogCertificateClose}
+          >
+            <Grid
+              style={{ display: "flex", justifyContent: "flex-end" }}
+            >
+              <ReactToPrint
+                trigger={() => (
+                  <Button
+                    style={{ background: "#1ECD97", color: "#fff" }}
+                    variant="contained"
+                  >
+                    In chứng chỉ
+                  </Button>
+                )}
+                content={() => this.CertificateRef}
               />
             </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogTitle
-          id="customized-dialog-title"
-          onClose={this.handleDialogCertificateClose}
-        >
-          <Grid
-            style={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            <ReactToPrint
-              trigger={() => (
-                <Button
-                  style={{ background: "#1ECD97", color: "#fff" }}
-                  variant="contained"
-                >
-                  In chứng chỉ
-                </Button>
-              )}
-              content={() => this.CertificateRef}
-            />
-          </Grid>
-        </DialogTitle>
-      </>)
-     }
-     else{
-      return (
-        <DialogContent dividers>
-        <Typography
-        variant="body2"
-        color="textSecondary"
-        component="p"
-        style={{ marginLeft: 4, textAlign: "center" }}
-      >
-          Đã gửi yêu cầu xét chứng chỉ.
-      </Typography>
-      </DialogContent>
-       )
-    }
+          </DialogTitle>
+        </>)
+      }
+      else {
+        return (
+          <DialogContent dividers>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              style={{ marginLeft: 4, textAlign: "center" }}
+            >
+              Đã gửi yêu cầu xét chứng chỉ.
+            </Typography>
+          </DialogContent>
+        )
+      }
     }
   }
 
   render() {
-    const { classes } = this.props;
+    // const { classes } = this.props;
+    const { user_course, user_practice_info } = this.state;
+    const courseList = user_course.map((course, i) => {
+      return <Slide in={true} direction="down" {...(true ? { timeout: 1500 } : {})}>
+        <Course id={course.id} name={course.course_name} backgroundImage={course.background_image} rating={course.rating_value} />
+      </Slide>
+    });
+
     return (
       <>
         {this.state.isLoading ? (
@@ -230,208 +249,142 @@ class PrintBody extends Component {
             />
           </div>
         ) : (
-          <Grid
-            container
-            spacing={2}
-            style={{ height: "100%", maxHeight: 400 }}
-          >
-            <Grid item xs={12} sm={4} md={4}>
-              <Paper
-                style={{
-                  height: "100%",
-                  padding: 10,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
+            <React.Fragment>
+              <Grid
+                container
+                spacing={2}
+                style={{ height: "100%", maxHeight: "352px" }}
               >
-                <Grid container direction="column" alignItems="center">
-                  <Grid item container style={{ justifyContent: "center" }}>
-                    <Grid
-                      item
-                      xs={4}
-                      sm={4}
-                      md={4}
-                      style={{ display: "flex", justifyContent: "center" }}
-                    >
-                      <img
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          borderRadius: "50%"
-                        }}
-                        alt="avatar"
-                        src={this.props.user.avatar}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid item>
-                    <Typography
-                      variant="h5"
-                      gutterBottom
-                      style={{ color: "#4978cc" }}
-                    >
-                      {this.props.user.lastname} {this.props.user.firstname}
-                    </Typography>
-                  </Grid>
-                  <Grid item style={{ textAlign: "center" }}>
-                    <Typography variant="h5" style={{ color: "#4978cc" }}>
-                      {this.props.user.codepoint}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                      style={{ marginLeft: 4, color: "#4978cc" }}
-                    >
-                      {/* {course.total_minitask} */}
-                      Điểm tích lũy
-                    </Typography>
-                  </Grid>
-
-                  <Grid item style={{ textAlign: "center", marginTop:"20px" }}>
-                    <Typography variant="h5" style={{ color: "#4978cc" }}>
-                      {this.state.minitasks.length}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                      style={{ marginLeft: 4, color: "#4978cc" }}
-                    >
-                      {/* {course.total_minitask} */}
-                      Bài thực hành đã hoàn thành
-                    </Typography>
-                  </Grid>
-
-                  <Grid item style={{ textAlign: "center", marginTop:"20px" }}>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      component="p"
-                      style={{ marginLeft: 4, textAlign: "center" }}
-                    >
-                      Bạn sẽ nhận được chứng chỉ nếu số đậu của bạn lớn hơn{" "}
-                      {this.state.review_point}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item style={{ textAlign: "center" }}>
-                  {this.renderButtonCertificate(this.state.certificateViewStart)}
-                  
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-            <Grid item xs={12} sm={8} md={8}>
-              <Paper
-                style={{
-                  minHeight: 400,
-                  overflowY: "auto",
-                  display: "flex",
-                  flexDirection: "column"
-                }}
-              >
-                <Grid container style={{ padding: 10 }}>
-                  <Grid item style={{ flexGrow: 1 }}>
-                    <div style={{ fontWeight: "bold" }}>
-                      Danh sách bài thực hành đã hoàn thành
-                    </div>{""}
-                  </Grid>
-                </Grid>
-                <Grid container style={{ padding: 30 }}>
-                  {this.state.minitasks.length !== 0 ? (
-                    this.state.minitasks.map(minitask => {
-                      return (
-                        <React.Fragment key={minitask.id}>
-                          <Grid container style={{ alignItems: "center" }}>
-                            <Grid item>
-                              <img
-                                className={classes.img}
-                                style={{
-                                  width: "50px",
-                                  height: "50px",
-                                  objectFit: "cover",
-                                  borderRadius: "8px"
-                                }}
-                                alt="complex"
-                                src={minitask.avatar}
-                              />
-                            </Grid>
-                            <Grid item style={{ flexGrow: 1, padding: 10 }}>
-                              <div style={{ fontWeight: "bold" }}>
-                                <Link
-                                  className="item"
-                                  style={{ textDecoration: "none" }}
-                                  to={`/tasks/${minitask.id}`}
-                                >
-                                  {minitask.mini_task_name}
-                                </Link>
-                              </div>
-                              <div style={{ color: "#9d9d9d" }}>
-                                Số đậu: {minitask.code_point}
-                              </div>
-                            </Grid>
-                          </Grid>
-                          <Divider style={{ margin: "auto", width: "100%" }} />{" "}
-                        </React.Fragment>
-                      );
-                    })
-                  ) : (
-                    <Grid
-                      container
-                      justify="center"
-                      alignItems="center"
-                      style={{ flexGrow: 1 }}
-                    >
-                      <Grid item>
+                <Grid item xs={12} sm={3} md={3}>
+                  <Paper
+                    style={{
+                      height: "351px",
+                      display: "flex",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Grid container direction="row">
+                      <Grid item xs={12} md={12} sm={12}>
+                        <Box display="flex" p={1} bgcolor="grey.300">
+                          <Box mr={1} mt={1} flexGrow={1}>
+                            <PersonIcon fontSize="large" />
+                          </Box>
+                          <Box mt={1} flexGrow={6}>
+                            <Typography variant="h5">Thông tin cá nhân</Typography>
+                          </Box>
+                          <Box>
+                            <IconButton color="primary" aria-label="Edit">
+                              <EditIcon />
+                            </IconButton>
+                          </Box>
+                        </Box>
+                        <Box display="flex" justifyContent="flex-start" p={2}>
+                          <Box borderRadius={16} borderColor="grey.500">
+                            <img
+                              style={{ width: 100, height: 100 }}
+                              src={this.props.user.avatar}
+                              alt="Ảnh đại diện"
+                            />
+                          </Box>
+                          <Box ml={1}>
+                            <Box mb={1} ml={1}>
+                              <Typography variant="overline">
+                                Họ và tên: {this.props.user.lastname}{" "}
+                                {this.props.user.firstname}
+                              </Typography>
+                            </Box>
+                            <Box mb={1} ml={1}>
+                              <Typography variant="overline">Email: {this.props.user.email}</Typography>
+                            </Box>
+                            <Box mb={1} ml={1}>
+                              <Typography variant="overline">Điểm: {this.props.user.codepoint}</Typography>
+                            </Box>
+                          </Box>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={12} sm={12}>
                         <Typography
                           variant="body2"
                           color="textSecondary"
                           component="p"
-                          style={{ marginLeft: 4 }}
+                          style={{ marginLeft: 4, textAlign: "center" }}
                         >
-                          Bạn chưa hoàn thành bài thực hành nào.
+                          Bạn sẽ nhận được chứng chỉ nếu số đậu của bạn lớn hơn{" "}
+                          {this.state.review_point}
                         </Typography>
                       </Grid>
+                      <Grid item xs={12} md={12} sm={12}>
+                        <Box p={2}>
+                          {this.renderButtonCertificate(this.state.certificateViewStart)}
+                        </Box>
+                      </Grid>
                     </Grid>
-                  )}
+                  </Paper>
                 </Grid>
-              </Paper>
-            </Grid>
-            <Dialog
-              maxWidth={false}
-              open={this.state.openDialogCertificate}
-              onClose={this.handleDialogCertificateClose}
-              aria-labelledby="customized-dialog-title"
-            >
-              {" "}
-              {this.state.isLoadingCert === true ? (
-                <div
-                  className="sweet-loading"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "200px",
-                    height: "200px",
-                    overflow: "hidden"
-                  }}
+                <Grid item xs={12} sm={9} md={9}>
+                  <Paper
+                    style={{
+                      minHeight: 350,
+                      overflowY: "auto",
+                      display: "flex",
+                      flexDirection: "column"
+                    }}
+                  >
+                    <Grid container>
+                      <Grid item style={{ flexGrow: 1 }}>
+                        <Box p={2}>
+                          <Typography variant="h6">Học tập</Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                    <Box p={2}>
+                      <Grid container spacing={2}>
+                        {courseList}
+                      </Grid>
+                    </Box>
+                  </Paper>
+                </Grid>
+                <Dialog
+                  maxWidth={false}
+                  open={this.state.openDialogCertificate}
+                  onClose={this.handleDialogCertificateClose}
+                  aria-labelledby="customized-dialog-title"
                 >
-                  <HashLoader
-                    sizeUnit={"px"}
-                    size={50}
-                    color={"#AEA8A8"}
-                    loading={this.state.isLoadingCert}
-                  />
-                </div>
-              ) : ( 
-                
-                this.renderDialog(this.state.certificateViewStart)
-              )}
-            </Dialog>
-          </Grid>
-        )}
+                  {" "}
+                  {this.state.isLoadingCert === true ? (
+                    <div
+                      className="sweet-loading"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "200px",
+                        height: "200px",
+                        overflow: "hidden"
+                      }}
+                    >
+                      <HashLoader
+                        sizeUnit={"px"}
+                        size={50}
+                        color={"#AEA8A8"}
+                        loading={this.state.isLoadingCert}
+                      />
+                    </div>
+                  ) : (
+
+                      this.renderDialog(this.state.certificateViewStart)
+                    )}
+                </Dialog>
+              </Grid>
+              <Box mt={2}>
+                <Grid container xs={12}>
+                  <Grid item xs={12}>
+                    <Practice user_practice_info={user_practice_info} />
+                  </Grid>
+                </Grid>
+              </Box>
+            </React.Fragment>
+          )}
       </>
     );
   }
@@ -443,6 +396,6 @@ const mapStateToProps = state => ({
   user: state.rootReducer.user
 });
 
-export default withStyles(styles, { withTheme: true })(
+export default withStyles(null, { withTheme: true })(
   connect(mapStateToProps, {})(PrintBody)
 );

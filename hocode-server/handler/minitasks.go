@@ -435,6 +435,40 @@ func (h *Handler) GetAllMinitask(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, mini_tasks)
 }
 
+func (h *Handler) GetUserPracticeMinitask(c echo.Context) error {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	user_minitask_practice := []*model.UserMinitaskPractice{}
+
+	db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+		"user_id":     userID,
+	}).All(&user_minitask_practice)
+
+	minitask_list := []*model.MiniTask{}
+
+	for i := range user_minitask_practice {
+		minitask := &model.MiniTask{}
+		db.DB(config.NameDb).C("minitasks").Find(bson.M{
+			"_id": bson.ObjectIdHex(user_minitask_practice[i].MiniTaskID),
+		}).One(&minitask)
+		if user_minitask_practice[i].Status == "done" {
+			minitask.Status = "done"
+		} else if user_minitask_practice[i].Status == "tried" {
+			minitask.Status = "tried"
+		} else {
+			minitask.Status = "normal"
+		}
+		minitask_list = append(minitask_list, minitask)
+	}
+
+	return c.JSON(http.StatusOK, minitask_list)
+}
+
 func (h *Handler) GetUserPracticeCode(c echo.Context) (err error) {
 	db := h.DB.Clone()
 	defer db.Close()

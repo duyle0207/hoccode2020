@@ -205,7 +205,7 @@ class LoginPage extends React.Component {
   }
 
   responseGoogle = (response) => {
-    console.log(response.Qt.jL);
+    // console.log(response.Qt.jL);
     console.log(response.profileObj.email);
     console.log(response.accessToken);
 

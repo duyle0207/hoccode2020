@@ -8,8 +8,8 @@ const (
 	Username string = "duyle"
 	Password string = "aaaaaaaa"
 	Source string = "admin"
-	//LinkDb2 string = "cluster0-shard-00-00-gwhbh.mongodb.net:27017"
-	//LinkDb3 string = "cluster0-shard-00-02-gwhbh.mongodb.net:27017"
+	LinkDb2 string = "cluster0-shard-00-00-gwhbh.mongodb.net:27017"
+	LinkDb3 string = "cluster0-shard-00-02-gwhbh.mongodb.net:27017"
 	//LinkDb string = "localhost:27017/"
 	//LinkDb string = "mongodb://admin:adminadmin1@ds021984.mlab.com:21984/"
 )
