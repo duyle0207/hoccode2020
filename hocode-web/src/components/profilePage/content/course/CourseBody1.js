@@ -128,10 +128,10 @@ class CourseBody extends Component {
                 }
                 {this.props.user.role === "admin" ?
                   <Grid container spacing={3}>
-                    {coursesTemp.map((course) => <Grid key={course.id} item xs={12} sm={4} md={4}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
+                    {coursesTemp.map((course) => <Grid key={course.id} item xs={12} sm={4} md={4}><CourseItem course={course} /></Grid>)}
                   </Grid> : (
                     <Grid container spacing={3}>
-                      {courseActived.map((course) => <Grid key={course.id} item xs={12} sm={3} md={3}><Link style={{ textDecoration: 'none' }} to={`${url}/courses/${course.id}/tasks`}><CourseItem course={course} /></Link></Grid>)}
+                      {courseActived.map((course) => <Grid key={course.id} item xs={12} sm={3} md={3}><CourseItem course={course} /></Grid>)}
                     </Grid>
                   )
                 }

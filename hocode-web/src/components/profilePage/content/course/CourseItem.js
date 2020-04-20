@@ -16,12 +16,16 @@ import EmojiNatureIcon from "@material-ui/icons/EmojiNature";
 import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Fade from '@material-ui/core/Fade';
+import ThumbUpIcon from '@material-ui/icons/ThumbUp';
+import { Link } from "react-router-dom";
+
 
 import {
   // FacebookShareCount,
   FacebookIcon,
   FacebookShareButton
 } from "react-share";
+import { Button } from "@material-ui/core";
 
 const randomColor = () => {
   var listColor = [deepOrange[500], deepPurple[500], green[500], pink[500]];
@@ -64,6 +68,8 @@ class CourseItem extends Component {
       coueseStatus: 0,
       coursePassInfo: {},
       isLoadingCourseInfo: true,
+      //status for like function
+      liked: true
     };
   }
 
@@ -145,12 +151,52 @@ class CourseItem extends Component {
     }
     return value;
   }
+  
+  // handle func like course 
+  
+  handleCountLiked() {
+    var newcourse = this.props.course;
+    if(!this.state.liked) {
+      this.setState((prevState, props) => {
+        return {
+          liked: true
+        }
+      });
+    } else {
+      this.setState((prevState, props) => {
+        return {
+          liked: false
+        }
+      });
+    }
+    if(this.state.liked) {
+      newcourse.numbers_like = this.props.course.numbers_like + 1;
+    }
+    else {
+      newcourse.numbers_like = this.props.course.numbers_like - 1;
+    }
+    this.setState({ course: newcourse });
+
+    axios
+      .put(
+        `http://localhost:8081/api/v1/curd/courses/${this.props.course.id}`,
+        newcourse
+      )
+      .then(res => {
+        // const course = res.data;
+        // this.setState({ course: course });
+      });
+    
+    // console.log(newcourse);
+    
+  }
+  
  
   render() {
     const { days, hours, min, sec, courseStatus } = this.state;
     const { classes, course } = this.props;
-
-
+    console.log(this.state.liked);
+    console.log(this.state.likeActived);
     // check course statement -- Active or Inactive
     // let isActive;
     // if (course.status === "Inactive") {
@@ -318,9 +364,12 @@ class CourseItem extends Component {
                 // fontFamily: `'Yanone Kaffeesatz', sans-serif`
               }}
             >
-              <Typography gutterBottom variant="h5" component="h5">
-                {course.course_name}
-              </Typography>
+              <Link style={{ textDecoration: 'none' }} to={`courses/${course.id}/tasks`}>
+                <Typography gutterBottom variant="h5" component="h5">
+                  {course.course_name}
+                </Typography>
+              </Link>
+              
             </div>
             <div
               style={{
@@ -445,22 +494,44 @@ class CourseItem extends Component {
                     justifyContent: "flex-start"
                   }}
                 >
-                  <LaptopIcon
-                    style={{
-                      // color: "#fff",
-                      // backgroundColor: "rgba(0, 0, 0, 0.87)",
-                      padding: "2px 4px",
-                      boxSizing: "content-box",
-                      borderRadius: "4px"
-                    }}
-                    fontSize="large"
-                  />
+                  <Box>
+                    {this.state.liked ? (<ThumbUpIcon
+                      style={{
+                        // color: "#fff",
+                        //backgroundColor: "rgba(0, 0, 0, 0.87)",
+                        padding: "2px 4px",
+                        boxSizing: "content-box",
+                        borderRadius: "4px",
+                      }}
+                      fontSize="large"
+                      color="disabled"
+                      onClick={
+                        () => { this.handleCountLiked() }
+                      } 
+                    />): (<ThumbUpIcon
+                      style={{
+                        // color: "#fff",
+                        //backgroundColor: "rgba(0, 0, 0, 0.87)",
+                        padding: "2px 4px",
+                        boxSizing: "content-box",
+                        borderRadius: "4px",
+                      }}
+                      fontSize="large"
+                      color="primary"
+                      onClick={
+                        () => { this.handleCountLiked() }
+                      } 
+                    />  )}
+                      
+                  </Box>             
+                  
                   <Typography
                     variant="body2"
                     color="textSecondary"
                     component="p"
                   >
-                    {this.state.totalMinitask}
+                    {/* {this.state.totalMinitask} */}
+                    {course.numbers_like}
                   </Typography>
                 </Grid>
                 <Grid
