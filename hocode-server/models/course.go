@@ -21,7 +21,7 @@ type (
 		StartTime time.Time `json:"start_time" bson:"start_time"`
 		EndTime   time.Time `json:"end_time" bson:"end_time"`
 
-		CourseType      string     `json:"course_type" bson:"course_type"`
+		CourseType string `json:"course_type" bson:"course_type"`
 
 		TotalMinitask int       `json:"total_minitask" bson:"total_minitask"`
 		Tasks         []*Task   `json:"tasks" bson:"tasks"`

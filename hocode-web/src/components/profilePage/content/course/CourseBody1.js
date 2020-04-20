@@ -158,7 +158,7 @@ class CourseBody extends Component {
     const { classes } = this.props;
     const { coursesTemp, isLoading, courseStatus, lap_trinh_co_so_list, lap_trinh_nang_cao_list, giai_quyet_van_de_list, keyword } = this.state;
     // let url = this.props.url;
-    
+
     return (
       <Grid container className={this.props.user.role === "admin" ? classes.CourseContainer1 : classes.CourseContainer} justify="center">
         {isLoading ? <div className="sweet-loading" style={{ display: 'flex', alignItems: "center", justifyContent: 'center', width: '100%' }}>

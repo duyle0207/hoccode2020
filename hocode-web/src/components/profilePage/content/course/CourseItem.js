@@ -153,6 +153,7 @@ class CourseItem extends Component {
   }
   
   // handle func like course 
+  
   handleCountLiked() {
     var newcourse = this.props.course;
     if(!this.state.liked) {
