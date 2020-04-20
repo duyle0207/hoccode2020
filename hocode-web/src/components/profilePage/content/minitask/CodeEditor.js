@@ -22,9 +22,6 @@ import "codemirror/addon/hint/css-hint.js"
 let jBeautify = require('js-beautify').js;
 
 
-
-
-
 class CodeEditor extends Component {
 
   render() {

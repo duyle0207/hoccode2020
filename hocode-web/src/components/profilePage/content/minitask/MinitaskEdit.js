@@ -2,6 +2,7 @@ import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+import Box from '@material-ui/core/Box';
 import { withStyles } from "@material-ui/styles";
 import axios from "axios";
 import React, { Component } from "react";
@@ -11,7 +12,11 @@ import CodeEditor from "./CodeEditor";
 import "./createminitaskbody.css";
 import ReactMde from "./ReactMde";
 import ShowUnitTest from "./ShowUnitTest";
-
+import Typography from '@material-ui/core/Typography';
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+import Slide from '@material-ui/core/Slide';
 
 const options = [
   { value: "int", label: "Interger" },
@@ -29,7 +34,7 @@ const optionsLevel = [
 const styles = {
   CreateMiniTaskBodyContainer: {
     minHeight: "100vh",
-    padding: 40
+    padding: 20
   },
   button: {
     textTransform: "none"
@@ -82,7 +87,8 @@ class MinitaskEdit extends Component {
       output_type_func_select: options[0],
       level_ref_select: optionsLevel[0],
       courses_option_select: { value: "", label: "" },
-      task_option_select: { value: "", label: "" }
+      task_option_select: { value: "", label: "" },
+      isImportVariableOpen: false,
     };
     this.output_type_func = React.createRef();
     this.courses_ref = React.createRef();
@@ -154,7 +160,7 @@ class MinitaskEdit extends Component {
 
       /* eslint-disable array-callback-return */
 
-      for ( let i = 0; i < courses.length; i++) {
+      for (let i = 0; i < courses.length; i++) {
         courses[i].tasks.map(tas => {
           tasksfulloption.push({
             value: tas.id,
@@ -189,12 +195,20 @@ class MinitaskEdit extends Component {
       this.setState({
         courses: coursesFilter,
         coursesOption: coursesoption,
-        tasksOption: foundTask.tasksoption,
-        courses_option_select: foundTask.courses,
+        // tasksOption: foundTask.tasksoption,
+        // courses_option_select: foundTask.courses,
         task_option_select: foundTask
       });
     });
   }
+
+  // handle modal import variable
+  handleModalVariableOpen = () => {
+    this.setState({
+      isImportVariableOpen: !this.state.isImportVariableOpen,
+    })
+  }
+
   // handle simple input change
   handleSimpleInputChange(event) {
     const target = event.target;
@@ -222,11 +236,11 @@ class MinitaskEdit extends Component {
     // const currentParams = getParams(location.pathname);
     const template_code = `public ${this.state.output_type_func} ${
       this.state.name_func
-    }(${this.state.inputList
-      .map(input => {
-        return `${input.input_type} ${input.input_name}`;
-      })
-      .join()})
+      }(${this.state.inputList
+        .map(input => {
+          return `${input.input_type} ${input.input_name}`;
+        })
+        .join()})
 { 
 }`;
 
@@ -250,7 +264,7 @@ class MinitaskEdit extends Component {
         `http://localhost:8081/api/v1/curd/minitasks/${this.props.minitasksId}`,
         newMiniTask
       )
-      .then(function(response) {
+      .then(function (response) {
         toast("Sửa bài thành công!", {
           containerId: "B"
         });
@@ -274,7 +288,7 @@ class MinitaskEdit extends Component {
     }));
     console.log(select_value);
     const name = this.courses_ref.current.props.name; //get name of select tag
-    let course = await this.state.courses.find(function(course) {
+    let course = await this.state.courses.find(function (course) {
       return course.id === select_value.value;
     });
     console.log(course);
@@ -352,7 +366,7 @@ class MinitaskEdit extends Component {
     /* for (let i = 0; i < inputListLength; i++) {
       arrayInput.push({ value: "", type: "int" });
     }*/
-    this.state.inputList.forEach(function(input, key) {
+    this.state.inputList.forEach(function (input, key) {
       arrayInput.push({ value: "", type: input.input_type });
     });
 
@@ -375,23 +389,151 @@ class MinitaskEdit extends Component {
     this.setState({ unit_tests: this.state.unit_tests });
   }
 
+  renderTitle = (title) => {
+    return <Box my={1}>
+      <Typography style={{ fontSize: 15, fontWeight: 450 }}>{title}</Typography>
+    </Box>
+  }
+
   render() {
     const { classes } = this.props;
+    const { template_code, isImportVariableOpen } = this.state;
 
     return (
       <React.Fragment>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <div>Sửa bài thực hành</div>
+          <Typography variant="h2">Sửa bài thực hành</Typography>
         </div>
+        <div>
+          {/* <button type="button" onClick={this.handleModalVariableOpen}>
+            react-transition-group
+          </button> */}
+          <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '8px'
+            }}
+            open={isImportVariableOpen}
+            onClose={this.handleModalVariableOpen}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <Fade in={isImportVariableOpen}>
 
+              <div
+                style={{
+                  maxHeight: "50vh",
+                  height: "1500px",
+                  width: "1000px",
+                  position: "relative",
+                  overflowY: "scroll",
+                  overflowX: "hidden",
+                  backgroundColor: "white",
+                  borderRadius: '8px'
+                }}
+              >
+                <Box p={4}>
+                  <Box display="flex">
+                    <Box>
+                      <Button
+                        variant="contained"
+                        style={{ background: "#2a92ed", color: "white" }}
+                        className={classes.button}
+                        onClick={e => this.addInput(e)}
+                      >
+                        Thêm tham số
+                    </Button>
+                    </Box>
+                    <Box mx={2}>
+                      <Typography variant="overline">Số lượng: {this.state.inputList.length}</Typography>
+                    </Box>
+                  </Box>
+                  {this.state.inputList.map((input, index) => {
+                    return (
+                      <Slide in={true} direction="left">
+                        <div key={index}>
+                          <Grid container spacing={1}>
+                            <Grid item container xs={12} sm={5} spacing={2}>
+                              <Grid item xs={12} sm={12}>
+                                {this.renderTitle("Tên tham số:")}
+                              </Grid>
+                              <Grid item xs={12} sm={12}>
+                                <input
+                                  className="input-createminitask"
+                                  value={input.input_name}
+                                  onChange={e =>
+                                    this.handleListInputNameChange(e, index)
+                                  } // higher order function, index và e là biến vẫn được sử dụng sau khi onchange thự thi
+                                />
+                              </Grid>
+                            </Grid>
+                            <Grid item container xs={12} sm={5} spacing={1}>
+                              <Grid item xs={12} sm={12}>
+                                {this.renderTitle("Kiểu tham số:")}
+                              </Grid>
+                              <Grid item xs={12} sm={12}>
+                                <Select
+                                  options={options}
+                                  //defaultValue={options[0]}
+                                  onChange={select_value =>
+                                    this.handleListInputTypeChange(
+                                      select_value,
+                                      index
+                                    )
+                                  } // higher order function
+                                />
+                              </Grid>
+                            </Grid>
+                            <Grid
+                              item
+                              container
+                              xs={12}
+                              sm={2}
+                              style={{ alignItems: "flex-end" }}
+                              justify="center"
+                            >
+                              <Grid item>
+                                <Button
+                                  className={classes.button}
+                                  variant="contained"
+                                  style={{
+                                    color: "white",
+                                    background: "#ca0000"
+                                  }}
+                                  onClick={() => {
+                                    this.handleRemoveInput(index);
+                                  }}
+                                >
+                                  xóa
+                              </Button>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                          <Divider style={{ margin: "5px auto", width: "50%" }} />
+                        </div>
+                      </Slide>
+                    );
+                  })}
+                </Box>{" "}
+              </div>
+            </Fade>
+          </Modal>
+        </div>
         <Grid
           container
           className={classes.CreateMiniTaskBodyContainer}
           spacing={2}
         >
           <Grid item xs={12} sm={6} md={6}>
-            <Grid style={{ background: "aliceblue", padding: "8px" }}>
-              {this.state.coursesOption[0] !== undefined ? (
+            <Grid style={{ padding: "8px" }}>
+              {/* {this.state.coursesOption[0] !== undefined ? (
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6} md={6}>
                     <div>Chọn chủ đề:</div>
@@ -421,11 +563,11 @@ class MinitaskEdit extends Component {
                 </Grid>
               ) : (
                 ""
-              )}
+              )} */}
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={6}>
-                  <div>Tên bài thực hành:</div>
+                  {this.renderTitle("Tên bài thực hành:")}
                   <input
                     name="name"
                     className="input-createminitask"
@@ -434,7 +576,7 @@ class MinitaskEdit extends Component {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={6}>
-                  <div>Tên Function:</div>
+                  {this.renderTitle("Tên hàm:")}
                   <input
                     name="name_func"
                     className="input-createminitask"
@@ -443,7 +585,7 @@ class MinitaskEdit extends Component {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={6}>
-                  <div>Số đậu:</div>
+                  {this.renderTitle("Sổ đậu:")}
                   <input
                     name="code_point"
                     type="number"
@@ -453,7 +595,7 @@ class MinitaskEdit extends Component {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={6}>
-                  <div>Chọn độ khó:</div>
+                  {this.renderTitle("Độ khó:")}
                   <Select
                     styles={selectStyles}
                     options={optionsLevel}
@@ -468,9 +610,7 @@ class MinitaskEdit extends Component {
               <Grid container>
                 <Grid item xs={12} md={12}>
                   {" "}
-                  <div style={{ marginBottom: 10, marginTop: 10 }}>
-                    Kiểu trả về:
-                  </div>
+                  {this.renderTitle("Kiểu trả về:")}
                   <Select
                     className="select_type"
                     styles={selectStyles}
@@ -488,20 +628,93 @@ class MinitaskEdit extends Component {
                 </Grid>
               </Grid>
               <Grid container>
-                <Grid item container xs={12} md={12}>
-                  <Grid item xs={12} md={12}>
-                    <div style={{ marginBottom: 10, marginTop: 10 }}>
-                      Mô tả bài toán:
-                    </div>
-                  </Grid>
-
-                  <ReactMde
-                    handleMarkdownChange={this.handleMarkdownChange}
-                    mini_task_desc={this.state.mini_task_desc}
-                  />
+                <Grid item xs={12}>
+                  <Box my={2}>
+                    <Button
+                      variant="contained"
+                      style={{ background: "#2a92ed", color: "white" }}
+                      className={classes.button}
+                      onClick={this.handleModalVariableOpen}
+                    >
+                      Thêm tham số
+                  </Button>
+                  </Box>
                 </Grid>
               </Grid>
             </Grid>
+            {/* <div
+              style={{
+                maxHeight: "50vh",
+                height: "200px",
+                position: "relative",
+                overflowY: "scroll",
+                overflowX: "hidden"
+              }}
+            >
+              {this.state.inputList.map((input, index) => {
+                return (
+                  <div key={index}>
+                    <Grid container spacing={1}>
+                      <Grid item container xs={12} sm={5} spacing={1}>
+                        <Grid item xs={12} sm={12}>
+                          {this.renderTitle("Tên tham số:")}
+                        </Grid>
+                        <Grid item xs={12} sm={12}>
+                          <input
+                            className="input-createminitask"
+                            value={input.input_name}
+                            onChange={e =>
+                              this.handleListInputNameChange(e, index)
+                            } // higher order function, index và e là biến vẫn được sử dụng sau khi onchange thự thi
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid item container xs={12} sm={5} spacing={1}>
+                        <Grid item xs={12} sm={12}>
+                          {this.renderTitle("Kiểu tham số:")}
+                        </Grid>
+                        <Grid item xs={12} sm={12}>
+                          <Select
+                            options={options}
+                            //defaultValue={options[0]}
+                            onChange={select_value =>
+                              this.handleListInputTypeChange(
+                                select_value,
+                                index
+                              )
+                            } // higher order function
+                          />
+                        </Grid>
+                      </Grid>
+                      <Grid
+                        item
+                        container
+                        xs={12}
+                        sm={2}
+                        style={{ alignItems: "flex-end" }}
+                      >
+                        <Grid item>
+                          <Button
+                            className={classes.button}
+                            variant="contained"
+                            style={{
+                              color: "white",
+                              background: "#ca0000"
+                            }}
+                            onClick={() => {
+                              this.handleRemoveInput(index);
+                            }}
+                          >
+                            xóa
+                              </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Divider style={{ margin: "5px auto", width: "50%" }} />
+                  </div>
+                );
+              })}{" "}
+            </div> */}
           </Grid>
           <Grid item xs={12} sm={6} md={6}>
             <div className="codeEditorCreateMiniTask">
@@ -510,88 +723,17 @@ class MinitaskEdit extends Component {
                 name_func={this.state.name_func}
                 inputList={this.state.inputList}
                 updateTemplateCode={this.updateTemplateCode}
+                template_code={template_code}
               />
             </div>
-            <Grid container style={{ marginTop: 20 }}>
+            {/* <Grid container style={{ marginTop: 20 }}>
               <Grid
                 item
                 xs={12}
                 md={12}
                 sm={12}
-                style={{ background: "aliceblue", padding: "10px" }}
+                style={{ padding: "10px" }}
               >
-                <div
-                /*   style={{
-                    maxHeight: "20vh",
-                    position: "relative",
-                    overflowY: "scroll",
-                    overflowX: "hidden"
-                  }}*/
-                >
-                  {this.state.inputList.map((input, index) => {
-                    return (
-                      <div key={index}>
-                        <Grid container spacing={1}>
-                          <Grid item container xs={12} sm={5} spacing={1}>
-                            <Grid item xs={12} sm={12}>
-                              Tên tham số:
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                              <input
-                                className="input-createminitask"
-                                value={input.input_name}
-                                onChange={e =>
-                                  this.handleListInputNameChange(e, index)
-                                } // higher order function, index và e là biến vẫn được sử dụng sau khi onchange thự thi
-                              />
-                            </Grid>
-                          </Grid>
-                          <Grid item container xs={12} sm={5} spacing={1}>
-                            <Grid item xs={12} sm={12}>
-                              kiểu tham số:
-                            </Grid>
-                            <Grid item xs={12} sm={12}>
-                              <Select
-                                options={options}
-                                //defaultValue={options[0]}
-                                onChange={select_value =>
-                                  this.handleListInputTypeChange(
-                                    select_value,
-                                    index
-                                  )
-                                } // higher order function
-                              />
-                            </Grid>
-                          </Grid>
-                          <Grid
-                            item
-                            container
-                            xs={12}
-                            sm={2}
-                            style={{ alignItems: "flex-end" }}
-                          >
-                            <Grid item>
-                              <Button
-                                className={classes.button}
-                                variant="contained"
-                                style={{
-                                  color: "white",
-                                  background: "#ca0000"
-                                }}
-                                onClick={() => {
-                                  this.handleRemoveInput(index);
-                                }}
-                              >
-                                xóa
-                              </Button>
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                        <Divider style={{ margin: "5px auto", width: "50%" }} />
-                      </div>
-                    );
-                  })}{" "}
-                </div>
                 <div
                   style={{
                     display: "flex",
@@ -599,37 +741,37 @@ class MinitaskEdit extends Component {
                     margin: "10px 0px"
                   }}
                 >
-                  <Button
-                    variant="contained"
-                    style={{ background: "#2a92ed", color: "white" }}
-                    className={classes.button}
-                    onClick={e => this.addInput(e)}
-                  >
-                    Thêm tham số
-                  </Button>
+                  
                 </div>
               </Grid>
               <Divider style={{ margin: "20px auto", width: "50%" }} />
-            </Grid>
+            </Grid> */}
           </Grid>
 
+          <Grid container>
+            <Grid item container xs={12} md={12}>
+              <Grid item xs={12} md={12}>
+                {this.renderTitle("Mô tả bài toán:")}
+              </Grid>
+              <Grid item xs={12} md={12}>
+                <div style={{ marginBottom: 10, marginTop: 10 }}>
+                  <ReactMde
+                    handleMarkdownChange={this.handleMarkdownChange}
+                    mini_task_desc={this.state.mini_task_desc}
+                  />
+                </div>
+              </Grid>
+            </Grid>
+          </Grid>
           <Grid item container xs={12} sm={12} md={12}>
-            <Grid
-              item
-              xs={12}
-              sm={12}
-              md={12}
-              style={{ justifyContent: "center", textAlign: "center" }}
-            >
-              {" "}
-              Tạo unit test
+            <Grid item xs={12} sm={12} md={12}>
+              {this.renderTitle("Tạo test:")}
             </Grid>
             <Grid
               item
-              xs={12}
-              md={12}
-              sm={12}
-              style={{ background: "aliceblue", padding: "10px" }}
+              xs={6}
+              md={6}
+              sm={6}
             >
               <div
               /*  style={{
@@ -641,67 +783,71 @@ class MinitaskEdit extends Component {
               >
                 {this.state.unit_tests.map((unit_test, index0) => {
                   return (
-                    <div key={index0} style={{ padding: 10 }}>
-                      {" "}
-                      Test {index0 + 1}
-                      <Paper style={{ padding: 10 }}>
-                        <Grid container spacing={1}>
-                          <Grid item xs={12} sm={12} md={12}>
-                            Inputs:
+                    <Box mr={1} mt={2}>
+                      <div key={index0}>
+                        {" "}
+                        {/* Test {index0 + 1} */}
+                        <Paper style={{ padding: 10 }}>
+                          <Grid container spacing={1}>
+                            <Grid item xs={12} sm={12} md={12}>
+                              {this.renderTitle("Input:")}
+                            </Grid>
+                            {unit_test.inputs.map((input, index1) => {
+                              return (
+                                <Grid item xs={12} sm={4} md={4} key={index1}>
+                                  <input
+                                    className="input-createminitask"
+                                    value={input.value}
+                                    onChange={e =>
+                                      this.handleInputTestChange(
+                                        e,
+                                        index0,
+                                        index1
+                                      )
+                                    }
+                                    placeholder={`param ${index1 + 1}`}
+                                  />
+                                </Grid>
+                              );
+                            })}
                           </Grid>
-                          {unit_test.inputs.map((input, index1) => {
-                            return (
-                              <Grid item xs={12} sm={4} md={4} key={index1}>
-                                <input
-                                  className="input-createminitask"
-                                  value={input.value}
-                                  onChange={e =>
-                                    this.handleInputTestChange(
-                                      e,
-                                      index0,
-                                      index1
-                                    )
-                                  }
-                                  placeholder={`param ${index1 + 1}`}
-                                />
-                              </Grid>
-                            );
-                          })}
-                        </Grid>
-                        <Grid container spacing={1}>
-                          <Grid item xs={12} sm={12} md={12}>
-                            Out put
+                          <Grid container spacing={1}>
+                            <Grid item xs={12} sm={12} md={12}>
+                              {this.renderTitle("Output:")}
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12}>
+                              <input
+                                className="output_createminitask"
+                                value={unit_test.expected_output}
+                                onChange={e =>
+                                  this.handleOutputTestChange(e, index0)
+                                }
+                              />
+                            </Grid>
                           </Grid>
-                          <Grid item xs={12} sm={12} md={12}>
-                            <input
-                              className="output_createminitask"
-                              value={unit_test.expected_output}
-                              onChange={e =>
-                                this.handleOutputTestChange(e, index0)
-                              }
-                            />
-                          </Grid>
-                        </Grid>
-                        <Grid container style={{ justifyContent: "center" }}>
-                          <Grid item>
-                            <Button
-                              className={classes.button}
-                              variant="contained"
-                              style={{ color: "white", background: "#ca0000" }}
-                              onClick={() => {
-                                this.handleRemoveUnitTest(index0);
-                              }}
-                            >
-                              xóa
+                          <Grid container>
+                            <Grid item>
+                              <Button
+                                className={classes.button}
+                                variant="contained"
+                                style={{ color: "white", background: "#ca0000" }}
+                                onClick={() => {
+                                  this.handleRemoveUnitTest(index0);
+                                }}
+                              >
+                                xóa
                             </Button>
+                            </Grid>
                           </Grid>
-                        </Grid>
-                      </Paper>
-                    </div>
+                        </Paper>
+                      </div>
+                    </Box>
                   );
                 })}
               </div>
-              <div>
+            </Grid>
+            <Grid item xs={6} md={6} sm={6}>
+              <Box my={2}>
                 <div className="codeEditorShowUnitTest">
                   <ShowUnitTest
                     output_type_func={this.state.output_type_func}
@@ -709,43 +855,56 @@ class MinitaskEdit extends Component {
                     unit_tests={this.state.unit_tests}
                   />
                 </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  margin: "10px 0px"
-                }}
-              >
-                <Button
-                  className={classes.button}
-                  style={{ background: "#2a92ed", color: "white" }}
-                  variant="contained"
-                  onClick={e => this.addTest(e)}
+              </Box>
+              <Box>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    margin: "10px 0px"
+                  }}
                 >
-                  Thêm test
+                  <Button
+                    className={classes.button}
+                    style={{ background: "#2a92ed", color: "white" }}
+                    variant="contained"
+                    onClick={e => this.addTest(e)}
+                  >
+                    Thêm test
                 </Button>
-              </div>
+                </div>
+              </Box>
+              <Box>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    margin: "10px 0px"
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    style={{ background: "#2fbe6f ", color: "white" }}
+                    className={classes.button}
+                    onClick={this.handleSubmit}
+                  >
+                    Thay đổi
+                </Button>
+                </div>
+              </Box>
             </Grid>
-            <Grid
+            {/* <Grid
               container
               item
               xs={12}
-              md={12}
-              sm={12}
+              md={6}
+              sm={6}
               style={{ justifyContent: "flex-end", padding: "10px" }}
             >
               <Grid item>
-                <Button
-                  variant="contained"
-                  style={{ background: "#2fbe6f ", color: "white" }}
-                  className={classes.button}
-                  onClick={this.handleSubmit}
-                >
-                  Thay đổi
-                </Button>
+                
               </Grid>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Grid>
         <ToastContainer

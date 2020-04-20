@@ -21,11 +21,6 @@ import "codemirror/addon/hint/css-hint.js"
 
 let jBeautify = require('js-beautify').js;
 
-
-
-
-
-
 class ShowUnitTest extends Component {
   constructor(props){
     super(props);
@@ -113,9 +108,10 @@ class ShowUnitTest extends Component {
   
     return (
       <CodeMirror
-      value={
-        junit4
-      }
+        width="1000px"
+        value={
+          junit4
+        }
         options={{
           mode: "javascript",
           theme: "material",
@@ -130,9 +126,8 @@ class ShowUnitTest extends Component {
           autocorrect:true,
           extraKeys:{"Ctrl-Space":"autocomplete"},
           readOnly:true,
-          
         }}
-        MarkText={{from:{line:0,ch:1}, to:{line:3,ch:1}, css: "font-size:5px"}}
+        MarkText={{from:{line:0,ch:1}, to:{line:3,ch:1}, css: "font-size:10px"}}
         onBeforeChange={(editor, data, value) => {
            this.props.updateTemplateCode(value);// update state usercode in component minitaskpage
         }}
