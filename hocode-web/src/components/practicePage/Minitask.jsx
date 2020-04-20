@@ -12,10 +12,11 @@ import DoneIcon from '@material-ui/icons/Done';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Slide from '@material-ui/core/Slide';
 import axios from "axios";
+import Tooltip from '@material-ui/core/Tooltip';
 
 class Minitask extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = ({
             isUserLikeMinitask: true,
@@ -24,12 +25,12 @@ class Minitask extends Component {
 
     componentDidMount = () => {
         axios.get(`http://localhost:8081/api/v1/curd/getUserMinitaskFavourite/${this.props.minitask.id}`)
-        .then(res => {
-            console.log(res.data);
-            if(res.data.id === "") {
-                this.setState({isUserLikeMinitask: false});
-            }
-        });
+            .then(res => {
+                console.log(res.data);
+                if (res.data.id === "") {
+                    this.setState({ isUserLikeMinitask: false });
+                }
+            });
     }
 
     renderLevel = (level) => {
@@ -54,12 +55,12 @@ class Minitask extends Component {
 
     handleUserLikeMinitask = () => {
         axios.get(`http://localhost:8081/api/v1/curd/handleLikeMinitask/${this.props.minitask.id}`)
-        .then(res => {
-            console.log(res.data);
-        });
-        this.setState({isUserLikeMinitask: !this.state.isUserLikeMinitask});
+            .then(res => {
+                console.log(res.data);
+            });
+        this.setState({ isUserLikeMinitask: !this.state.isUserLikeMinitask });
     }
-    
+
     render() {
         const { minitask, index } = this.props;
         const { isUserLikeMinitask } = this.state;
@@ -68,7 +69,7 @@ class Minitask extends Component {
                 <Slide in={true} direction="right" {...(true ? { timeout: 1550 } : {})}>
                     <Grid item xs={6}>
                         <Paper>
-                            <Grid style={{backgroundColor:""}} borderRadius={16} container xs={12} justify="center" alignItems="center">
+                            <Grid style={{ backgroundColor: "" }} borderRadius={16} container xs={12} justify="center" alignItems="center">
                                 <Grid xs={1}>
                                     <Box p={1} ml={1}>
                                         {this.renderStatus(minitask.status)}
@@ -81,12 +82,14 @@ class Minitask extends Component {
                                         </Typography>
                                     </Box>
                                 </Grid>
-                                <Grid xs={5}>
+                                <Grid xs={6}>
                                     <Box p={1}>
                                         <Link to={`/minitask/${minitask.id}`} style={{ textDecoration: 'none' }}>
-                                            <Typography variant="h6" style={{color:"#0088CC"}}>
-                                                {minitask.mini_task_name}
-                                            </Typography>
+                                            <Tooltip title={minitask.mini_task_name} placement="top">
+                                                <Typography variant="h6" style={{ color: "#0088CC" }}>
+                                                    {minitask.name_func}
+                                                </Typography>
+                                            </Tooltip>
                                         </Link>
                                     </Box>
                                 </Grid>
@@ -95,10 +98,10 @@ class Minitask extends Component {
                                         {this.renderLevel(minitask.level)}
                                     </Box>
                                 </Grid>
-                                <Grid xs={3}>
+                                <Grid xs={2}>
                                     <Box display="flex" justifyContent="flex-end" p={1}>
                                         <Box>
-                                            { !isUserLikeMinitask ? 
+                                            {!isUserLikeMinitask ?
                                                 <StarBorderRoundedIcon fontSize="large" style={{ cursor: "pointer", }} onClick={this.handleUserLikeMinitask} />
                                                 :
                                                 <StarIcon fontSize="large" style={{ cursor: "pointer", color: "#FCB829" }} onClick={this.handleUserLikeMinitask} />

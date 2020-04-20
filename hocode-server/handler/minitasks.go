@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -394,6 +395,66 @@ func (h *Handler) Minitasks(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, mta)
 }
 
+func (h *Handler) Get3RandomMinitask(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	mini_tasks := []*model.MiniTask{}
+
+	db.DB(config.NameDb).C("minitasks").
+		Find(bson.M{}).
+		Sort("-timestamps").All(&mini_tasks)
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	user_mini_task := []*model.UserMinitaskPractice{}
+	db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+		"user_id": userID,
+	}).All(&user_mini_task)
+
+	for i := range mini_tasks {
+		for j := range user_mini_task {
+			if mini_tasks[i].ID == bson.ObjectIdHex(user_mini_task[j].MiniTaskID) {
+				if user_mini_task[j].Status == "done" {
+					mini_tasks[i].Status = "done"
+				} else if user_mini_task[j].Status == "tried" {
+					mini_tasks[i].Status = "tried"
+				} else {
+					mini_tasks[i].Status = "normal"
+				}
+			}
+		}
+	}
+
+	result := []*model.MiniTask{}
+	random_minitask := rand.Intn(len(mini_tasks) - 0) + 0
+	isFound := false
+	countEasy := 0
+	countMedium := 0
+	countHard := 0
+
+	for !isFound{
+		if mini_tasks[random_minitask].Level == "easy" && countEasy<1{
+			result = append(result, mini_tasks[random_minitask])
+			countEasy++
+		} else if mini_tasks[random_minitask].Level == "medium" && countMedium<1{
+			result = append(result, mini_tasks[random_minitask])
+			countMedium++
+		} else if mini_tasks[random_minitask].Level == "hard" && countHard<1{
+			result = append(result, mini_tasks[random_minitask])
+			countHard++
+		}
+		if countHard == 1 && countMedium == 1 && countEasy == 1 {
+			isFound = true
+		}
+		random_minitask = rand.Intn(len(mini_tasks) - 0) + 0
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
 func (h *Handler) GetAllMinitask(c echo.Context) (err error) {
 	db := h.DB.Clone()
 	defer db.Close()
@@ -405,7 +466,7 @@ func (h *Handler) GetAllMinitask(c echo.Context) (err error) {
 
 	db.DB(config.NameDb).C("minitasks").
 		Find(bson.M{}).
-		Skip(page).
+		Skip(page*16).
 		Limit(16).
 		Sort("-timestamps").All(&mini_tasks)
 

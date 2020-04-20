@@ -54,8 +54,8 @@ class HeaderPracticePage extends Component {
             });
         axios.get(`http://localhost:8081/api/v1/curd/getTotalMinitask`)
             .then(res => {
-                // console.log(Math.floor(res.data/3)+1);
-                this.setState({ totalPage: Math.floor(res.data / 16) + 1 });
+                console.log(res.data);
+                this.setState({ totalPage: res.data%16===0 ? Math.floor(res.data / 16): Math.floor(res.data / 16) + 1});
             });
         axios.get(`http://localhost:8081/api/v1/curd/getChartInfo`)
             .then(res => {
@@ -331,7 +331,7 @@ class HeaderPracticePage extends Component {
                                         <Paper style={{ backgroundColor: "#FAFAFA" }}>
                                             <Box p={1} display="flex" justifyContent="center">
                                                 <Box>
-                                                    <Typography variant="h5">SỐ BÀI ĐÃ LÀM</Typography>
+                                                    <Typography variant="h5">SỐ BÀI ĐÃ HOÀN THÀNH</Typography>
                                                 </Box>
                                             </Box>
                                             {chartInfo.easy === 0 && chartInfo.medium === 0 && chartInfo.hard === 0 ?

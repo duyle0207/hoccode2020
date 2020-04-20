@@ -298,7 +298,7 @@ class CreateMiniTaskBody extends Component {
                 <Grid item xs={12} md={12}>
                   {" "}
                   <div style={{ marginBottom: 10, marginTop: 10 }}>
-                    Kiểu trả về:
+                    {/* Kiểu trả về: */}
                   </div>
                   <Select
                     className="select_type"

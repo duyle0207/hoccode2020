@@ -74,7 +74,96 @@ func (h *Handler) Courses(c echo.Context) (err error) {
 	c.Response().Header().Set("x-total-count", strconv.Itoa(len(courses)))
 
 	return c.JSON(http.StatusOK, courses)
+}
 
+func (h *Handler) GetTotalCourse(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	total_course, _ := db.DB(config.NameDb).C("course").Find(bson.M{
+		"status": "Active",
+	}).Count()
+
+	return c.JSON(http.StatusOK, total_course)
+}
+
+func (h *Handler) GetNewestCourse(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	courses := []*model.Course{}
+
+	_ = db.DB(config.NameDb).C("course").Find(bson.M{
+		"status": "Active",
+	}).Skip(0).Limit(4).Sort("-timestamp").All(&courses)
+
+	return c.JSON(http.StatusOK, courses)
+}
+
+func (h *Handler) CreateCourseType(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	course_type := &model.CourseType{}
+
+	if err = c.Bind(course_type); err!=nil{
+		return c.JSON(http.StatusOK, err)
+	}
+
+	course_type.ID = bson.NewObjectId()
+
+	_, err = db.DB(config.NameDb).C("course_type").UpsertId(course_type.ID, course_type)
+
+	if err != nil {
+		return c.JSON(http.StatusOK, err)
+	}
+
+	return c.JSON(http.StatusOK, "success")
+}
+
+func (h *Handler) GetCourseTypeList(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	course_type := []*model.CourseType{}
+
+	db.DB(config.NameDb).C("course_type").Find(bson.M{}).All(&course_type)
+
+	return c.JSON(http.StatusOK, course_type)
+}
+
+func (h *Handler) GetCourseByCourseType(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	course_type := c.Param("course_type")
+
+	courses := []*model.Course{}
+
+	db.DB(config.NameDb).C("course").Find(bson.M{
+		"course_type": course_type,
+		"status": "Active",
+	}).All(&courses)
+
+	return c.JSON(http.StatusOK, courses)
+}
+
+func (h *Handler) SearchCourseByCourseType(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	course_type := c.Param("course_type")
+	keyword := c.Param("keyword")
+
+	courses := []*model.Course{}
+
+	db.DB(config.NameDb).C("course").Find(bson.M{
+		"course_type": course_type,
+		"status": "Active",
+		"course_name": bson.RegEx{keyword, "i"},
+	}).All(&courses)
+
+	return c.JSON(http.StatusOK, courses)
 }
 
 // http://localhost:8080/courses/5d86e07bfe6e2b157bd3b259

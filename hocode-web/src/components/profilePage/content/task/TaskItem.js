@@ -80,8 +80,8 @@ class TaskItem extends Component {
             display: "flex",
             textDecoration: "none",
             color: "#595959",
-            
-            alignItems: "center"
+            alignItems: "center",
+            margin: "auto"
           }}
         >
           <Grid container item xs={12} sm={12} spacing={2} direction="row" alignItems="center" justify="center">
@@ -90,7 +90,7 @@ class TaskItem extends Component {
                 <div style={{ flexGrow: 1 }}> {minitask.mini_task_name}</div>
               </Tooltip>
             </Grid>
-            <Grid container item xs={3} sm={3} spacing={1}>
+            <Grid container item xs={3} sm={3} spacing={1} direction="row" justify="center" alignItems="center">
               <Tooltip title="Số đậu" placement="top">
                 <div
                   style={{
@@ -127,7 +127,7 @@ class TaskItem extends Component {
                 </div>
               </Tooltip>
             </Grid>
-            <Grid container item xs={3} sm={3} spacing={1}>
+            <Grid container item xs={3} sm={3} spacing={1} direction="row" justify="center" alignItems="center">
               <Tooltip title="Hoàn thành" placement="top">
               <div
                 style={{
@@ -181,8 +181,8 @@ class TaskItem extends Component {
             display: "flex",
             textDecoration: "none",
             color: "#595959",
-            
-            alignItems: "center"
+            alignItems: "center",
+            margin: "auto"
           }}
         >
           <Grid container xs={12} sm={12} spacing={3} direction="row" justify="center" alignItems="center" >
@@ -364,6 +364,10 @@ class TaskItem extends Component {
                 item
                 className={`${classes.MiniTaskItem}`}
                 key={minitask.id}
+                style={{
+                  width:"100%",
+                  verticalAlign:"middle"
+                }}
               >
                 {" "}
                 {this.renderMiniItem(minitask)}

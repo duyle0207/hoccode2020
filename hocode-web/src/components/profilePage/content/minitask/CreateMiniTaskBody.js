@@ -17,7 +17,7 @@ const options = [
   { value: "double", label: "Double" },
   { value: "double[]", label: "Double Array" },
   { value: "String[]", label: "String Array" },
-  { value: "int[]", label: "Interger Array" }
+  { value: "int[]", label: "Interger Array" },
 ];
 const optionsLevel =[
   { value: "easy", label: "Easy" },
