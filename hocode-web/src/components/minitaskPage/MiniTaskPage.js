@@ -409,6 +409,7 @@ class MiniTaskPage extends Component {
               stdout: stdout
             }
           }));
+          console.log(error);
           this.setState((state, props) => ({
             isLoading: false
           }));

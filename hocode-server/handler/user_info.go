@@ -55,6 +55,50 @@ func (h *Handler) GetUserCourse(c echo.Context) (err error) {
 
 }
 
+func (h *Handler) GetUserCourseProfile(c echo.Context) (err error) {
+
+	uc := &model.UserCourse{}
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	ID := claims["id"].(string)
+	fmt.Println("ID")
+	fmt.Println(ID)
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	courses := []*model.Course{}
+
+	if err = db.DB(config.NameDb).C("user_course").
+		Find(bson.M{
+			"user_id": ID,
+			"del":     bson.M{"$ne": true},
+		}).
+		One(&uc); err != nil {
+		if err == mgo.ErrNotFound {
+			// return echo.ErrNotFound
+			uc.CourseInfo = []*model.CourseInfo{}
+			return c.JSON(http.StatusOK, courses)
+		}
+		return
+	}
+
+	for i :=range uc.CourseInfo {
+		fmt.Println(i)
+		if i<3 {
+			course := &model.Course{}
+			db.DB(config.NameDb).C("course").Find(bson.M{
+				"_id": bson.ObjectIdHex(uc.CourseInfo[i].CourseID),
+			}).One(&course)
+			courses = append(courses, course)
+		}
+	}
+
+	return c.JSON(http.StatusOK, courses)
+
+}
+
 //func GetMiniTaskByID(id string, h *Handler) (minitask model.MiniTask) {
 //
 //	db := h.DB.Clone()

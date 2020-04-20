@@ -11,8 +11,26 @@ import StarBorderRoundedIcon from '@material-ui/icons/StarBorderRounded';
 import DoneIcon from '@material-ui/icons/Done';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Slide from '@material-ui/core/Slide';
+import axios from "axios";
 
 class Minitask extends Component {
+
+    constructor(props){
+        super(props);
+        this.state = ({
+            isUserLikeMinitask: true,
+        })
+    }
+
+    componentDidMount = () => {
+        axios.get(`http://localhost:8081/api/v1/curd/getUserMinitaskFavourite/${this.props.minitask.id}`)
+        .then(res => {
+            console.log(res.data);
+            if(res.data.id === "") {
+                this.setState({isUserLikeMinitask: false});
+            }
+        });
+    }
 
     renderLevel = (level) => {
         if (level === "easy") {
@@ -33,8 +51,18 @@ class Minitask extends Component {
             return "";
         }
     }
+
+    handleUserLikeMinitask = () => {
+        axios.get(`http://localhost:8081/api/v1/curd/handleLikeMinitask/${this.props.minitask.id}`)
+        .then(res => {
+            console.log(res.data);
+        });
+        this.setState({isUserLikeMinitask: !this.state.isUserLikeMinitask});
+    }
+    
     render() {
         const { minitask, index } = this.props;
+        const { isUserLikeMinitask } = this.state;
         return (
             <React.Fragment>
                 <Slide in={true} direction="right" {...(true ? { timeout: 1550 } : {})}>
@@ -70,8 +98,11 @@ class Minitask extends Component {
                                 <Grid xs={3}>
                                     <Box display="flex" justifyContent="flex-end" p={1}>
                                         <Box>
-                                            <StarBorderRoundedIcon fontSize="large" style={{ cursor: "pointer", }} onClick={() => { console.log("helo") }} />
-                                            <StarIcon fontSize="large" style={{ cursor: "pointer", color: "#FCB829" }} onClick={() => { console.log("helo") }} />
+                                            { !isUserLikeMinitask ? 
+                                                <StarBorderRoundedIcon fontSize="large" style={{ cursor: "pointer", }} onClick={this.handleUserLikeMinitask} />
+                                                :
+                                                <StarIcon fontSize="large" style={{ cursor: "pointer", color: "#FCB829" }} onClick={this.handleUserLikeMinitask} />
+                                            }
                                         </Box>
                                     </Box>
                                 </Grid>

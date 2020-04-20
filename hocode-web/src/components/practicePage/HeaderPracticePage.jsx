@@ -13,7 +13,6 @@ import Paper from '@material-ui/core/Paper';
 import {
     Chart,
     PieSeries,
-    Title,
 } from '@devexpress/dx-react-chart-material-ui';
 
 import { Animation } from '@devexpress/dx-react-chart';
@@ -47,10 +46,11 @@ class HeaderPracticePage extends Component {
     }
 
     componentDidMount = () => {
+        this.setState({isLoadingFilterData: true})
         axios.get(`http://localhost:8081/api/v1/curd/getAllMinitask/${this.state.page - 1}`)
             .then(res => {
                 console.log(res.data);
-                this.setState({ minitaskList: res.data, tempData: res.data });
+                this.setState({ minitaskList: res.data, tempData: res.data, isLoadingFilterData:false });
             });
         axios.get(`http://localhost:8081/api/v1/curd/getTotalMinitask`)
             .then(res => {
@@ -68,7 +68,7 @@ class HeaderPracticePage extends Component {
                 ];
 
                 const allTask = [
-                    { key: 'Todo', value: chartInfo.todo - (chartInfo.solved+chartInfo.attempted) },
+                    { key: 'Todo', value: chartInfo.todo - (chartInfo.solved + chartInfo.attempted) },
                     { key: 'Attempted', value: chartInfo.attempted },
                     { key: 'Solved', value: chartInfo.solved },
                 ];
@@ -291,6 +291,11 @@ class HeaderPracticePage extends Component {
                                 <Grid item xs={3}>
                                     <Box >
                                         <Paper>
+                                            <Box p={1} display="flex" justifyContent="center">
+                                                <Box>
+                                                    <Typography variant="h5">THỐNG KÊ CHUNG</Typography>
+                                                </Box>
+                                            </Box>
                                             <Chart
                                                 data={chartAllTask}
                                             >
@@ -298,15 +303,15 @@ class HeaderPracticePage extends Component {
                                                     valueField="value"
                                                     argumentField="key"
                                                 />
-                                                <Title
+                                                {/* <Title
                                                     text="THỐNG KÊ CHUNG"
-                                                />
+                                                /> */}
                                                 <Animation />
                                             </Chart>
                                             <Box display="flex" justifyContent="center" p={1} alignItems="center">
                                                 <Box mx={1}>
                                                     <Typography variant="overline" style={{ color: "#42A5F5" }}>
-                                                        To do: {chartInfo.todo - (chartInfo.solved+chartInfo.attempted)}
+                                                        To do: {chartInfo.todo - (chartInfo.solved + chartInfo.attempted)}
                                                     </Typography>
                                                 </Box>
                                                 <Box mx={1}>
@@ -324,19 +329,32 @@ class HeaderPracticePage extends Component {
                                     </Box>
                                     <Box mt={2}>
                                         <Paper style={{ backgroundColor: "#FAFAFA" }}>
-                                            <Chart
-                                                data={chartData}
-                                            >
-                                                <PieSeries
-                                                    valueField="value"
-                                                    argumentField="key"
-                                                    innerRadius={0.6}
-                                                />
-                                                <Title
-                                                    text="SỐ BÀI ĐÃ LÀM"
-                                                />
-                                                <Animation />
-                                            </Chart>
+                                            <Box p={1} display="flex" justifyContent="center">
+                                                <Box>
+                                                    <Typography variant="h5">SỐ BÀI ĐÃ LÀM</Typography>
+                                                </Box>
+                                            </Box>
+                                            {chartInfo.easy === 0 && chartInfo.medium === 0 && chartInfo.hard === 0 ?
+                                                <Box p={1} display="flex" justifyContent="center">
+                                                    <Box>
+                                                        <Typography variant="button">Bạn chưa thực hiện bài thực hành nào</Typography>
+                                                    </Box>
+                                                </Box>
+                                                :
+                                                <Chart
+                                                    data={chartData}
+                                                >
+                                                    <PieSeries
+                                                        valueField="value"
+                                                        argumentField="key"
+                                                        innerRadius={0.6}
+                                                    />
+                                                    {/* <Title
+                                                text="SỐ BÀI ĐÃ LÀM"
+                                            /> */}
+                                                    <Animation />
+                                                </Chart>
+                                            }
                                             <Box display="flex" justifyContent="center" p={2} alignItems="center">
                                                 <Box mx={1}>
                                                     <Typography variant="overline" style={{ color: "#9CCC65" }}>

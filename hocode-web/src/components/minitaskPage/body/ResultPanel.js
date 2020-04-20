@@ -79,6 +79,8 @@ export default function ResultPanel(props) {
   function renderResultPanel(result) {
     if (result.stdout !== undefined ) {
       if (result.error !== "") {
+        console.info("error");
+        console.info(result.error);
         return (
           <React.Fragment>
             <div
@@ -88,7 +90,7 @@ export default function ResultPanel(props) {
                 fontSize: 14
               }}
             >
-              {result.error}
+              <Typography varian="caption">{result.error.substring(0, result.error.length/2)}</Typography>
             </div>
           </React.Fragment>
         );

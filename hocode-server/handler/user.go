@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"time"
 
 	"github.com/duyle0207/hoccode2020/config"
 
@@ -150,4 +151,94 @@ func GetUserByID(h *Handler, user_id string) model.User {
 	}).One(&user)
 
     return user
+}
+
+func (h *Handler) AddMinitaskToFavouriteList(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	minitask_id := c.Param("minitask_id")
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	user_minitask_favourite_temp := &model.UserMinitaskFavourite{}
+
+	db.DB(config.NameDb).C("user_minitask_favourite").Find(bson.M{
+		"user_id": userID,
+		"minitask_id": minitask_id,
+	}).One(&user_minitask_favourite_temp)
+
+	if user_minitask_favourite_temp.ID == "" {
+		user_minitask_favourite_temp.ID = bson.NewObjectId()
+		user_minitask_favourite_temp.UserID = userID
+		user_minitask_favourite_temp.MiniTaskID = minitask_id
+		user_minitask_favourite_temp.Timestamp = time.Now()
+
+		db.DB(config.NameDb).C("user_minitask_favourite").UpsertId(user_minitask_favourite_temp.ID, user_minitask_favourite_temp)
+	} else {
+		db.DB(config.NameDb).C("user_minitask_favourite").RemoveId(user_minitask_favourite_temp.ID)
+	}
+
+	return c.JSON(http.StatusOK, user_minitask_favourite_temp)
+}
+
+func (h *Handler) CheckUserLikeMinitask(c echo.Context) (err error) {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	user_minitask_favourite := &model.UserMinitaskFavourite{}
+
+	minitask_id := c.Param("minitask_id")
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	db.DB(config.NameDb).C("user_minitask_favourite").Find(bson.M{
+		"user_id": userID,
+		"minitask_id": minitask_id,
+	}).One(&user_minitask_favourite)
+
+	return c.JSON(http.StatusOK, user_minitask_favourite)
+}
+
+func (h *Handler) GetUserMinitaskFavourite(c echo.Context) error {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	user_minitask_favourite := []*model.UserMinitaskFavourite{}
+	db.DB(config.NameDb).C("user_minitask_favourite").Find(bson.M{
+		"user_id": userID,
+	}).All(&user_minitask_favourite)
+
+	minitask_list := []*model.MiniTask{}
+
+	for i:=range  user_minitask_favourite {
+		minitask := &model.MiniTask{}
+
+		user_minitask_practice_temp := &model.UserMinitaskPractice{}
+
+		db.DB(config.NameDb).C("user_minitask_practice").Find(bson.M{
+			"user_id":     userID,
+			"minitask_id": user_minitask_favourite[i].MiniTaskID,
+		}).One(&user_minitask_practice_temp)
+
+		db.DB(config.NameDb).C("minitasks").Find(bson.M{
+			"_id": bson.ObjectIdHex(user_minitask_favourite[i].MiniTaskID),
+		}).One(&minitask)
+
+		if user_minitask_practice_temp != nil {
+			minitask.Status = user_minitask_practice_temp.Status
+		}
+
+		minitask_list = append(minitask_list, minitask)
+	}
+
+	return c.JSON(http.StatusOK, minitask_list)
 }

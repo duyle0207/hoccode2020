@@ -29,9 +29,11 @@ import (
 // @BasePath /api/v1
 
 func main() {
+
 	sentry.Init(sentry.ClientOptions{
 		Dsn: "https://dc72a0f7e03b48ee9f92721698fbd011@sentry.io/1827288",
 	})
+
 	//sentry.CaptureException(errors.New("Start App"))
 	// Since sentry emits events in the background we need to make sure
 	// they are sent before we shut down
@@ -82,10 +84,11 @@ func main() {
 	//	log.Info("Connect mongodb success")
 	//}
 
+	// Connect mongo cluster
 	tlsConfig := &tls.Config{}
 
 	dialInfo := &mgo.DialInfo{
-		Addrs:    []string{config.LinkDb},
+		Addrs:    []string{config.LinkDb, config.LinkDb2, config.LinkDb3},
 		Database: config.NameDb,
 		Username: config.Username,
 		Password: config.Password,
@@ -105,6 +108,15 @@ func main() {
 		log.Info("Connect mongodb success")
 	}
 
+	//Connect Mongo local
+	//db, err := mgo.Dial("localhost:27017/hocode")
+	//if err != nil {
+	//	log.Info("Connect mongodb error")
+	//	e.Logger.Fatal(err)
+	//} else {
+	//	log.Info("Connect mongodb success")
+	//}
+
 	// Initialize handler
 	h := &handler.Handler{DB: db}
 
@@ -113,7 +125,7 @@ func main() {
 
 	e.POST("/createTaskMinTask", h.CreateTaskMinTask)
 
-	// e.GET("/users", h.GetUser)
+	e.GET("/users", h.GetUser)
 	// e.GET("/users/:id", h.GetUserByID)
 	// e.POST("/users", h.SaveUser)
 	// e.PUT("/users/:id", h.UpdateUser)
@@ -164,6 +176,9 @@ func main() {
 
 	r.GET("/daily", h.DailyMiniTask)
 
+	r.GET("/getMinitasksByTaskID/:id", h.GetMiniTaskByTaskID)
+	r.GET("/totalMinitask/:course_id", h.GetTotalCourseMinitask)
+
 	r.GET("/certs/search/:id", h.SearchCertsByID)
 
 	r.GET("/getGeneralLeaderBoard", h.GetGeneralLeaderBoard)
@@ -180,6 +195,8 @@ func main() {
 	curd.GET("/getTotalMinitask",h.GetTotalMinitask)
 	curd.POST("/runPracticeCode", h.RunCodePractice)
 	curd.GET("/getUserMinitaskPractice/:minitask_id", h.GetUserPracticeCode)
+	curd.GET("/getUserMinitaskPractice", h.GetUserPracticeMinitask)
+
 	curd.GET("/getChartInfo",h.GetChartInfo)
 
 	curd.GET("/configs", h.GetListConfigs)
@@ -235,6 +252,10 @@ func main() {
 	curd.DELETE("/task_minitask/:task_id/:minitask_id/:course_id", h.DeleteTaskMinitask)
 	curd.GET("/getCoursePassInfo/:course_id", h.IsPassTask)
 
+	curd.GET("/getUserMinitaskFavourite/:minitask_id",h.CheckUserLikeMinitask)
+	curd.GET("/handleLikeMinitask/:minitask_id",h.AddMinitaskToFavouriteList)
+	curd.GET("/getUserMinitaskFavouriteList",h.GetUserMinitaskFavourite)
+
 	// End CURD
 
 	rs := e.Group("/api/v1/auth")
@@ -268,6 +289,7 @@ func main() {
 	rs.GET("/listUserCourse", h.GetListUserCourse)
 
 	rs.GET("/usercourse", h.GetUserCourse)
+	rs.GET("/usercourseProfile", h.GetUserCourseProfile)
 	rs.GET("/completeminitask", h.GetUserCompleteMititask)
 
 	rs.GET("/courses/:id/tasks", h.AuthTaskByCoursesID)

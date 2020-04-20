@@ -22,6 +22,7 @@ type (
 		Avatar       string      `json:"avatar" bson:"avatar"`
 		TemplateCode string      `json:"template_code" bson:"template_code"`
 		UnitTests    []*UnitTest `json:"unit_tests" bson:"unit_tests"`
+
 		// input_list:[{input_name:"param1",input_type:"int"}]
 
 		InputList []*InputList `json:"input_list" bson:"input_list"`

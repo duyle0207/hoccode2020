@@ -1,7 +1,12 @@
 package handler
 
 import (
+	"fmt"
+	"github.com/duyle0207/hoccode2020/config"
+	model "github.com/duyle0207/hoccode2020/models"
+	"gopkg.in/mgo.v2/bson"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo"
 )
@@ -15,6 +20,22 @@ import (
 // @Router /health_check [get]
 func (h *Handler) HealthCheck(c echo.Context) (err error) {
 
-	return c.JSON(http.StatusOK, "Server Ok")
+	courses := []*model.User{}
+	page, _ := strconv.Atoi(c.QueryParam("page"))
+	limit, _ := strconv.Atoi(c.QueryParam("limit"))
 
+	db := h.DB.Clone()
+	fmt.Println(db)
+	defer db.Close()
+
+	if err = db.DB(config.NameDb).C("users").
+		Find(bson.M{"del": bson.M{"$ne": true}}).
+		Skip((page - 1) * limit).
+		Limit(limit).
+		Sort("-timestamp").
+		All(&courses); err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusOK, courses)
 }
