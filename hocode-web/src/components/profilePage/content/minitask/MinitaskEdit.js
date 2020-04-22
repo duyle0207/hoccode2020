@@ -89,6 +89,8 @@ class MinitaskEdit extends Component {
       courses_option_select: { value: "", label: "" },
       task_option_select: { value: "", label: "" },
       isImportVariableOpen: false,
+      isShowError: false,
+      errContent: "",
     };
     this.output_type_func = React.createRef();
     this.courses_ref = React.createRef();
@@ -147,59 +149,59 @@ class MinitaskEdit extends Component {
           level_ref_select: found2
         });
       });
-    axios.get(`http://localhost:8081/api/v1/courses`).then(res => {
-      const courses = res.data;
-      const coursesFilter = courses.filter(course => course.tasks.length > 0); // chọn những courses có task
-      const coursesoption = coursesFilter.map(course => {
-        return { value: course.id, label: course.course_name };
-      });
-      // const tasksoption = courses[0].tasks.map(task => {
-      //   return { value: task.id, label: task.task_name };
-      // });
-      const tasksfulloption = [];
+    // axios.get(`http://localhost:8081/api/v1/courses`).then(res => {
+    //   const courses = res.data;
+    //   const coursesFilter = courses.filter(course => course.tasks.length > 0); // chọn những courses có task
+    //   const coursesoption = coursesFilter.map(course => {
+    //     return { value: course.id, label: course.course_name };
+    //   });
+    //   // const tasksoption = courses[0].tasks.map(task => {
+    //   //   return { value: task.id, label: task.task_name };
+    //   // });
+    //   const tasksfulloption = [];
 
-      /* eslint-disable array-callback-return */
+    //   /* eslint-disable array-callback-return */
 
-      for (let i = 0; i < courses.length; i++) {
-        courses[i].tasks.map(tas => {
-          tasksfulloption.push({
-            value: tas.id,
-            label: tas.task_name,
-            courses: { value: courses[i].id, label: courses[i].course_name, },
-            tasksoption: courses[i].tasks.map((task) => {
-              return { value: task.id, label: task.task_name };
-            }),
-          });
-        });
-      }
-      /* eslint-enable array-callback-return */
+    //   for (let i = 0; i < courses.length; i++) {
+    //     courses[i].tasks.map(tas => {
+    //       tasksfulloption.push({
+    //         value: tas.id,
+    //         label: tas.task_name,
+    //         courses: { value: courses[i].id, label: courses[i].course_name, },
+    //         tasksoption: courses[i].tasks.map((task) => {
+    //           return { value: task.id, label: task.task_name };
+    //         }),
+    //       });
+    //     });
+    //   }
+    //   /* eslint-enable array-callback-return */
 
-      // courses.map(cou => {
-      //   cou.tasks.map(tas => {
-      //     tasksfulloption.push({ value: tas.id, label: tas.task_name });
-      //   });
-      // });
+    //   // courses.map(cou => {
+    //   //   cou.tasks.map(tas => {
+    //   //     tasksfulloption.push({ value: tas.id, label: tas.task_name });
+    //   //   });
+    //   // });
 
-      // if (minitask !== null) {
-      // const foundCourse = coursesoption.find(
-      //   element => element.value === minitask.course_id
-      // );
-      const foundTask = tasksfulloption.find(
-        element => element.value === minitask.task_id
-      );
-      // }
+    //   // if (minitask !== null) {
+    //   // const foundCourse = coursesoption.find(
+    //   //   element => element.value === minitask.course_id
+    //   // );
+    //   const foundTask = tasksfulloption.find(
+    //     element => element.value === minitask.task_id
+    //   );
+    //   // }
 
-      console.log(tasksfulloption);
-      console.log(foundTask);
+    //   console.log(tasksfulloption);
+    //   console.log(foundTask);
 
-      this.setState({
-        courses: coursesFilter,
-        coursesOption: coursesoption,
-        // tasksOption: foundTask.tasksoption,
-        // courses_option_select: foundTask.courses,
-        task_option_select: foundTask
-      });
-    });
+    //   this.setState({
+    //     courses: coursesFilter,
+    //     coursesOption: coursesoption,
+    //     // tasksOption: foundTask.tasksoption,
+    //     // courses_option_select: foundTask.courses,
+    //     task_option_select: foundTask
+    //   });
+    // });
   }
 
   // handle modal import variable
@@ -269,7 +271,11 @@ class MinitaskEdit extends Component {
           containerId: "B"
         });
         console.log(response);
-      });
+      }).catch(err => {
+        if (err !== undefined) {
+          this.setState({ isShowError: true, errContent: "Làm ơn nhập đủ thông tin" })
+        }
+      });;
     console.log(newMiniTask);
   }
 
@@ -395,14 +401,63 @@ class MinitaskEdit extends Component {
     </Box>
   }
 
+  handleShowError = () => {
+    this.setState({ isShowError: !this.state.isShowError });
+  }
+
+
   render() {
     const { classes } = this.props;
-    const { template_code, isImportVariableOpen } = this.state;
+    const { template_code, isImportVariableOpen, errContent, isShowError } = this.state;
 
     return (
       <React.Fragment>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Typography variant="h2">Sửa bài thực hành</Typography>
+        </div>
+        <div>
+          {/* <button type="button" onClick={this.handleModalVariableOpen}>
+            react-transition-group
+          </button> */}
+          <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '8px'
+            }}
+            open={isShowError}
+            onClose={this.handleShowError}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <div
+              style={{
+                maxHeight: "50vh",
+                height: "200px",
+                width: "300px",
+                position: "relative",
+                overflowY: "scroll",
+                overflowX: "hidden",
+                backgroundColor: "white",
+                borderRadius: '8px'
+              }}
+            >
+              <Box p={2}>
+                <Box>
+                  <Typography variant="h6">{errContent}</Typography>
+                </Box>
+                <Box>
+                  {errContent}
+                </Box>
+              </Box>
+            </div>
+          </Modal>
         </div>
         <div>
           {/* <button type="button" onClick={this.handleModalVariableOpen}>

@@ -730,7 +730,7 @@ func (h *Handler) CreateMinitast(c echo.Context) (err error) {
 		mtn.ID = bson.NewObjectId()
 	}
 	// Validation
-	if mtn.MiniTaskName == ""  || mtn.Status == "" || mtn.NameFunc == "" || mtn.MinitaskDesc == "" || mtn.TemplateCode == "" {
+	if mtn.MiniTaskName == ""  || mtn.Status == "" || mtn.NameFunc == "" || mtn.MinitaskDesc == "" || mtn.TemplateCode == "" || mtn.CodePoint == 0{
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid to or message fields"}
 	}
 

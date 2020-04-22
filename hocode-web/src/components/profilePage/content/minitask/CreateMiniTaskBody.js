@@ -27,7 +27,7 @@ const options = [
   { value: "int[]", label: "Interger Array" },
   { value: "void", label: "Void" },
 ];
-const optionsLevel =[
+const optionsLevel = [
   { value: "easy", label: "Easy" },
   { value: "medium", label: "Medium" },
   { value: "hard", label: "Hard" },
@@ -78,7 +78,9 @@ class CreateMiniTaskBody extends Component {
       course_id: "", // ban đầu khi gọi api thì set state để cái này có giá trị mặc định
       task_id: "",
       code_point: 0,
-      numbers_doing: 0 // số lượt làm tính điểm cho bài thực hành
+      numbers_doing: 0, // số lượt làm tính điểm cho bài thực hành,
+      isShowError: false,
+      errContent: "",
     };
     this.output_type_func = React.createRef();
     this.courses_ref = React.createRef();
@@ -99,25 +101,25 @@ class CreateMiniTaskBody extends Component {
   }
 
   componentDidMount() {
-    axios.get(`http://localhost:8081/api/v1/courses`).then(res => {
-      const courses = res.data;
-      const coursesFilter = courses.filter(course => course.tasks.length > 0); // chọn những courses có task
-      const coursesoption = coursesFilter.map(course => {
-        return { value: course.id, label: course.course_name };
-      });
-      this.setState({
-        courses: coursesFilter,
-        coursesOption: coursesoption,
-        tasksOption: courses[0].tasks.map(task => {
-          return { value: task.id, label: task.task_name };
-        })
-      });
-      console.log(courses);
-      this.setState({
-        course_id: courses[0].id,
-        task_id: courses[0].tasks.length === 0 ? "" : courses[0].tasks[0].id
-      });
-    });
+    // axios.get(`http://localhost:8081/api/v1/courses`).then(res => {
+    //   const courses = res.data;
+    //   const coursesFilter = courses.filter(course => course.tasks.length > 0); // chọn những courses có task
+    //   const coursesoption = coursesFilter.map(course => {
+    //     return { value: course.id, label: course.course_name };
+    //   });
+    //   this.setState({
+    //     courses: coursesFilter,
+    //     coursesOption: coursesoption,
+    //     tasksOption: courses[0].tasks.map(task => {
+    //       return { value: task.id, label: task.task_name };
+    //     })
+    //   });
+    //   console.log(courses);
+    //   this.setState({
+    //     course_id: courses[0].id,
+    //     task_id: courses[0].tasks.length === 0 ? "" : courses[0].tasks[0].id
+    //   });
+    // });
   }
 
   // handle modal import variable
@@ -151,11 +153,11 @@ class CreateMiniTaskBody extends Component {
   async handleSubmit() {
     const template_code = `public ${this.state.output_type_func} ${
       this.state.name_func
-    }(${this.state.inputList
-      .map(input => {
-        return `${input.input_type} ${input.input_name}`;
-      })
-      .join()})
+      }(${this.state.inputList
+        .map(input => {
+          return `${input.input_type} ${input.input_name}`;
+        })
+        .join()})
 { 
 }`;
 
@@ -177,12 +179,16 @@ class CreateMiniTaskBody extends Component {
     };
     axios
       .post("http://localhost:8081/api/v1/minitasks", newMiniTask)
-      .then(function(response) {
+      .then(function (response) {
         window.location.reload();
         toast("Tạo bài thực hành thành công!", {
           containerId: "B"
         });
         console.log(response);
+      }).catch(err => {
+        if (err !== undefined) {
+          this.setState({ isShowError: true, errContent: "Làm ơn nhập đủ thông tin" })
+        }
       });
     console.log(newMiniTask);
   }
@@ -194,7 +200,7 @@ class CreateMiniTaskBody extends Component {
     this.setState({
       [name]: select_value.value
     });
-    
+
   }
   async onCoursesSelectChange(select_value) {
     // mấy chỗ select này coi chừng sai :v
@@ -203,7 +209,7 @@ class CreateMiniTaskBody extends Component {
     }));
     console.log(select_value);
     const name = this.courses_ref.current.props.name; //get name of select tag
-    let course = await this.state.courses.find(function(course) {
+    let course = await this.state.courses.find(function (course) {
       return course.id === select_value.value;
     });
     console.log(course);
@@ -227,7 +233,7 @@ class CreateMiniTaskBody extends Component {
     this.setState({
       [name]: select_value.value
     });
-    console.log(name,select_value)
+    console.log(name, select_value)
   }
   // update template code when typing
   updateTemplateCode(value) {
@@ -276,7 +282,7 @@ class CreateMiniTaskBody extends Component {
     /* for (let i = 0; i < inputListLength; i++) {
       arrayInput.push({ value: "", type: "int" });
     }*/
-    this.state.inputList.forEach(function(input, key) {
+    this.state.inputList.forEach(function (input, key) {
       arrayInput.push({ value: "", type: input.input_type });
     });
 
@@ -305,14 +311,62 @@ class CreateMiniTaskBody extends Component {
     </Box>
   }
 
+  handleShowError = () => {
+    this.setState({ isShowError: !this.state.isShowError });
+  }
+
   render() {
     const { classes } = this.props;
-    const { template_code, isImportVariableOpen } = this.state;
+    const { template_code, isImportVariableOpen, errContent, isShowError } = this.state;
 
     return (
       <React.Fragment>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <Typography variant="h2">Sửa bài thực hành</Typography>
+          <Typography variant="h2">Thêm bài thực hành</Typography>
+        </div>
+        <div>
+          {/* <button type="button" onClick={this.handleModalVariableOpen}>
+            react-transition-group
+          </button> */}
+          <Modal
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '8px'
+            }}
+            open={isShowError}
+            onClose={this.handleShowError}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <div
+              style={{
+                maxHeight: "50vh",
+                height: "200px",
+                width: "300px",
+                position: "relative",
+                overflowY: "scroll",
+                overflowX: "hidden",
+                backgroundColor: "white",
+                borderRadius: '8px'
+              }}
+            >
+              <Box p={2}>
+                <Box>
+                  <Typography variant="h6">{errContent}</Typography>
+                </Box>
+                <Box>
+                  {errContent}
+                </Box>
+              </Box>
+            </div>
+          </Modal>
         </div>
         <div>
           {/* <button type="button" onClick={this.handleModalVariableOpen}>

@@ -14,7 +14,7 @@ class ReactMde extends Component {
     return (
       <Grid item xs={6} sm={6} >
           <SimpleMDEReact
-            style={{width:"500px"}}
+            style={{width:"1400px"}}
             className={"react_mde_custom"}
             label=""
             value={this.props.mini_task_desc}
