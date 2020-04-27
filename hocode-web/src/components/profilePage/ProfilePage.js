@@ -32,6 +32,9 @@ import NavRight from "./navRight/NavRight";
 import PracticePage from "../practicePage/PracticePage";
 import "./profilepage.css";
 import KeyboardIcon from '@material-ui/icons/Keyboard';
+import RoomPracticePage from '../roomPractice/RoomPracticePage';
+import GroupIcon from '@material-ui/icons/Group';
+import CreateRoomPage from '../roomPractice/CreateRoomPage';
 
 const drawerWidth = 240;
 const styles = theme => ({
@@ -218,6 +221,17 @@ class ProfilePage extends React.Component {
                 </p>
               </MenuItem>
             </Link>
+
+            <Link to={`${url}/contest`}>
+              <MenuItem
+                selected={pathname === `${url}/contest`}
+                onClick={this.onClickMenuItem(1)}
+                dense="true"
+              >
+                <GroupIcon style={{ fontSize: 16 }} />
+                <p style={{ fontSize: 14, marginLeft: "8px" }}>Chiến đấu</p>
+              </MenuItem>
+            </Link>
             {this.props.user.role === "mod" ||
               this.props.user.role === "admin" ? (
                 <Link to={`/admin`}>
@@ -336,6 +350,9 @@ class ProfilePage extends React.Component {
             <Route path={`${path}/course`}>
               <CourseBody url={url} />
             </Route>
+            <Route path={`${path}/contest`}>
+              <RoomPracticePage url={url} />
+            </Route>
             <Route path={`${path}/courses/:courseId/tasks`}>
               <TaskBody location={this.props.location} />
             </Route>
@@ -345,6 +362,9 @@ class ProfilePage extends React.Component {
             {/* <Route path={`${path}/admin`}>
               <ReactAdmin />
             </Route> */}
+            <Route path={`${path}/create-contest`}>
+              <CreateRoomPage />
+            </Route>
             <Route path={`${path}/account`}>
               <Account />
             </Route>

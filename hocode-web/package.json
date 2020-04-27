@@ -25,6 +25,8 @@
     "jwt-decode": "^2.2.0",
     "markdown-react-js": "^1.0.2",
     "material-table": "^1.57.2",
+    "material-ui-datetimepicker": "^1.0.7",
+    "material-ui-pickers": "^2.2.4",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
     "ra-data-json-server": "^2.9.7",

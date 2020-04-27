@@ -250,7 +250,7 @@ func main() {
 	curd.POST("/tasks", h.CreateTasks)
 	curd.DELETE("/tasks/:id", h.DeleteTasks)
 
-	e.GET("/searchMinitasks/:mini_task_name/", h.SearchMinitasks)
+	curd.GET("/searchMinitasks/:mini_task_name/", h.SearchMinitasks)
 	curd.GET("/searchMinitasksPracticePage/:mini_task_name/:status/:level/", h.SearchMinitasksPracticePage)
 	curd.GET("/minitasks", h.GetListMiniTasks)
 	curd.GET("/minitasks/:id", h.GetOneMiniTasks)
