@@ -2,6 +2,9 @@ package main
 
 import (
 	"crypto/tls"
+	"net"
+	"time"
+
 	"github.com/duyle0207/hoccode2020/config"
 	"github.com/duyle0207/hoccode2020/handler"
 	"github.com/getsentry/sentry-go"
@@ -9,8 +12,6 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 	"gopkg.in/mgo.v2"
-	"net"
-	"time"
 )
 
 // @title Hocode API
@@ -161,8 +162,8 @@ func main() {
 	r.GET("/tasks/:id", h.TaskByID)
 
 	r.GET("/minitasks", h.Minitasks)
-	r.GET("/getAllMinitask/:page",h.GetAllMinitask)
-	r.GET("/getTotalMinitask",h.GetTotalMinitask)
+	r.GET("/getAllMinitask/:page", h.GetAllMinitask)
+	r.GET("/getTotalMinitask", h.GetTotalMinitask)
 	r.GET("/minitasks/:id", h.MinitasksByID)
 
 	r.GET("/profile", h.Profile)
@@ -196,16 +197,16 @@ func main() {
 
 	curd.Use(middleware.JWT([]byte("secret")))
 
-	curd.GET("/get3RandomMinitask",h.Get3RandomMinitask)
+	curd.GET("/get3RandomMinitask", h.Get3RandomMinitask)
 
 	// CURD
-	curd.GET("/getAllMinitask/:page",h.GetAllMinitask)
-	curd.GET("/getTotalMinitask",h.GetTotalMinitask)
+	curd.GET("/getAllMinitask/:page", h.GetAllMinitask)
+	curd.GET("/getTotalMinitask", h.GetTotalMinitask)
 	curd.POST("/runPracticeCode", h.RunCodePractice)
 	curd.GET("/getUserMinitaskPractice/:minitask_id", h.GetUserPracticeCode)
 	curd.GET("/getUserMinitaskPractice", h.GetUserPracticeMinitask)
 
-	curd.GET("/getChartInfo",h.GetChartInfo)
+	curd.GET("/getChartInfo", h.GetChartInfo)
 
 	curd.GET("/configs", h.GetListConfigs)
 	curd.GET("/configs/byname/:id", h.GetConfigByName)
@@ -260,9 +261,23 @@ func main() {
 	curd.DELETE("/task_minitask/:task_id/:minitask_id/:course_id", h.DeleteTaskMinitask)
 	curd.GET("/getCoursePassInfo/:course_id", h.IsPassTask)
 
-	curd.GET("/getUserMinitaskFavourite/:minitask_id",h.CheckUserLikeMinitask)
-	curd.GET("/handleLikeMinitask/:minitask_id",h.AddMinitaskToFavouriteList)
-	curd.GET("/getUserMinitaskFavouriteList",h.GetUserMinitaskFavourite)
+	curd.GET("/getUserMinitaskFavourite/:minitask_id", h.CheckUserLikeMinitask)
+	curd.GET("/handleLikeMinitask/:minitask_id", h.AddMinitaskToFavouriteList)
+	curd.GET("/getUserMinitaskFavouriteList", h.GetUserMinitaskFavourite)
+
+	//API for curd fight page
+	curd.GET("/fights", h.GetListFight)
+	curd.GET("/fights/:id", h.GetOneFight)
+	curd.POST("/fights", h.CreateFights)
+	curd.DELETE("/fights/:id", h.DeleteFights)
+	curd.PUT("/fights/:id", h.UpdateFights)
+
+	// API for curd fight minitask
+	curd.POST("/fightminitask", h.CreateFightMinitask)
+	curd.GET("/fightminitask", h.GetListFightMinitask)
+	curd.GET("/fightminitask/:id", h.GetOneFightMinitask)
+	curd.GET("/listminitaskfight/:fightid", h.GetListMinitaskByFightID)
+	curd.DELETE("/delminitask/:fight_id/:minitask_id", h.DeleteFightMinitask)
 
 	// End CURD
 

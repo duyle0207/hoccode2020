@@ -55,6 +55,11 @@ import {
   ModelUserEdit
 } from "./resources/ModelUser";
 
+import {
+  ModelFightList,
+  ModelFightCreate,
+  ModelFightEdit
+} from "./resources/ModelFight";
 import { history } from "../../../js/store/store";
 
 const ReactAdmin = () => (
@@ -118,6 +123,12 @@ const ReactAdmin = () => (
           list={ModelTaskList}
           create={ModelTaskCreate}
           edit={ModelTaskEdit}
+        />,
+        <Resource
+          name="fights"
+          list={ModelFightList}
+          create={ModelFightCreate}
+          edit={ModelFightEdit}
         />,
 
         <Resource
