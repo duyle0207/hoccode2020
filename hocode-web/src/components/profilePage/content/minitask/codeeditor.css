@@ -19,8 +19,9 @@
     height: 300px;
 }
 .codeEditorShowUnitTest{
-    height: 200px;
+    height: 300px;
     overflow: auto;
+    border-radius: 8px;
 }
 
 .codeEditorCreateMiniTask .CodeMirror-cursor { display: none !important } 

@@ -45,7 +45,7 @@ import Card from '@material-ui/core/Card';
 
 import Button from '@material-ui/core/Button';
 
-import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 import Modal from 'react-awesome-modal';
@@ -67,6 +67,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 
 import Slider from '@material-ui/core/Slider';
 import FormControl from '@material-ui/core/FormControl';
+import Silde from '@material-ui/core/Slide';
 
 export const ModelTaskList = props => (
   <List
@@ -531,25 +532,27 @@ class ModelTaskEdit extends Component {
                             </TableHead>
                             <TableBody>
                               {this.state.temp_task_minitask.map(row => (
-                                <TableRow bgcolor={row.isNew ? "#bbdefb" : ""} key={row.task_name}>
-                                  <TableCell component="th" scope="row">
-                                    {row.mini_task_name}
-                                  </TableCell>
-                                  {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
-                                  <TableCell align="right">{row.code_point}</TableCell>
-                                  {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
-                                  <TableCell align="right">
-                                    <Tooltip title="Độ khó" placement="top">
-                                      <div style={{ marginLeft: 10 }}>
-                                        {this.renderLevelMinitaskChip(row.level)}
-                                      </div>
-                                    </Tooltip>
-                                  </TableCell>
-                                  <TableCell align="right" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">View Desc</Button></TableCell>
-                                  <TableCell align="right">
-                                    <Button onClick={() => { this.removeMinitask(row) }} startIcon={<DeleteForeverIcon />} size="large" color="secondary"> Remove</Button>
-                                  </TableCell>
-                                </TableRow>
+                                <Silde in={true} direction="up">
+                                  <TableRow bgcolor={row.isNew ? "#bbdefb" : ""} key={row.task_name}>
+                                    <TableCell component="th" scope="row">
+                                      {row.mini_task_name}
+                                    </TableCell>
+                                    {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
+                                    <TableCell align="right">{row.code_point}</TableCell>
+                                    {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
+                                    <TableCell align="right">
+                                      <Tooltip title="Độ khó" placement="top">
+                                        <div style={{ marginLeft: 10 }}>
+                                          {this.renderLevelMinitaskChip(row.level)}
+                                        </div>
+                                      </Tooltip>
+                                    </TableCell>
+                                    <TableCell align="right" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">View Desc</Button></TableCell>
+                                    <TableCell align="right">
+                                      <Button onClick={() => { this.removeMinitask(row) }} startIcon={<DeleteForeverIcon />} size="large" color="secondary"> Remove</Button>
+                                    </TableCell>
+                                  </TableRow>
+                                </Silde>
                               ))}
                             </TableBody>
                           </Table>
@@ -572,7 +575,7 @@ class ModelTaskEdit extends Component {
                     <Box height={470} bgcolor="#ede7f6" color="black" p={{ xs: 2, sm: 2, md: 2 }}>
                       <Typography variant="h5" color="black" gutterBottom>
                         Minitask bank ({this.state.tempMinitaskList.length})
-                    </Typography>
+                      </Typography>
                       <Box my={1}>
                         <Grid container spacing={2}>
                           <Grid item xs={12}>
@@ -629,27 +632,16 @@ class ModelTaskEdit extends Component {
                           <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
                             <TableHead>
                               <TableRow>
-                                <TableCell></TableCell>
                                 <TableCell>Minitask name</TableCell>
                                 <TableCell align="right">Code point</TableCell>
                                 <TableCell align="right">Level</TableCell>
                                 <TableCell align="right"></TableCell>
+                                <TableCell></TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
                               {this.state.tempMinitaskList.map(row => (
                                 <TableRow key={row.task_name}>
-                                  <TableCell align="center">
-                                    <Button
-                                      variant="outlined"
-                                      size="small"
-                                      startIcon={<KeyboardBackspaceIcon />}
-                                      aria-label="move selected right"
-                                      onClick={() => this.getMinitaskFromBank(row)}
-                                    >
-                                      {/* &lt; */}
-                                    </Button>
-                                  </TableCell>
                                   <TableCell component="th" scope="row">
                                     {row.mini_task_name}
                                   </TableCell>
@@ -665,6 +657,17 @@ class ModelTaskEdit extends Component {
                                     </Tooltip>
                                   </TableCell>
                                   <TableCell align="center" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">View Desc</Button></TableCell>
+                                  <TableCell align="center">
+                                    <Button
+                                      variant="outlined"
+                                      size="small"
+                                      startIcon={<ArrowUpwardIcon />}
+                                      aria-label="move selected right"
+                                      onClick={() => this.getMinitaskFromBank(row)}
+                                    >
+                                      {/* &lt; */}
+                                    </Button>
+                                  </TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>

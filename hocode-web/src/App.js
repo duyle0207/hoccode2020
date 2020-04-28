@@ -20,6 +20,8 @@ import PrivateRoute from "./private-route/PrivateRoute";
 import jwt_decode from "jwt-decode";
 import LeaderBoard from "./components/leaderboard/LeaderboardPage";
 import PracticePage from "./components/practicePage/PracticePage";
+// import RoomPracticePage from "./components/roomPractice/RoomPracticePage";
+
 // Check for token to keep user logged in/ xet khi load lai trang
 if (localStorage.AuthToken) {
   // Set auth token header auth
@@ -58,6 +60,7 @@ function App() {
 
               <PrivateRoute path="/courses" exact component={CoursePage} />
               <PrivateRoute path="/practice" exact component={PracticePage} />
+              {/* <PrivateRoute path="/practice-with-friend" component={RoomPracticePage} /> */}
               <PrivateRoute
                 path="/courses/:courseId/tasks"
                 component={TaskPage}

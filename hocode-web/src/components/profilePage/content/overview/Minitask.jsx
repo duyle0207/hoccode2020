@@ -34,7 +34,7 @@ class Minitask extends Component {
                                     style={{ textDecoration: "none" }}
                                     to={`/minitask/${minitask.id}`}
                                 >
-                                    <Tooltip title={minitask.mini_task_name}>
+                                    <Tooltip title={minitask.mini_task_name} placement="top">
                                         <Typography variant="h3" style={{ fontSize: 18, fontWeight: 600, color: "#3B3B3B" }}>{minitask.name_func}</Typography>
                                     </Tooltip>
                                 </Link>

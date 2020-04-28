@@ -40,36 +40,38 @@ func (h *Handler) Courses(c echo.Context) (err error) {
 
 	courses := []*model.Course{}
 	// page, _ := strconv.Atoi(c.QueryParam("page"))
-	offset, _ := strconv.Atoi(c.QueryParam("offset"))
-	limit, _ := strconv.Atoi(c.QueryParam("limit"))
+	//offset, _ := strconv.Atoi(c.QueryParam("offset"))
+	//limit, _ := strconv.Atoi(c.QueryParam("limit"))
 
 	db := h.DB.Clone()
 	defer db.Close()
 
 	if err = db.DB(config.NameDb).C("course").
-		Find(bson.M{"del": bson.M{"$ne": true}}).
+		Find(bson.M{
+			//"status": "Active",
+		}).
 		// Skip((page - 1) * limit).
-		Skip(offset).
-		Limit(limit).
+		//Skip(offset).
+		//Limit(limit).
 		Sort("-timestamp").
 		All(&courses); err != nil {
 		return
 	}
 
-	for i := 0; i < len(courses); i++ {
-		mta := []*model.Task{}
-
-		db.DB(config.NameDb).C("tasks").
-			Find(bson.M{
-				"course_id": courses[i].ID.Hex(),
-				"del":       bson.M{"$ne": true}},
-			).
-			Select(bson.M{"_id": 1, "task_name": 1}).
-			Sort("-timestamp").
-			All(&mta)
-		courses[i].Tasks = mta
-
-	}
+	//for i := 0; i < len(courses); i++ {
+	//	mta := []*model.Task{}
+	//
+	//	db.DB(config.NameDb).C("tasks").
+	//		Find(bson.M{
+	//			"course_id": courses[i].ID.Hex(),
+	//			"del":       bson.M{"$ne": true}},
+	//		).
+	//		Select(bson.M{"_id": 1, "task_name": 1}).
+	//		Sort("-timestamp").
+	//		All(&mta)
+	//	courses[i].Tasks = mta
+	//
+	//}
 
 	c.Response().Header().Set("x-total-count", strconv.Itoa(len(courses)))
 

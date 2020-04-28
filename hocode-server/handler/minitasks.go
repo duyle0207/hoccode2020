@@ -730,7 +730,7 @@ func (h *Handler) CreateMinitast(c echo.Context) (err error) {
 		mtn.ID = bson.NewObjectId()
 	}
 	// Validation
-	if mtn.MiniTaskName == "" || mtn.TaskId == "" || mtn.Status == "" || mtn.NameFunc == "" || mtn.MinitaskDesc == "" || mtn.TemplateCode == "" {
+	if mtn.MiniTaskName == ""  || mtn.Status == "" || mtn.NameFunc == "" || mtn.MinitaskDesc == "" || mtn.TemplateCode == "" || mtn.CodePoint == 0{
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid to or message fields"}
 	}
 
@@ -834,42 +834,42 @@ func (h *Handler) DailyMiniTask(c echo.Context) (err error) {
 		return
 	}
 
-	for i := 0; i < len(mta); i++ {
-		fmt.Println(mta[i].TaskId)
-		fmt.Println(bson.ObjectIdHex(mta[i].TaskId))
-		fmt.Println("")
-	}
+	//for i := 0; i < len(mta); i++ {
+	//	fmt.Println(mta[i].TaskId)
+	//	//fmt.Println(bson.ObjectIdHex(mta[i].TaskId))
+	//	fmt.Println("")
+	//}
 	//for i:=0;i<len(mta);i++ {
 	//	fmt.Println(mta[i].TaskId)
 	//	fmt.Println(bson.ObjectIdHex(mta[i].TaskId))
 	//	fmt.Println("")
 	//}
 
-	for i := 0; i < len(mta); i++ {
-
-		tf := &model.Task{}
-		fmt.Println(mta[i].TaskId)
-		if err = db.DB(config.NameDb).C("tasks").
-			// FindId(bson.ObjectIdHex(mta[i].TaskId)).
-			Find(bson.M{
-				"_id": bson.ObjectIdHex(mta[i].TaskId),
-				"del": bson.M{"$ne": true},
-			}).
-			// Find(bson.M{}).
-			// Select(bson.M{"id": id}).
-			One(&tf); err != nil {
-			if err == mgo.ErrNotFound {
-				fmt.Println("error")
-				return echo.ErrNotFound
-			}
-			return
-		}
-		mta[i].Avatar = tf.BackgroundImage
-	}
-	for i := 0; i < len(mta); i++ {
-		fmt.Println(i)
-		fmt.Println(mta[i].Avatar)
-		fmt.Println(i)
-	}
+	//for i := 0; i < len(mta); i++ {
+	//
+	//	tf := &model.Task{}
+	//	fmt.Println(mta[i].TaskId)
+	//	if err = db.DB(config.NameDb).C("tasks").
+	//		// FindId(bson.ObjectIdHex(mta[i].TaskId)).
+	//		Find(bson.M{
+	//			"_id": bson.ObjectIdHex(mta[i].TaskId),
+	//			"del": bson.M{"$ne": true},
+	//		}).
+	//		// Find(bson.M{}).
+	//		// Select(bson.M{"id": id}).
+	//		One(&tf); err != nil {
+	//		if err == mgo.ErrNotFound {
+	//			fmt.Println("error")
+	//			return echo.ErrNotFound
+	//		}
+	//		return
+	//	}
+	//	mta[i].Avatar = tf.BackgroundImage
+	//}
+	//for i := 0; i < len(mta); i++ {
+	//	fmt.Println(i)
+	//	fmt.Println(mta[i].Avatar)
+	//	fmt.Println(i)
+	//}
 	return c.JSON(http.StatusOK, mta)
 }

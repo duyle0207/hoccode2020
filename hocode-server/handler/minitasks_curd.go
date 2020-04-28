@@ -119,9 +119,10 @@ func (h *Handler) UpdateMiniTasks(c echo.Context) (err error) {
 	}
 
 	// Validation
-	// if bk.Title == "" || bk.Image == "" || bk.Content == "" {
-	// 	return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid title or image fields"}
-	// }
+	// Validation
+	if bk.MiniTaskName == ""  || bk.Status == "" || bk.NameFunc == "" || bk.MinitaskDesc == "" || bk.TemplateCode == "" || bk.CodePoint == 0  {
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: "invalid to or message fields"}
+	}
 
 	// Connect to DB
 	db := h.DB.Clone()

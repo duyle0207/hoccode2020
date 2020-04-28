@@ -402,7 +402,7 @@ class Overview extends React.Component {
                             container
                             style={{ alignItems: "center", flexWrap: "unset" }}
                           >
-                            <Grid item>
+                            {/* <Grid item>
                               <img
                                 className={classes.img}
                                 style={{
@@ -414,7 +414,7 @@ class Overview extends React.Component {
                                 alt="complex"
                                 src={daily_minitask.avatar}
                               />
-                            </Grid>
+                            </Grid> */}
                             <Grid item style={{ flexGrow: 1, padding: 10 }}>
                               <div style={{ fontWeight: "bold" }}>
                                 <Link

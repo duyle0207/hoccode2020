@@ -657,18 +657,18 @@ class TaskBody extends Component {
                             </Typography>
                         </Box>
                         <Grid item xs={12} sm={12} style={{ paddingTop: '15px' }}>
-                          <Typography variant="body1">
+                          <Typography variant="overline">
                             {course.course_desc}
                           </Typography>
                         </Grid>
                         <Box>
-                          <Typography variant="cation" display="block" gutterBottom>
-                            {/* Ngày bắt đầu: {new Date(course.start_time).toISOString().replace(/T/, ' ').replace(/\..+/, '')} */}
+                          {/* <Typography variant="cation" display="block" gutterBottom>
+                            Ngày bắt đầu: {new Date(course.start_time).toISOString().replace(/T/, ' ').replace(/\..+/, '')}
                             Ngày bắt đầu: {course.start_time}
-                          </Typography>
-                          <Typography variant="cation" display="block" gutterBottom>
+                          </Typography> */}
+                          {/* <Typography variant="cation" display="block" gutterBottom>
                             Ngày kết thúc: {course.end_time}
-                          </Typography>
+                          </Typography> */}
                         </Box>
                       </Grid>
 
