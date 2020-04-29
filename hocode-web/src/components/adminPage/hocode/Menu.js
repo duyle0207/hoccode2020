@@ -17,6 +17,7 @@ import SportsVolleyballIcon from '@material-ui/icons/SportsVolleyball';
 import SportsSoccerIcon from '@material-ui/icons/SportsSoccer';
 import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import EmojiEventsIcon from '@material-ui/icons/EmojiEvents';
 
 const ICONS = {
   books: <MenuBookIcon style={{marginRight: 1}} />,
@@ -27,6 +28,7 @@ const ICONS = {
   profile: <ListIcon style={{marginRight: 1}} />,
   certs: <CardGiftcardIcon style={{marginRight: 1}} />,
   users: <SupervisorAccountIcon style={{marginRight: 1}} />,
+  fights: <EmojiEventsIcon style={{marginRight:1}}/>
 };
 
 const Menu = ({ resources, onMenuClick, logout }) => (
@@ -89,6 +91,8 @@ const changeIDToName = name => {
     case "Users":
       title = "Người dùng";
       break;
+    case "Fights":
+      title = "Thi đấu"
     default:
       title = name;
       break;
