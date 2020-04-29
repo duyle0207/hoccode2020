@@ -242,3 +242,20 @@ func (h *Handler) GetUserMinitaskFavourite(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, minitask_list)
 }
+
+// Search User
+func (h *Handler) SearchUser(c echo.Context) (err error) {
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	email := c.Param("email")
+
+	users :=[]*model.User{}
+
+	db.DB(config.NameDb).C("users").Find(bson.M{
+		"email": bson.RegEx{email, "i"},
+	}).Limit(8).All(&users)
+
+	return c.JSON(http.StatusOK, users)
+}

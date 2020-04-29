@@ -225,10 +225,10 @@ class Overview extends React.Component {
                   </Box>
                   <Box my={4} mx={1}>
                     <Grid container>
-                      <Grid item sm={3}>
+                      <Grid item xs={3} md={3} sm={3}>
                         <CardUser user={this.props.user} />
                       </Grid>
-                      <Grid item sm={9}>
+                      <Grid item xs={9} md={9} sm={9}>
                         <UserInfo totalCourse={totalCourse} userCourse={courses} minitaskInfo={chartInfo} />
                       </Grid>
                     </Grid>
@@ -379,7 +379,7 @@ class Overview extends React.Component {
                     <Box mt={1}>
                       <Grid container style={{ marginBottom: 15 }}>
                         <Grid item style={{ flexGrow: 1 }}>
-                          <div style={{ fontWeight: "bold" }}>Bài tập cho hôm nay :)</div>{" "}
+                          <div style={{ fontWeight: "bold" }}>Bài tập cho hôm nay</div>{" "}
                         </Grid>
                       </Grid>
                     </Box>

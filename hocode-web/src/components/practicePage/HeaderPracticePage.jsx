@@ -46,16 +46,16 @@ class HeaderPracticePage extends Component {
     }
 
     componentDidMount = () => {
-        this.setState({isLoadingFilterData: true})
+        this.setState({ isLoadingFilterData: true })
         axios.get(`http://localhost:8081/api/v1/curd/getAllMinitask/${this.state.page - 1}`)
             .then(res => {
                 console.log(res.data);
-                this.setState({ minitaskList: res.data, tempData: res.data, isLoadingFilterData:false });
+                this.setState({ minitaskList: res.data, tempData: res.data, isLoadingFilterData: false });
             });
         axios.get(`http://localhost:8081/api/v1/curd/getTotalMinitask`)
             .then(res => {
                 console.log(res.data);
-                this.setState({ totalPage: res.data%16===0 ? Math.floor(res.data / 16) : Math.floor(res.data / 16) + 1});
+                this.setState({ totalPage: res.data % 16 === 0 ? Math.floor(res.data / 16) : Math.floor(res.data / 16) + 1 });
             });
         axios.get(`http://localhost:8081/api/v1/curd/getChartInfo`)
             .then(res => {
@@ -159,7 +159,7 @@ class HeaderPracticePage extends Component {
                     :
                     <Box>
                         <Grid item xs={12}>
-                            <Grid container justify="center" spacing={3}>
+                            <Grid container justify="center" spacing={1}>
                                 <Grid item xs={9}>
                                     <Box>
                                         <img src="https://codelearnstorage.s3.amazonaws.com/Themes/TheCodeCampPro/Resources/Images/content/training.jpg"
@@ -179,7 +179,7 @@ class HeaderPracticePage extends Component {
                                                     </Box>
                                                 </Box>
                                             </Grid>
-                                            <Grid item xs={3} direction="row" justify="center" alignItems="center">
+                                            <Grid item xs={4} direction="row" justify="center" alignItems="center">
                                                 <Box mx={1} display="flex" justifyContent="center">
                                                     <FormControl style={{ width: '100%' }}>
                                                         <TextField id="outlined-basic"
@@ -198,7 +198,7 @@ class HeaderPracticePage extends Component {
                                                     </FormControl>
                                                 </Box>
                                             </Grid>
-                                            <Grid item xs={2} direction="row" justify="center" alignItems="center">
+                                            <Grid item xs={3} direction="row" justify="center" alignItems="center">
                                                 <Box mx={1} display="flex" justifyContent="center">
                                                     <FormControl variant="filled" style={{ width: "100%" }}>
                                                         <InputLabel id="demo-simple-select-filled-label">Trạng thái</InputLabel>
@@ -219,7 +219,7 @@ class HeaderPracticePage extends Component {
                                                     </FormControl>
                                                 </Box>
                                             </Grid>
-                                            <Grid item xs={2} direction="row" justify="center" alignItems="center">
+                                            <Grid item xs={3} direction="row" justify="center" alignItems="center">
                                                 <Box mx={1} display="flex" justifyContent="center">
                                                     <FormControl variant="filled" style={{ width: "100%" }}>
                                                         <InputLabel id="demo-simple-select-filled-label">Cấp độ</InputLabel>
@@ -308,37 +308,37 @@ class HeaderPracticePage extends Component {
                                                 /> */}
                                                 <Animation />
                                             </Chart>
-                                            <Box display="flex" justifyContent="center" p={1} alignItems="center">
-                                                <Box mx={1}>
-                                                    <Typography variant="overline" style={{ color: "#42A5F5" }}>
+                                            <Grid container xs={12}>
+                                                <Grid container justify="center" alignContent="center" xs={3} sm={3} md={3}>
+                                                    <Typography noWrap variant="overline" style={{ color: "#42A5F5" }}>
                                                         To do: {chartInfo.todo - (chartInfo.solved + chartInfo.attempted)}
                                                     </Typography>
-                                                </Box>
-                                                <Box mx={1}>
-                                                    <Typography variant="overline" style={{ color: "#9CCC65" }}>
+                                                </Grid>
+                                                <Grid container justify="center" alignContent="center" xs={5} sm={5} md={5}>
+                                                    <Typography noWrap variant="overline" style={{ color: "#9CCC65" }}>
                                                         Solved: {chartInfo.solved + "/" + chartInfo.todo}
                                                     </Typography>
-                                                </Box>
-                                                <Box mx={1}>
-                                                    <Typography variant="overline" style={{ color: "#FF7043" }}>
+                                                </Grid>
+                                                <Grid container justify="center" alignContent="center" xs={4} sm={4} md={4}>
+                                                    <Typography noWrap variant="overline" style={{ color: "#FF7043" }}>
                                                         Attempted: {chartInfo.attempted}
                                                     </Typography>
-                                                </Box>
-                                            </Box>
+                                                </Grid>
+                                            </Grid>
                                         </Paper>
                                     </Box>
                                     <Box mt={2}>
                                         <Paper style={{ backgroundColor: "#FAFAFA" }}>
-                                            <Box p={1} display="flex" justifyContent="center">
-                                                <Box>
-                                                    <Typography variant="h5">SỐ BÀI ĐÃ HOÀN THÀNH</Typography>
-                                                </Box>
+                                            <Box p={1}>
+                                                <Grid container justify="center" alignContent="center">
+                                                    <Typography noWrap variant="h5">SỐ BÀI ĐÃ HOÀN THÀNH</Typography>
+                                                </Grid>
                                             </Box>
                                             {chartInfo.easy === 0 && chartInfo.medium === 0 && chartInfo.hard === 0 ?
-                                                <Box p={1} display="flex" justifyContent="center">
-                                                    <Box>
-                                                        <Typography variant="button">Bạn chưa thực hiện bài thực hành nào</Typography>
-                                                    </Box>
+                                                <Box p={1}>
+                                                    <Grid container justify="center" alignContent="center">
+                                                        <Typography noWrap variant="h5">Bạn chưa thực hiện bài thực hành nào</Typography>
+                                                    </Grid>
                                                 </Box>
                                                 :
                                                 <Chart
@@ -355,23 +355,23 @@ class HeaderPracticePage extends Component {
                                                     <Animation />
                                                 </Chart>
                                             }
-                                            <Box display="flex" justifyContent="center" p={2} alignItems="center">
-                                                <Box mx={1}>
+                                            <Grid container xs={12}>
+                                                <Grid container justify="center" alignContent="center" xs={3} sm={3} md={3}>
                                                     <Typography variant="overline" style={{ color: "#9CCC65" }}>
                                                         Easy: {chartInfo.easy + "/" + chartInfo.total_easy}
                                                     </Typography>
-                                                </Box>
-                                                <Box mx={1}>
+                                                </Grid>
+                                                <Grid container justify="center" alignContent="center" xs={5} sm={5} md={5}>
                                                     <Typography variant="overline" style={{ color: "#42A5F5" }}>
                                                         Medium: {chartInfo.medium + "/" + chartInfo.total_medium}
                                                     </Typography>
-                                                </Box>
-                                                <Box mx={1}>
+                                                </Grid>
+                                                <Grid container justify="center" alignContent="center" xs={4} sm={4} md={4}>
                                                     <Typography variant="overline" style={{ color: "#FF7043" }}>
                                                         Hard: {chartInfo.hard + "/" + chartInfo.total_hard}
                                                     </Typography>
-                                                </Box>
-                                            </Box>
+                                                </Grid>
+                                            </Grid>
                                         </Paper>
                                     </Box>
                                 </Grid>

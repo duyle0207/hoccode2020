@@ -8,6 +8,7 @@ import {
     Tab,
     Typography,
     Button,
+    Slide
 } from "@material-ui/core";
 
 import { Link } from "react-router-dom";
@@ -59,24 +60,36 @@ class RoomPracticePage extends Component {
         return (
             <React.Fragment>
                 <Grid className="banner" container xs={12} justify="center">
-                    <Grid xs={12} sm={3} md={3}>
-                        <Box p={2} display="flex" justifyContent="center">
+                    <Grid xs={12} sm={6} md={6}>
+                        <Box mt={4} display="flex" justifyContent="center">
                             <img src="https://assets.leetcode.com/static_assets/public/images/LeetCode_Cup.png"
                                 // width="100%"
                                 height="150px" alt="banner" />
+                        </Box>
+                        <Box mt={2} display="flex" justifyContent="center">
+                            <Typography style={{fontSize: 30, fontWeight: 200, color: "#b3b3b3"}}>
+                                <span style={{fontSize: 30, fontWeight: 200, color: "#FFFFFF"}}>Chiến trường</span> Hocode
+                            </Typography>
+                        </Box>
+                        <Box mb={4} display="flex" justifyContent="center">
+                            <Typography style={{fontSize: 18, fontWeight: 200, color: "#b3b3b3"}}>
+                                Hãy cùng chiến đấu mỗi tuần cùng Hocode nhé
+                            </Typography>
                         </Box>
                     </Grid>
                 </Grid>
                 <Box my={2} display="flex" justifyContent="center">
                     <Box flexGrow={1}>
-                        <Typography style={{ fontSize: 28, fontWeight: 460 }}>Chiến trường</Typography>
+                        {/* <Typography style={{ fontSize: 28, fontWeight: 460 }}>Chiến trường</Typography> */}
                     </Box>
                     <Box>
-                        <Button variant="contained" component={ Link } to={`/profile/create-contest`} startIcon={<AddBoxIcon />}>Tạo cuộc chiến</Button>
+                        <Button variant="contained" style={{backgroundColor: "#E24CE1"}} component={ Link } to={`/profile/create-contest`} startIcon={<AddBoxIcon style={{color:"white"}} />}>
+                            <Typography variant="button" style={{ color: "white" }}>Tạo cuộc chiến</Typography>
+                        </Button>
                     </Box>
                 </Box>
                 {/* <Grid container xs={12}> */}
-                <AppBar position="static">
+                <AppBar position="static" style={{backgroundColor:"white", color:"black"}}>
                     <Tabs value={tab} onChange={this.handleChangeTab} aria-label="simple tabs example">
                         <Tab label="Công khai" />
                         <Tab label="Riêng tư" />
@@ -84,7 +97,7 @@ class RoomPracticePage extends Component {
                 </AppBar>
                 <TabPanel value={tab} index={0}>
                     {[1, 2, 3, 4].map((room, index) => {
-                        return <Room index={index} />
+                        return <Slide in={true} direction="right" {...(true ? { timeout: 2000 } : {})}><Room index={index} /></Slide>
                     })}
                     <Box p={2} display="flex" justifyContent="center">
                         <Box>

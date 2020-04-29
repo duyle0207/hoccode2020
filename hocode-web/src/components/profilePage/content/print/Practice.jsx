@@ -192,9 +192,9 @@ class Practice extends Component {
                             // }}
                             >
                                 <Grid container xs={12}>
-                                    <Grid item style={{ flexGrow: 1 }}>
+                                    <Grid container item style={{ flexGrow: 1 }}>
                                         <Box p={2}>
-                                            <Typography variant="h6" component="h1">Luyện tập</Typography>
+                                            <Typography noWrap variant="h6" component="h1">Luyện tập</Typography>
                                         </Box>
                                     </Grid>
                                 </Grid>

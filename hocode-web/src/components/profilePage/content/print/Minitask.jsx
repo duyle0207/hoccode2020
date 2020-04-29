@@ -7,8 +7,8 @@ import Grid from '@material-ui/core/Grid';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import DoneIcon from '@material-ui/icons/Done';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from "react-router-dom";
 import Typography from '@material-ui/core/Typography';
 
@@ -43,13 +43,17 @@ class Minitask extends Component {
                     <Divider />
                     <Box>
                         <Grid container mx={2}>
-                                <ListItem button component={props => <Link to={`/minitask/${minitask.id}`} {...props} />}>
-                                    <ListItemIcon>
-                                        {this.renderStatus(status)}
-                                    </ListItemIcon>
-                                    <ListItemText primary={<Typography variant="button">{name}</Typography>} />
+                            <ListItem button component={props => <Link to={`/minitask/${minitask.id}`} {...props} />}>
+                                <Grid xs={2} md={2} sm={2}>
+                                    {this.renderStatus(status)}
+                                </Grid>
+                                <Grid container xs={6} md={6} sm={6}>
+                                    <Typography noWrap variant="button">{name}</Typography>
+                                </Grid>
+                                <Grid xs={4} md={4} sm={4}>
                                     {this.renderLevel(level)}
-                                </ListItem>
+                                </Grid>
+                            </ListItem>
                         </Grid>
                     </Box>
                     <Divider />

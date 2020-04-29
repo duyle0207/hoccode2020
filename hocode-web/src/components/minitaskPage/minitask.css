@@ -69,7 +69,7 @@
   left: 0;
 }
 .resultPanel {
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 .codeEditor .reset_code button {
   background: #8291a3;

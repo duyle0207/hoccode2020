@@ -62,38 +62,38 @@ class Minitask extends Component {
     }
 
     render() {
-        const { minitask, index } = this.props;
+        const { minitask } = this.props;
         const { isUserLikeMinitask } = this.state;
         return (
             <React.Fragment>
                 <Slide in={true} direction="right" {...(true ? { timeout: 1550 } : {})}>
                     <Grid item xs={6}>
                         <Paper>
-                            <Grid style={{ backgroundColor: "" }} borderRadius={16} container xs={12} justify="center" alignItems="center">
-                                <Grid xs={1}>
+                            <Grid xs={12} container style={{ backgroundColor: "" }} borderRadius={16} justify="center" alignItems="center">
+                                <Grid xs={2}>
                                     <Box p={1} ml={1}>
                                         {this.renderStatus(minitask.status)}
                                     </Box>
                                 </Grid>
-                                <Grid xs={1}>
+                                {/* <Grid xs={1}>
                                     <Box p={2}>
                                         <Typography variant="h6">
                                             {index + 1}
                                         </Typography>
                                     </Box>
-                                </Grid>
-                                <Grid xs={6}>
+                                </Grid> */}
+                                <Grid item container xs={5} md={5} sm={5}>
                                     <Box p={1}>
                                         <Link to={`/minitask/${minitask.id}`} style={{ textDecoration: 'none' }}>
                                             <Tooltip title={minitask.mini_task_name} placement="top">
-                                                <Typography variant="h6" style={{ color: "#0088CC" }}>
+                                                <Typography noWrap variant="h6" style={{ color: "#0088CC" }}>
                                                     {minitask.name_func}
                                                 </Typography>
                                             </Tooltip>
                                         </Link>
                                     </Box>
                                 </Grid>
-                                <Grid xs={2}>
+                                <Grid xs={3}>
                                     <Box p={1}>
                                         {this.renderLevel(minitask.level)}
                                     </Box>

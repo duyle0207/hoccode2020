@@ -65,7 +65,7 @@ class CourseItem extends Component {
       hours: 0,
       min: 0,
       sec: 0,
-      coueseStatus: 0,
+      courseStatus: 0,
       coursePassInfo: {},
       isLoadingCourseInfo: true,
       //status for like function

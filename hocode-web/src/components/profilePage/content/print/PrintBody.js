@@ -21,6 +21,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Course from './Course';
 import Practice from './Practice';
 import Slide from '@material-ui/core/Fade';
+import CardMedia from '@material-ui/core/CardMedia';
 
 // const styles = {};
 
@@ -265,132 +266,140 @@ class PrintBody extends Component {
                   >
                     <Grid container direction="row">
                       <Grid item xs={12} md={12} sm={12}>
-                        <Box display="flex" p={1} bgcolor="grey.300">
-                          <Box mr={1} mt={1} flexGrow={1}>
-                            <PersonIcon fontSize="large" />
-                          </Box>
-                          <Box mt={1} flexGrow={6}>
-                            <Typography variant="h5">Thông tin cá nhân</Typography>
-                          </Box>
-                          <Box>
-                            <IconButton color="primary" aria-label="Edit">
-                              <EditIcon />
-                            </IconButton>
-                          </Box>
-                        </Box>
-                        <Box display="flex" justifyContent="flex-start" p={2}>
-                          <Box borderRadius={16} borderColor="grey.500">
-                            <img
-                              style={{ width: 100, height: 100 }}
-                              src={this.props.user.avatar}
-                              alt="Ảnh đại diện"
-                            />
-                          </Box>
-                          <Box ml={1}>
-                            <Box mb={1} ml={1}>
-                              <Typography variant="overline">
-                                Họ và tên: {this.props.user.lastname}{" "}
-                                {this.props.user.firstname}
-                              </Typography>
+                        <Grid item xs={12} md={12} sm={12}>
+                          <Box display="flex" p={1} bgcolor="grey.300">
+                            <Box mr={1} mt={1} flexGrow={1}>
+                              <PersonIcon fontSize="large" />
                             </Box>
-                            <Box mb={1} ml={1}>
-                              <Typography variant="overline" >Email: {this.props.user.email}</Typography>
+                            <Box mt={1} flexGrow={6}>
+                              <Typography variant="h5">Thông tin cá nhân</Typography>
                             </Box>
-                            <Box mb={1} ml={1}>
-                              <Typography variant="overline">Điểm: {this.props.user.codepoint}</Typography>
+                            <Box>
+                              <IconButton color="primary" aria-label="Edit">
+                                <EditIcon />
+                              </IconButton>
                             </Box>
                           </Box>
-                        </Box>
+                        </Grid>
+                        <Grid item xs={12} md={12} sm={12}>
+                          <Grid container xs={12}>
+                            <Grid item xs={4} md={4} sm={4} borderColor="grey.500">
+                              <Box p={1}>
+                                <CardMedia
+                                  component="img"
+                                  alt="Contemplative Reptile"
+                                  height="100"
+                                  src={this.props.user.avatar}
+                                  title="Contemplative Reptile"
+                                />
+                              </Box>
+                            </Grid>
+                            <Grid item xs={8} md={8} sm={8} borderColor="grey.500">
+                              <Grid item container xs={12} md={12} sm={12}>
+                                <Typography noWrap variant="overline">
+                                  Họ và tên: {this.props.user.lastname}{" "}
+                                  {this.props.user.firstname}
+                                </Typography>
+                              </Grid>
+                              <Grid item container xs={12} md={12} sm={12}>
+                                <Typography noWrap variant="overline">Email: {this.props.user.email}</Typography>
+                              </Grid>
+                              <Grid item container xs={12} md={12} sm={12} zeroMinWidth>
+                                <Typography noWrap variant="overline">Điểm: {this.props.user.codepoint}</Typography>
+                              </Grid>
+                          </Grid>
+                        </Grid>
                       </Grid>
-                      <Grid item xs={12} md={12} sm={12}>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                          style={{ marginLeft: 4, textAlign: "center" }}
-                        >
-                          Bạn sẽ nhận được chứng chỉ nếu số đậu của bạn lớn hơn{" "}
-                          {this.state.review_point}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={12} md={12} sm={12}>
-                        <Box p={2}>
-                          {this.renderButtonCertificate(this.state.certificateViewStart)}
-                        </Box>
-                      </Grid>
+                    </Grid>
+                    <Grid item xs={12} md={12} sm={12}>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                        style={{ marginLeft: 4, textAlign: "center" }}
+                      >
+                        Bạn sẽ nhận được chứng chỉ nếu số đậu của bạn lớn hơn{" "}
+                        {this.state.review_point}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={12} sm={12}>
+                      <Box p={2}>
+                        {this.renderButtonCertificate(this.state.certificateViewStart)}
+                      </Box>
+                    </Grid>
                     </Grid>
                   </Paper>
-                </Grid>
-                <Grid item xs={12} sm={8} md={8}>
-                  <Paper
-                    style={{
-                      minHeight: 350,
-                      overflowY: "auto",
-                      display: "flex",
-                      flexDirection: "column"
-                    }}
-                  >
-                    <Grid container>
-                      <Grid item style={{ flexGrow: 1 }}>
-                        <Box p={2}>
-                          <Typography variant="h6">Học tập</Typography>
-                        </Box>
-                      </Grid>
+              </Grid>
+              <Grid item xs={12} sm={8} md={8}>
+                <Paper
+                  style={{
+                    minHeight: 350,
+                    overflowY: "auto",
+                    display: "flex",
+                    flexDirection: "column"
+                  }}
+                >
+                  <Grid container>
+                    <Grid item container style={{ flexGrow: 1 }}>
+                      <Box p={2}>
+                        <Typography noWrap variant="h6">Học tập</Typography>
+                      </Box>
                     </Grid>
-                    <Box p={2}>
-                      <Grid container spacing={2}>
-                        {courseList.length===0?
+                  </Grid>
+                  <Box p={2}>
+                    <Grid container spacing={2}>
+                      {courseList.length === 0 ?
                         <Box p={1}>
                           <Typography variant="h3">Bạn chưa tham gia khóa học nào</Typography>
                         </Box>
-                        : 
+                        :
                         courseList
-                        }
-                      </Grid>
-                    </Box>
-                  </Paper>
-                </Grid>
-                <Dialog
-                  maxWidth={false}
-                  open={this.state.openDialogCertificate}
-                  onClose={this.handleDialogCertificateClose}
-                  aria-labelledby="customized-dialog-title"
-                >
-                  {" "}
-                  {this.state.isLoadingCert === true ? (
-                    <div
-                      className="sweet-loading"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "200px",
-                        height: "200px",
-                        overflow: "hidden"
-                      }}
-                    >
-                      <HashLoader
-                        sizeUnit={"px"}
-                        size={50}
-                        color={"#AEA8A8"}
-                        loading={this.state.isLoadingCert}
-                      />
-                    </div>
-                  ) : (
-
-                      this.renderDialog(this.state.certificateViewStart)
-                    )}
-                </Dialog>
+                      }
+                    </Grid>
+                  </Box>
+                </Paper>
               </Grid>
-              <Box mt={2}>
-                <Grid container xs={12}>
-                  <Grid item xs={12}>
-                    <Practice user_practice_info={user_practice_info} />
-                  </Grid>
+              <Dialog
+                maxWidth={false}
+                open={this.state.openDialogCertificate}
+                onClose={this.handleDialogCertificateClose}
+                aria-labelledby="customized-dialog-title"
+              >
+                {" "}
+                {this.state.isLoadingCert === true ? (
+                  <div
+                    className="sweet-loading"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "200px",
+                      height: "200px",
+                      overflow: "hidden"
+                    }}
+                  >
+                    <HashLoader
+                      sizeUnit={"px"}
+                      size={50}
+                      color={"#AEA8A8"}
+                      loading={this.state.isLoadingCert}
+                    />
+                  </div>
+                ) : (
+                    this.renderDialog(this.state.certificateViewStart)
+                  )}
+              </Dialog>
+              </Grid>
+            <Box mt={2}>
+              <Grid container xs={12}>
+                <Grid item xs={12}>
+                  <Practice user_practice_info={user_practice_info} />
                 </Grid>
-              </Box>
+              </Grid>
+            </Box>
             </React.Fragment>
-          )}
+    )
+  }
       </>
     );
   }

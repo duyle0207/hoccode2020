@@ -197,6 +197,7 @@ func main() {
 	curd.Use(middleware.JWT([]byte("secret")))
 
 	curd.GET("/get3RandomMinitask",h.Get3RandomMinitask)
+	curd.GET("/searchUser/:email",h.SearchUser)
 
 	// CURD
 	curd.GET("/getAllMinitask/:page",h.GetAllMinitask)

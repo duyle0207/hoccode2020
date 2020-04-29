@@ -258,10 +258,7 @@ class ModelTaskEdit extends Component {
     const temp_task_minitask = this.state.temp_task_minitask;
     var i = -1;
 
-    console.log(id);
-
     temp_task_minitask.forEach((minitask, index) => {
-      console.log(minitask);
       if (id.isNew === true) {
         if (minitask.id === id.id) {
           console.log(minitask.id);

@@ -26,26 +26,27 @@ class Minitask extends Component {
         return (
             <React.Fragment>
                 <Fade in={true} {...(true ? { timeout: 1500 } : {})}>
-                    <Grid item xs={4} md={4} sm={4}>
+                    <Grid item zeroMinWidth xs={4} md={4} sm={4}>
                         <Box p={3} boxShadow={3}>
-                            <Box display="flex" justifyContent="center">
-                                <Link
-                                    className="item"
-                                    style={{ textDecoration: "none" }}
-                                    to={`/minitask/${minitask.id}`}
-                                >
+                            <Link
+                                className="item"
+                                style={{ textDecoration: "none" }}
+                                to={`/minitask/${minitask.id}`}
+                            >
+                                <Grid container justify="center" alignContent="center">
                                     <Tooltip title={minitask.mini_task_name} placement="top">
-                                        <Typography variant="h3" style={{ fontSize: 18, fontWeight: 600, color: "#3B3B3B" }}>{minitask.name_func}</Typography>
+                                        <Typography noWrap variant="h3" style={{ fontSize: 18, fontWeight: 600, color: "#3B3B3B" }}>{minitask.name_func}</Typography>
                                     </Tooltip>
-                                </Link>
-                            </Box>
+
+                                </Grid>
+                            </Link>
                             <Box display="flex" p={2} justifyContent="center">
                                 {this.renderLevel(minitask.level)}
                             </Box>
                         </Box>
                     </Grid>
                 </Fade>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 }

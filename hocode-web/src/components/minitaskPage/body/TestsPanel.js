@@ -173,7 +173,7 @@ export default function TestsPanel(props) {
       ) : (
         <React.Fragment>
           <Tabs
-            style={{ minHeight: "30px" }}
+            style={{ minHeight: "60px" }}
             variant="fullWidth"
             value={value}
             onChange={handleChange}

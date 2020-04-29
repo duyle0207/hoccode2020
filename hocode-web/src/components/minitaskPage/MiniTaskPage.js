@@ -47,7 +47,8 @@ import Select from '@material-ui/core/Select';
 
 import Checkbox from '@material-ui/core/Checkbox';
 import Slide from '@material-ui/core/Slide';
-// import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Divider from '@material-ui/core/Divider';
 
 class MiniTaskPage extends Component {
   constructor(props) {
@@ -689,7 +690,7 @@ class MiniTaskPage extends Component {
                         <div className="coding-area">
                           <Split
                             className="splitVertical"
-                            sizes={[75, 25]}
+                            sizes={[50, 50]}
                             minSize={100}
                             expandToMin={false}
                             gutterSize={4}
@@ -741,7 +742,7 @@ class MiniTaskPage extends Component {
                                     </Box>
                                   </Slide>
                                 </Box>
-                                <Box mt={1} style={{ height: '100%' }}>
+                                <Box mt={1} style={{ height: '500pz' }}>
                                   <AceEditor
                                     mode="java"
                                     theme={theme}
@@ -808,37 +809,40 @@ class MiniTaskPage extends Component {
                                 </div> */}
                               </div>
                             </div>
-                            <div className="resultPanel">
-                              {this.state.result.stdout !== undefined ||
-                                this.state.result.errorRuntime !== undefined ? (
-                                  <ResultPanel
-                                    unit_tests={minitask.unit_tests} // truyền unit test vô chỉ là tạm thời, chứ unitest này phải lấy từ result
-                                    result={this.state.result}
-                                  />
-                                ) : (
-                                  <TestsPanel
-                                    isLoading={this.state.isLoading}
-                                    unit_tests={minitask.unit_tests}
-                                  />
-                                )}
-                            </div>
-                          </Split>
-                        </div>
-                        <div
-                          className="runtest-area"
-                          style={{
-                            minHeight: "40px",
-                            padding: "10px 20px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "flex-end"
-                          }}
-                        >
-                          <div style={{ marginLeft: 20, color: "#4DBF9D" }}>
-                            {renderPassedTestCount()}
-                          </div>
-                          <div style={{ marginLeft: 30 }}>
-                            {/* <button
+                            <Grid container xs={12} md={12} sm={12}>
+                              <Grid item xs={10} md={10} sm={10}>
+                                <div className="resultPanel">
+                                  {this.state.result.stdout !== undefined ||
+                                    this.state.result.errorRuntime !== undefined ? (
+                                      <ResultPanel
+                                        unit_tests={minitask.unit_tests} // truyền unit test vô chỉ là tạm thời, chứ unitest này phải lấy từ result
+                                        result={this.state.result}
+                                      />
+                                    ) : (
+                                      <TestsPanel
+                                        isLoading={this.state.isLoading}
+                                        unit_tests={minitask.unit_tests}
+                                      />
+                                    )}
+                                </div>
+                              </Grid>
+                              <Divider/>
+                              <Grid container style={{backgroundColor: "white"}} justify="center" alignContent="flex-start" item xs={2} md={2} sm={2}>
+                                <div
+                                  className="runtest-area"
+                                  style={{
+                                    // minHeight: "40px",
+                                    // padding: "10px 20px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "flex-end"
+                                  }}
+                                >
+                                  <div style={{ marginLeft: 20, color: "#4DBF9D" }}>
+                                    {renderPassedTestCount()}
+                                  </div>
+                                  <div style={{ marginLeft: 30 }}>
+                                    {/* <button
                             className={`execute_btn ${this.state.isLoading &&
                               "disable_btn"}`}
                             style={{ display: "flex", alignItems: "center" }}
@@ -854,10 +858,10 @@ class MiniTaskPage extends Component {
                               style={{ height: "10px", marginLeft: "3px" }}
                             ></img>
                           </button> */}
-                          </div>
-                          {this.state.isUserStudy ?
-                            <Box p={2}>
-                              {/* <button
+                                  </div>
+                                  {this.state.isUserStudy ?
+                                    <Box p={2}>
+                                      {/* <button
                                 onClick={this.submitCode}
                                 className={`submitCode_btn ${this.state.isLoading &&
                                   "disable_btn"}`}
@@ -865,16 +869,16 @@ class MiniTaskPage extends Component {
                               >
                                 Nộp bài
                               </button> */}
-                              <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
-                                <Button variant="contained" startIcon={<DescriptionIcon />}
-                                  style={{ backgroundColor: "#7BC043" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
-                                  Nộp bài
-                                </Button>
-                              </Slide>
-                            </Box>
-                            :
-                            <Box p={2}>
-                              {/* <button
+                                      <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
+                                        <Button variant="contained" startIcon={<DescriptionIcon />}
+                                          style={{ backgroundColor: "#7BC043" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
+                                          Nộp bài
+                                        </Button>
+                                      </Slide>
+                                    </Box>
+                                    :
+                                    <Box p={2}>
+                                      {/* <button
                                 onClick={this.submitCode}
                                 className={`submitCode_btn ${this.state.isLoading &&
                                   "disable_btn"}`}
@@ -882,42 +886,45 @@ class MiniTaskPage extends Component {
                               >
                                 Nộp bài
                               </button> */}
-                              <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
-                                <Button variant="contained" startIcon={<DescriptionIcon />}
-                                  style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodePractice} disabled={this.state.isLoading} color="primary">
-                                  Nộp bài
-                                </Button>
-                              </Slide>
-                            </Box>
-                          }
-
-                          {this.props.user.next_minitask !== undefined ? (
-                            <div style={{ marginLeft: 30, fontSize: 12 }}>
-                              {this.props.user.next_minitask.id === "" ? (
-                                <Link
-                                  to={`/profile/courses/${params.courseId}/tasks`}
-                                  style={{
-                                    textDecoration: "none",
-                                    color: "#595959"
-                                  }}
-                                >
-                                  Qua bài mới
-                                </Link>
-                              ) : (
-                                  <Link
-                                    to={`/tasks/${this.props.user.next_minitask.id}/${params.courseId}/${params.taskId}`}
-                                    style={{
-                                      textDecoration: "none",
-                                      color: "#595959"
-                                    }}
-                                  >
-                                    Qua bài mới
-                                  </Link>
-                                )}
-                            </div>
-                          ) : (
-                              <div></div>
-                            )}
+                                      <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
+                                        <Button variant="contained" startIcon={<DescriptionIcon />}
+                                          style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodePractice} disabled={this.state.isLoading} color="primary">
+                                          Nộp bài
+                                        </Button>
+                                      </Slide>
+                                    </Box>
+                                  }
+                                  {this.props.user.next_minitask !== undefined ? (
+                                    <div style={{ marginLeft: 30, fontSize: 12 }}>
+                                      {this.props.user.next_minitask.id === "" ? (
+                                        <Link
+                                          to={`/profile/courses/${params.courseId}/tasks`}
+                                          style={{
+                                            textDecoration: "none",
+                                            color: "#595959"
+                                          }}
+                                        >
+                                          Qua bài mới
+                                        </Link>
+                                      ) : (
+                                          <Link
+                                            to={`/tasks/${this.props.user.next_minitask.id}/${params.courseId}/${params.taskId}`}
+                                            style={{
+                                              textDecoration: "none",
+                                              color: "#595959"
+                                            }}
+                                          >
+                                            Qua bài mới
+                                          </Link>
+                                        )}
+                                    </div>
+                                  ) : (
+                                      <div></div>
+                                    )}
+                                </div>
+                              </Grid>
+                            </Grid>
+                          </Split>
                         </div>
                       </div>
                     </Split>{" "}

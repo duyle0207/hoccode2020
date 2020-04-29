@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Fade from '@material-ui/core/Fade';
+import CardMedia from '@material-ui/core/CardMedia';
 
 class CardUser extends Component {
     render() {
@@ -12,9 +13,9 @@ class CardUser extends Component {
         return (
             <React.Fragment>
                 <Fade in={true} {...(true ? { timeout: 1500 } : {})}>
-                    <Grid container xs={12}>
+                    <Grid container xs={12} spacing={2}>
                         <Grid item xs={3}>
-                            <img
+                            <CardMedia
                                 style={{ borderRadius: '50%' }}
                                 component="img"
                                 alt="avatar"
@@ -24,7 +25,7 @@ class CardUser extends Component {
                                 title="Contemplative Reptile"
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={8}>
                             <Typography gutterBottom variant="button" component="h2">
                                 {user.firstname + " " + user.lastname}
                             </Typography>

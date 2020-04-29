@@ -35,6 +35,7 @@ import KeyboardIcon from '@material-ui/icons/Keyboard';
 import RoomPracticePage from '../roomPractice/RoomPracticePage';
 import GroupIcon from '@material-ui/icons/Group';
 import CreateRoomPage from '../roomPractice/CreateRoomPage';
+import RoomDetail from '../roomPractice/RoomDetail';
 
 const drawerWidth = 240;
 const styles = theme => ({
@@ -358,6 +359,9 @@ class ProfilePage extends React.Component {
             </Route>
             <Route path={`${path}/print`}>
               <PrintBody userData={this.props.user} />
+            </Route>
+            <Route path={`${path}/contest-detail/:id`}>
+              <RoomDetail userData={this.props.user} />
             </Route>
             {/* <Route path={`${path}/admin`}>
               <ReactAdmin />
