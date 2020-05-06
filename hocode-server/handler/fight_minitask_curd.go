@@ -101,7 +101,6 @@ func (h *Handler) GetListMinitaskByFightID(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, miniTaskList)
-
 }
 
 func (h *Handler) GetOneFightMinitask(c echo.Context) (err error) {
@@ -170,3 +169,4 @@ func (h *Handler) DeleteFightMinitask(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, bk)
 }
+

@@ -1,0 +1,48 @@
+<style>
+    .header{
+        height: 40px;
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .content{
+        height: 100px;
+        font-size: 18px;
+        line-height: 30px;
+    }
+    .footer{
+        text-transform: uppercase;
+        text-align: center;
+        height: 40px;
+        font-size: 14px;
+        font-style: italic;
+    }
+    .footer a{
+        color: #000000;
+        text-decoration: none;
+        font-style: normal;
+    }
+</style>
+
+
+<body>
+<table bgcolor="#FFFFFF" width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr class="header">
+        <td style="padding: 2px; padding-left: 15px; background-color: #009688; color:aliceblue; font-weight: 100000; font-size: 50;">
+            <h1>HOCODE</h1>
+        </td>
+    </tr>
+    <tr class="content">
+        <td style="padding:10px;">
+            <p>
+                Chào <b>{{ .username }}</b>, <br/>
+                Bạn nhận được một lời mời tham gia cuộc thi từ <b>{{ .host}}</b>! 
+            </p>
+            <p>
+                Vui lòng nhấp vào link để tham gia cuộc thi: {{ .link}}
+            </p>
+        </td>
+    </tr>
+</table>
+</body>

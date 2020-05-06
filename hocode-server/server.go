@@ -127,6 +127,7 @@ func main() {
 	e.POST("/createTaskMinTask", h.CreateTaskMinTask)
 
 	e.GET("/users", h.GetUser)
+
 	// e.GET("/users/:id", h.GetUserByID)
 	// e.POST("/users", h.SaveUser)
 	// e.PUT("/users/:id", h.UpdateUser)
@@ -198,7 +199,7 @@ func main() {
 	curd.Use(middleware.JWT([]byte("secret")))
 
 	curd.GET("/get3RandomMinitask", h.Get3RandomMinitask)
-	curd.GET("/searchUser/:email", h.SearchUser)
+	curd.GET("/searchUser/:email/", h.SearchUser)
 
 	// CURD
 	curd.GET("/getAllMinitask/:page", h.GetAllMinitask)
@@ -268,10 +269,25 @@ func main() {
 
 	//API for curd fight page
 	curd.GET("/fights", h.GetListFight)
+	curd.GET("/fightsByUser", h.GetFightViaUser)
 	curd.GET("/fights/:id", h.GetOneFight)
+	curd.GET("/getOneFight/:id", h.GetOneFight)
 	curd.POST("/fights", h.CreateFights)
 	curd.DELETE("/fights/:id", h.DeleteFights)
 	curd.PUT("/fights/:id", h.UpdateFights)
+	curd.GET("/2NewestFights/", h.Get2NewestFights)
+	curd.GET("/fights/:type/:page/", h.GetFightListViaType)
+	curd.GET("/privateFights", h.GetPrivateFight)
+
+	// user fight
+	curd.GET("/user-fight/:fight_id", h.GetUserJoiningFight)
+	curd.GET("/user-fight-info/", h.GetUserFightInfo)
+	curd.POST("/jointFight_1/:fight_id/:user_id/:email/", h.JoinFight_1)
+	curd.POST("/jointFight/:fight_id/", h.JoinFight)
+	curd.DELETE("/kick-user-out-fight/:user_id/:fight_id/", h.HandleKickUserOutFight)
+	curd.POST("/invite-user",h.Send)
+	curd.GET("/getUserFight",h.GetUserFight)
+
 
 	// API for curd fight minitask
 	curd.POST("/fightminitask", h.CreateFightMinitask)
@@ -279,6 +295,7 @@ func main() {
 	curd.GET("/fightminitask/:id", h.GetOneFightMinitask)
 	curd.GET("/listminitaskfight/:fightid", h.GetListMinitaskByFightID)
 	curd.DELETE("/delminitask/:fight_id/:minitask_id", h.DeleteFightMinitask)
+	curd.GET("/isUserJoinFight/:fight_id/", h.IsUserJoinFight)
 
 	// End CURD
 
