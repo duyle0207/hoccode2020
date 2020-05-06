@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/duyle0207/hoccode2020/config"
 
@@ -42,7 +44,11 @@ func (h *Handler) GetOneFight(c echo.Context) (err error) {
 
 	bk := &model.Fight{}
 
+	fmt.Println("Zô")
+
 	id := c.Param("id")
+
+	fmt.Println(id)
 
 	db := h.DB.Clone()
 	defer db.Close()
@@ -50,7 +56,6 @@ func (h *Handler) GetOneFight(c echo.Context) (err error) {
 		// FindId(bson.ObjectIdHex(id)).
 		Find(bson.M{
 			"_id": bson.ObjectIdHex(id),
-			"del": bson.M{"$ne": true},
 		}).
 		One(&bk); err != nil {
 		if err == mgo.ErrNotFound {
@@ -92,6 +97,7 @@ func (h *Handler) UpdateFights(c echo.Context) (err error) {
 	name := claims["name"].(string)
 
 	bk.User_created = name
+
 	_, errUs := db.DB(config.NameDb).C("fights").UpsertId(bk.ID, bk)
 	if errUs != nil {
 		// return echo.ErrInternalServerError
@@ -122,6 +128,19 @@ func (h *Handler) CreateFights(c echo.Context) (err error) {
 	// Connect to DB
 	db := h.DB.Clone()
 	defer db.Close()
+
+	if bk.Fight_Type == "private" {
+		// do nothing
+	} else {
+		bk.Fight_Type = "public"
+	}
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	name := claims["name"].(string)
+
+	bk.User_created = name
+	bk.Timestamp = time.Now()
 
 	// Save in database
 	// if err = db.DB(config.NameDb).C("tasks").Insert(bk); err != nil {
