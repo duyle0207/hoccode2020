@@ -326,6 +326,10 @@ func main() {
 
 	rs.GET("/tasks/:id", h.TaskByID)
 
+	// API for  fight user minitask
+	rs.POST("/runfightminitask", h.CreateFightUserMinitask)
+	rs.PUT("/updatefightuserminitask/:id", h.UpdateFightUserMinitask)
+
 	ra := e.Group("/auth")
 	ra.Use(middleware.JWT([]byte("secret")))
 	ra.GET("", h.TestAuth)

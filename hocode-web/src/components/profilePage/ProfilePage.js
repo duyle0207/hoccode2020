@@ -223,9 +223,9 @@ class ProfilePage extends React.Component {
               </MenuItem>
             </Link>
 
-            <Link to={`${url}/contest`}>
+            <Link to={`${url}/fight`}>
               <MenuItem
-                selected={pathname === `${url}/contest`}
+                selected={pathname === `${url}/fight`}
                 onClick={this.onClickMenuItem(1)}
                 dense="true"
               >
@@ -351,7 +351,7 @@ class ProfilePage extends React.Component {
             <Route path={`${path}/course`}>
               <CourseBody url={url} />
             </Route>
-            <Route path={`${path}/contest`}>
+            <Route path={`${path}/fight`}>
               <RoomPracticePage url={url} />
             </Route>
             <Route path={`${path}/courses/:courseId/tasks`}>
@@ -360,7 +360,7 @@ class ProfilePage extends React.Component {
             <Route path={`${path}/print`}>
               <PrintBody userData={this.props.user} />
             </Route>
-            <Route path={`${path}/contest-detail/:id`}>
+            <Route path={`${path}/fight-detail/:id`}>
               <RoomDetail userData={this.props.user} />
             </Route>
             {/* <Route path={`${path}/admin`}>

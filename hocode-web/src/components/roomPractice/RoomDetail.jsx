@@ -22,12 +22,16 @@ import EqualizerIcon from '@material-ui/icons/Equalizer';
 import CodeIcon from '@material-ui/icons/Code';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SearchIcon from '@material-ui/icons/Search';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+
 
 import Minitask from "./Minitask";
 import UserRank from './UserRank';
 
 import Modal from 'react-awesome-modal';
 import axios from 'axios';
+import { Link } from "react-router-dom";
+
 
 // import { Link } from "react-router-dom";
 
@@ -108,7 +112,9 @@ class RoomDetail extends Component {
             isOpenSearchFriend: false,
             users: [],
             email: '',
-            invitedUsers: []
+            invitedUsers: [],
+            minitaskList: [],
+            firstIdMinitask: ""
         }
     }
 
@@ -128,6 +134,14 @@ class RoomDetail extends Component {
             const date = this.calculateCountdown(code === -1 ? fight.time_start : fight.time_end);
             date ? this.setState(date) : this.stop();
         }, 1000);
+        axios
+            .get(`http://localhost:8081/api/v1/curd/listminitaskfight/5ea6ec54e939f21a5432ba66`)
+            .then(res => {
+                const completed = res.data;
+                this.setState({ minitaskList: completed, firstIdMinitask: completed[0].id})
+                console.log(this.state.minitaskList);
+                console.log(this.state.firstIdMinitask);
+            });
     }
 
     // handle search user
@@ -419,7 +433,7 @@ class RoomDetail extends Component {
                                         30/40 thí sinh
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={6}>
                                     {timer}
                                 </Grid>
                                 <Grid item xs={2}>
@@ -427,6 +441,15 @@ class RoomDetail extends Component {
                                         startIcon={<PersonAddIcon style={{ color: "white" }} />}>
                                         <Typography style={{ color: "white", fontWeight: 500 }}>
                                             Mời bạn
+                                        </Typography>
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }} 
+                                            component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
+                                            startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
+                                        <Typography style={{ color: "white", fontWeight: 500 }}>
+                                            Bắt đầu
                                         </Typography>
                                     </Button>
                                 </Grid>
@@ -469,7 +492,7 @@ class RoomDetail extends Component {
                         :
                         <Box mt={2}>
                             <Grid container xs={12} spacing={1}>
-                                <Grid item xs={7} md={7} sm={7}>
+                                {/* <Grid item xs={7} md={7} sm={7}>
                                     <Paper>
                                         <Box p={1}>
                                             <Box my={1} mx={1} display="flex">
@@ -492,8 +515,8 @@ class RoomDetail extends Component {
                                             </Box>
                                         </Box>
                                     </Paper>
-                                </Grid>
-                                <Grid item xs={5} md={5} sm={5}>
+                                </Grid> */}
+                                <Grid item xs={12} md={12} sm={12}>
                                     <Paper>
                                         <Box p={1}>
                                             <Box my={1} display="flex">

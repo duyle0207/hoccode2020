@@ -119,15 +119,15 @@ class Room extends Component {
         const { contestStatus } = this.state;
         if (contestStatus === 0) {
             return <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />}
-                component={Link} to={`/profile/contest-detail/:id`}>
+                component={Link} to={`/profile/fight-detail/:id`}>
                 <Typography variant="button" style={{ color: "white" }}>Chiến đấu</Typography>
             </Button>
         } else if (contestStatus === -1) {
-            return <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/contest-detail/:id`}>
+            return <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/fight-detail/:id`}>
                 <Typography variant="button" style={{ color: "white" }}>Đăng ký ngay</Typography>
             </Button>
         } else if (contestStatus === 1) {
-            return <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/contest-detail/:id`}>
+            return <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/fight-detail/:id`}>
                 <Typography variant="button" style={{ color: "white" }}>Đã kết thúc</Typography>
             </Button>
         }
