@@ -3,6 +3,9 @@ package handler
 import (
 	"net/http"
 
+	// "github.com/dgrijalva/jwt-go"
+
+	"github.com/dgrijalva/jwt-go"
 	"github.com/duyle0207/hoccode2020/config"
 
 	model "github.com/duyle0207/hoccode2020/models"
@@ -71,6 +74,57 @@ func (h *Handler) CreateFightUserMinitask(c echo.Context) (err error) {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: errUs}
 	}
 
+	return c.JSON(http.StatusOK, bk)
+
+}
+
+// get one fight minitask user
+func (h *Handler) GetOneMinitaskFight(c echo.Context) (err error) {
+
+	bk := &model.FightUserMinitask{}
+
+	fightID := c.Param("fightid")
+	minitaskId := c.Param("miid")
+	// userID := c.Param("id")
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	db := h.DB.Clone()
+	defer db.Clone()
+
+	db.DB(config.NameDb).C("fight_user_minitask").
+		// FindId(bson.ObjectIdHex(id)).
+		Find(bson.M{
+			"fight_id":    fightID,
+			"user_id":     userID,
+			"minitask_id": minitaskId,
+		}).One(&bk)
+	return c.JSON(http.StatusOK, bk)
+
+}
+
+// get all fight minitask user
+func (h *Handler) GetAllDoneMinitaskFight(c echo.Context) (err error) {
+
+	bk := []*model.FightUserMinitask{}
+
+	fightID := c.Param("fightid")
+	// userID := c.Param("id")
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	db := h.DB.Clone()
+	defer db.Clone()
+
+	db.DB(config.NameDb).C("fight_user_minitask").
+		// FindId(bson.ObjectIdHex(id)).
+		Find(bson.M{
+			"fight_id": fightID,
+			"user_id":  userID,
+			"status":   "done",
+		}).All(&bk)
 	return c.JSON(http.StatusOK, bk)
 
 }

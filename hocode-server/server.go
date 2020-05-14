@@ -285,9 +285,10 @@ func main() {
 	curd.POST("/jointFight_1/:fight_id/:user_id/:email/", h.JoinFight_1)
 	curd.POST("/jointFight/:fight_id/", h.JoinFight)
 	curd.DELETE("/kick-user-out-fight/:user_id/:fight_id/", h.HandleKickUserOutFight)
-	curd.POST("/invite-user",h.Send)
-	curd.GET("/getUserFight",h.GetUserFight)
-
+	curd.POST("/invite-user", h.Send)
+	curd.GET("/getUserFight", h.GetUserFight)
+	curd.PUT("/add-point/:id", h.AddCodePointForUser)
+	curd.GET("/getone-userfight/:fight_id", h.GetOneFightUser)
 
 	// API for curd fight minitask
 	curd.POST("/fightminitask", h.CreateFightMinitask)
@@ -296,6 +297,11 @@ func main() {
 	curd.GET("/listminitaskfight/:fightid", h.GetListMinitaskByFightID)
 	curd.DELETE("/delminitask/:fight_id/:minitask_id", h.DeleteFightMinitask)
 	curd.GET("/isUserJoinFight/:fight_id/", h.IsUserJoinFight)
+	// API for  fight user minitask
+	curd.POST("/runfightminitask", h.CreateFightUserMinitask)
+	curd.GET("/getone-minitask/:fightid/:miid/", h.GetOneMinitaskFight)
+	curd.PUT("/updatestatus/:id", h.UpdateFightUserMinitask)
+	curd.GET("/getall-minitask/:fightid", h.GetAllDoneMinitaskFight)
 
 	// End CURD
 
@@ -342,10 +348,6 @@ func main() {
 	rs.POST("/nextminitask", h.NextMiniTask)
 
 	rs.GET("/tasks/:id", h.TaskByID)
-
-	// API for  fight user minitask
-	rs.POST("/runfightminitask", h.CreateFightUserMinitask)
-	rs.PUT("/updatefightuserminitask/:id", h.UpdateFightUserMinitask)
 
 	ra := e.Group("/auth")
 	ra.Use(middleware.JWT([]byte("secret")))

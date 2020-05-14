@@ -11,6 +11,7 @@ import (
 	model "github.com/duyle0207/hoccode2020/models"
 	"github.com/labstack/echo"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -41,7 +42,7 @@ func (h *Handler) GetFightListViaType(c echo.Context) (err error) {
 			"fight_id": fights[i].ID.Hex(),
 		}).One(&fight_user)
 		fmt.Println(fight_user.ID)
-		fights[i].IsUserRegister = fight_user.ID!=""
+		fights[i].IsUserRegister = fight_user.ID != ""
 	}
 
 	return c.JSON(http.StatusOK, fights)
@@ -58,7 +59,6 @@ func (h *Handler) GetPrivateFight(c echo.Context) (err error) {
 
 	fight_user := []*model.FightUser{}
 
-
 	fights := []*model.Fight{}
 
 	_ = db.DB(config.NameDb).C("fight_user").Find(bson.M{
@@ -69,8 +69,8 @@ func (h *Handler) GetPrivateFight(c echo.Context) (err error) {
 
 	result := []*model.Fight{}
 
-	for i:=range fight_user {
-		for j:=range fights {
+	for i := range fight_user {
+		for j := range fights {
 			if fights[j].ID.Hex() == fight_user[i].FightID && fights[j].Fight_Type == "private" {
 				fights[j].IsUserRegister = true
 				result = append(result, fights[j])
@@ -100,12 +100,13 @@ func (h *Handler) JoinFight_1(c echo.Context) (err error) {
 	}
 
 	isUserJoin, _ := db.DB(config.NameDb).C("fight_user").Find(bson.M{
-		"user_id": userID,
+		"user_id":  userID,
 		"fight_id": fight_id,
 	}).Count()
 
 	if isUserJoin == 0 {
-		_, err = db.DB(config.NameDb).C("fight_user").UpsertId(fight_user.ID, fight_user);if err != nil {
+		_, err = db.DB(config.NameDb).C("fight_user").UpsertId(fight_user.ID, fight_user)
+		if err != nil {
 			return c.JSON(http.StatusOK, err)
 		}
 	}
@@ -142,12 +143,13 @@ func (h *Handler) JoinFight(c echo.Context) (err error) {
 	}
 
 	isUserJoin, _ := db.DB(config.NameDb).C("fight_user").Find(bson.M{
-		"user_id": userID,
+		"user_id":  userID,
 		"fight_id": fight_id,
 	}).Count()
 
 	if isUserJoin == 0 {
-		_, err = db.DB(config.NameDb).C("fight_user").UpsertId(fight_user.ID, fight_user);if err != nil {
+		_, err = db.DB(config.NameDb).C("fight_user").UpsertId(fight_user.ID, fight_user)
+		if err != nil {
 			return c.JSON(http.StatusOK, err)
 		}
 	}
@@ -179,7 +181,7 @@ func (h *Handler) GetFightViaUser(c echo.Context) error {
 
 	_ = db.DB(config.NameDb).C("fights").Find(bson.M{
 		"user_created": email,
-		"fight_type": "private",
+		"fight_type":   "private",
 	}).All(&fights)
 
 	return c.JSON(http.StatusOK, fights)
@@ -194,7 +196,7 @@ func (h *Handler) HandleKickUserOutFight(c echo.Context) (err error) {
 	fight_id := c.Param("fight_id")
 
 	if err = db.DB(config.NameDb).C("fight_user").Remove(bson.M{
-		"user_id": user_id,
+		"user_id":  user_id,
 		"fight_id": fight_id,
 	}); err != nil {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
@@ -215,11 +217,11 @@ func (h *Handler) IsUserJoinFight(c echo.Context) error {
 	fight_id := c.Param("fight_id")
 
 	count, _ := db.DB(config.NameDb).C("fight_user").Find(bson.M{
-		"user_id": id,
+		"user_id":  id,
 		"fight_id": fight_id,
 	}).Count()
 
-	return c.JSON(http.StatusOK, count>0)
+	return c.JSON(http.StatusOK, count > 0)
 }
 
 // Get User's fight info
@@ -248,14 +250,14 @@ func (h *Handler) GetUserFightInfo(c echo.Context) error {
 
 	total_joined_public_fight := 0
 	total_joined_private_fight := 0
-	for i:=range fight_user {
-		for a:=range private_fights{
+	for i := range fight_user {
+		for a := range private_fights {
 			if bson.ObjectIdHex(fight_user[i].FightID) == private_fights[a].ID {
 				total_joined_private_fight++
 				break
 			}
 		}
-		for b:=range public_fights{
+		for b := range public_fights {
 			if bson.ObjectIdHex(fight_user[i].FightID) == public_fights[b].ID {
 				total_joined_public_fight++
 				break
@@ -264,8 +266,8 @@ func (h *Handler) GetUserFightInfo(c echo.Context) error {
 	}
 
 	result := &model.FightUserInfo{
-		TotalPublicFight: len(public_fights),
-		TotalPrivateFight: len(private_fights),
+		TotalPublicFight:        len(public_fights),
+		TotalPrivateFight:       len(private_fights),
 		TotalJoinedPublicFight:  total_joined_public_fight,
 		TotalJoinedPrivateFight: total_joined_private_fight,
 		UserId:                  id,
@@ -308,7 +310,7 @@ func (h *Handler) GetUserJoiningFight(c echo.Context) error {
 
 	users := []*model.FightUserRank{}
 
-	for i:=range fight_user {
+	for i := range fight_user {
 		user := &model.User{}
 		db.DB(config.NameDb).C("users").Find(bson.M{
 			"_id": bson.ObjectIdHex(fight_user[i].UserID),
@@ -345,7 +347,7 @@ func (h *Handler) GetUserFight(c echo.Context) error {
 	}).All(&fight_user)
 
 	result := []*model.Fight{}
-	for i:=range fight_user {
+	for i := range fight_user {
 		fight := &model.Fight{}
 		db.DB(config.NameDb).C("fights").Find(bson.M{
 			"_id": bson.ObjectIdHex(fight_user[i].FightID),
@@ -356,4 +358,62 @@ func (h *Handler) GetUserFight(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, result)
+}
+
+// Add code point for user fight
+func (h *Handler) AddCodePointForUser(c echo.Context) (err error) {
+
+	bk := &model.FightUser{}
+
+	id := c.Param("id")
+
+	if err = c.Bind(bk); err != nil {
+		return
+	}
+	bk.ID = bson.ObjectIdHex(id)
+	if bk.ID == "" {
+		bk.ID = bson.NewObjectId()
+	}
+
+	// Connect to DB
+	db := h.DB.Clone()
+	defer db.Close()
+
+	_, errUs := db.DB(config.NameDb).C("fight_user").UpsertId(bk.ID, bk)
+	if errUs != nil {
+		// return echo.ErrInternalServerError
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: errUs}
+	}
+
+	return c.JSON(http.StatusOK, bk)
+}
+
+//get fight user by fightID and userID
+func (h *Handler) GetOneFightUser(c echo.Context) (err error) {
+	bk := &model.FightUser{}
+
+	fight_id := c.Param("fight_id")
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	db := h.DB.Clone()
+	defer db.Close()
+	if err = db.DB(config.NameDb).C("fight_user").
+		// FindId(bson.ObjectIdHex(id)).
+		Find(bson.M{
+			"fight_id": fight_id,
+			"user_id":  userID,
+		}).
+		One(&bk); err != nil {
+		if err == mgo.ErrNotFound {
+			// return echo.ErrNotFound
+			return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
+
+		}
+
+		return
+	}
+
+	return c.JSON(http.StatusOK, bk)
 }
