@@ -8,6 +8,7 @@ import TestsPanel from "./body/TestsPanel";
 import Snackbar from '@material-ui/core/Snackbar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import DoneIcon from '@material-ui/icons/Done';
 
 import "./minitask.css";
 //import MediaQuery from "react-responsive";
@@ -49,6 +50,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Slide from '@material-ui/core/Slide';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import { getUser } from "../../js/actions/userAction";
 
 class MiniTaskPage extends Component {
   constructor(props) {
@@ -62,6 +65,7 @@ class MiniTaskPage extends Component {
       isLoadingComponent: true,
       open: false,
       isUserStudy: true,
+      isUserFight: false,
       // variable for numbers of doing with get code point.
       numbers_doing: 0,
       completedMinitask: [],
@@ -69,11 +73,22 @@ class MiniTaskPage extends Component {
       isAutocomplete: false,
       user_minitask_practice: {},
       isLoadingCode: true,
+      // stopwatch
+      hour: 0,
+      minute:0,
+      second:0,
+      //
+      minitaskListId: [], 
+      minitaskUser: {}, 
+      userFight: {}, 
+      fightminitaskdone: [],
+      startTime: " "
     };
 
     this.executeCode = this.executeCode.bind(this);
     this.submitCode = this.submitCode.bind(this);
     this.submitCodePractice = this.submitCodePractice.bind(this);
+    this.submitCodeFight = this.submitCodeFight.bind(this);
     this.updateUserCode = this.updateUserCode.bind(this);
     this.resetCode = this.resetCode.bind(this);
     this.createFileTest = this.createFileTest.bind(this);
@@ -94,7 +109,65 @@ class MiniTaskPage extends Component {
       this.setState({ isUserStudy: false });
     }
 
+    if (pathname.startsWith("/fight/")) {
+      this.setState({ isUserFight: true });
+      axios
+      .get(`http://localhost:8081/api/v1/curd/listminitaskfight/${params.fightId}`)
+      .then(res => {
+          const dt = res.data;
+          const IdMinitask = []; 
+
+          for(var i =0 ; i < dt.length; i++) {
+            IdMinitask.push(dt[i])
+
+          }
+          this.setState({ minitaskListId: IdMinitask})
+          console.log(this.state.minitaskListId);
+      });
+
+      axios
+      .get(`http://localhost:8081/api/v1/curd/getone-userfight/${params.fightId}`)
+      .then(res => {
+          this.setState({ userFight: res.data})
+          console.log(this.state.userFight);
+      });
+
+      axios
+      .get(`http://localhost:8081/api/v1/curd/getall-minitask/${params.fightId}`)
+      .then(res => {
+          const dt = res.data;
+          const IdMinitaskDone = []; 
+
+          for(var i =0 ; i < dt.length; i++) {
+            IdMinitaskDone.push(dt[i].minitask_id)
+
+          }
+          this.setState({ fightminitaskdone: IdMinitaskDone})
+          console.log(this.state.fightminitaskdone);
+      });
+
+
+      //set start time for user
+      var today = new Date();
+      var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+      var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      var dateStart = date+' '+time;
+      this.setState({startTime: dateStart});
+      console.log(dateStart);
+
+      // axios
+      // .get(`http://localhost:8081/api/v1/curd/getone-minitask/${params.fightId}/${params.minitaskId}/`)
+      // .then(res=>{
+      //   console.log(res.data);
+      //   this.setState({minitaskUser: res.data})
+      //   console.log(this.state.minitaskUser);
+      // })
+
+
+    }
     console.log(params);
+    console.log(this.state.isUserFight);
+
     axios
       .get(`http://localhost:8081/api/v1/minitasks/${params.minitaskId}`)
       .then(res => {
@@ -141,6 +214,17 @@ class MiniTaskPage extends Component {
         console.log(this.state.completedMinitask);
       });
     // setTimeout(()=>{console.log(this.state.minitask.mini_task_desc)},2000)
+
+    //set up stopwatch clock
+    setInterval(() => {
+      this.setState((state, props) => {
+        return {
+            hour  : state.hour == 59 ? state.hour + 1 : state.hour ,
+            minute: state.second == 59 ? state.minute + 1 : state.minute,
+            second: state.second == 59 ? 0 : state.second + 1
+          };
+        });
+      }, 1000);
   }
   componentDidUpdate(prevProps) {
     if (
@@ -596,6 +680,168 @@ class MiniTaskPage extends Component {
         }.bind(this)
       );
   }
+
+  // code fight submit handle
+  submitCodeFight() {
+    this.setState((state, props) => ({
+      result: {}
+    }));
+    const { minitask } = this.state;
+    //console.log(this.state.userCode);
+    let junit4 = this.createFileTest(minitask);
+
+    let code = `import java.lang.Math; \n public class Solution {\n    public Solution(){}\n    ${this.state.userCode}\n    }`;
+
+    const {
+      match: { params }
+    } = this.props;
+    console.log(params.taskId)
+    console.log(this.state.minitask.task_id);
+    // this.props.submitUpdateMinitask(
+    //   this.state.minitask.id,
+    //   params.taskId,
+    //   params.courseId
+    // );
+
+    this.setState((state, props) => ({
+      isLoading: true
+    }));
+
+    console.log(code);
+    console.log(junit4);
+
+    axios
+      .get(`http://localhost:8081/api/v1/curd/getone-minitask/${params.fightId}/${this.state.minitask.id}/`)
+      .then(res=>{
+        console.log(res.data);
+        this.setState({minitaskUser: res.data})
+        console.log(this.state.minitaskUser);
+      })
+
+    axios
+      .post("http://codejava.tk/runner", {
+        code: code + "\n\n// " + new Date() + "\n\n// " + new Date(),
+        test: junit4
+      })
+      .then(
+        function (response) {
+          console.log(response.data.stdout);
+          console.log(response.data.stderr === "");
+          const error = response.data.stderr;
+          const stdout = response.data.stdout;
+          this.setState((state, props) => ({
+            result: {
+              error: error,
+              stdout: stdout
+            }
+          }));
+          console.log(error);
+          this.setState((state, props) => ({
+            isLoading: false
+          }));
+
+          console.log(this.state.minitaskUser.status);
+          var today = new Date();
+          var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+          var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+          var dateTime = date+' '+time;
+
+          if (this.state.result.stdout.WASSUCCESSFUL === "true") {
+            if(this.props.user.id !== this.state.minitaskUser.user_id && 
+              params.fightId !== this.state.minitaskUser.fight_id &&
+              this.state.minitaskUser.minitask_id !== this.state.minitask.id) {
+                axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
+                  id: "",
+                  fight_id: params.fightId,
+                  user_id: this.props.user.id,
+                  minitask_id: this.state.minitask.id,
+                  status: "done",
+                  start_time: this.state.startTime,
+                  end_time: dateTime
+                }).then(res => {
+                  console.log(res.data);
+                  //add code point for users
+                  var newFightUser = this.state.userFight;
+                  newFightUser.point = this.state.minitask.code_point + newFightUser.point
+                  axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`,newFightUser)
+                    .then(res=>{console.log(res.data)});
+                  
+                });
+
+              } else {
+                console.log("Đã tồn tại minitask user fight");
+                var newStatus = this.state.minitaskUser            
+                if(newStatus.status !== "done") {
+                  newStatus.status = "done"
+                  newStatus.end_time = dateTime
+                  this.setState({minitaskUser: newStatus})
+                  axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
+                  .then(res=>{
+                    console.log(res.data);
+                      //add code point for users
+                    var newFightUser = this.state.userFight;
+                    newFightUser.point = this.state.minitask.code_point + newFightUser.point
+                    axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`,newFightUser)
+                      .then(res=>{console.log(res.data)});
+                  });
+                }
+                
+              }
+            Swal.fire({
+              type: "success",
+              title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
+              width: 600,
+              padding: "3em",
+              customClass: "hidden_alert",
+              backdrop: `
+                rgba(0,0,123,0.4)
+                url("${require("./giphy.gif")}") 
+                center center
+                no-repeat
+              `
+            });
+            toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
+              containerId: "B"
+            });
+          } else {
+              if(this.props.user.id !== this.state.minitaskUser.user_id && 
+                params.fightId !== this.state.minitaskUser.fight_id &&
+                this.state.minitaskUser.minitask_id !== this.state.minitask.id){
+                  axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
+                    id: "",
+                    fight_id: params.fightId,
+                    user_id: this.props.user.id,
+                    minitask_id: this.state.minitask.id,
+                    status: "tried",
+                    tried: this.state.minitaskUser.tried + 1,
+                    start_time: dateTime
+                  }).then(res => {
+                    console.log(res.data);
+                  });
+                } else {
+                  var newStatus = this.state.minitaskUser
+                  newStatus.tried += 1
+                  this.setState({minitaskUser: newStatus})
+                  axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
+                    .then(res=>{});
+                  }
+            
+          }
+        }.bind(this)
+      )
+      .catch(
+        function (error) {
+          this.setState((state, props) => ({
+            isLoading: false,
+            result: {
+              errorRuntime: error
+            }
+          }));
+          console.log(error);
+        }.bind(this)
+      );
+  }
+
   render() {
     const { minitask, result, theme, isLoadingCode } = this.state;
     const { isLoadingComponent } = this.state;
@@ -615,6 +861,26 @@ class MiniTaskPage extends Component {
           }
         }
       }
+    }
+
+    let btnSubmit;    
+    if ( this.state.isUserStudy) {
+      btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
+      style={{ backgroundColor: "blue" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
+      Nộp bài
+    </Button>)
+    }
+     if (this.state.isUserFight) {
+      btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
+      style={{ backgroundColor: "red" }} onClick={this.submitCodeFight} disabled={this.state.isLoading} color="primary">
+      Nộp bài
+    </Button>)
+    } 
+      else {
+      btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
+      style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodePractice} disabled={this.state.isLoading} color="primary">
+      Nộp bài
+    </Button>)
     }
 
     return (
@@ -642,6 +908,41 @@ class MiniTaskPage extends Component {
               history={this.props.history}
             />
           </div>
+          <Divider/>
+          {this.state.isUserFight ? (
+            <div className="container">
+              <div className="btn-minitask" style= {{margin:"0 auto", display:"inline-block", marginLeft: 10,  position:"relative"}}>
+                <ButtonGroup variant="contained"  size="large" aria-label=" contained primary button group">
+                 {this.state.minitaskListId.map((object, i) => {
+                     if( this.state.fightminitaskdone.includes(object.id)===true){
+                       return (
+                        <Button obj={object} key={i} 
+                        component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${object.id}`} className="btn-minitask-item" 
+                        style={{marginRight: 6, borderRadius: 3, backgroundColor:"#3f51b5 ", border:"1px solid #3f51b5 ", fontSize: 13}}>
+                          <DoneIcon style={{color:"#fff"}}  fontSize="medium"></DoneIcon>
+                        </Button>
+                       )
+                     } else {
+                       return (
+                        <Button obj={object} key={i} 
+                        component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${object.id}`} className="btn-minitask-item" 
+                        style={{marginRight: 6, borderRadius: 3, border:"1px solid #65656d", fontSize: 13}}>{i+1}</Button>
+                       )
+                     }
+                 })}                  
+                </ButtonGroup>
+              </div>
+              <div style={{float:"right" ,marginRight:10}}>
+                <div className="stopwatch" style={{color:"red", fontSize:16, fontWeight:600}}>
+                  Time: {this.state.hour < 10 ? "0" + this.state.hour : this.state.hour}:{this.state.minute < 10 ? "0" + this.state.minute : this.state.minute}:{this
+                    .state.second < 10
+                    ? "0" + this.state.second
+                  : this.state.second}
+                </div>
+              </div>
+          </div>
+          ) :null}
+          
           {isLoadingComponent && isLoadingCode ? (
             <div
               className="sweet-loading"
@@ -859,41 +1160,11 @@ class MiniTaskPage extends Component {
                             ></img>
                           </button> */}
                                   </div>
-                                  {this.state.isUserStudy ?
-                                    <Box p={2}>
-                                      {/* <button
-                                onClick={this.submitCode}
-                                className={`submitCode_btn ${this.state.isLoading &&
-                                  "disable_btn"}`}
-                                disabled={this.state.isLoading}
-                              >
-                                Nộp bài
-                              </button> */}
-                                      <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
-                                        <Button variant="contained" startIcon={<DescriptionIcon />}
-                                          style={{ backgroundColor: "#7BC043" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
-                                          Nộp bài
-                                        </Button>
-                                      </Slide>
-                                    </Box>
-                                    :
-                                    <Box p={2}>
-                                      {/* <button
-                                onClick={this.submitCode}
-                                className={`submitCode_btn ${this.state.isLoading &&
-                                  "disable_btn"}`}
-                                disabled={this.state.isLoading}
-                              >
-                                Nộp bài
-                              </button> */}
-                                      <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
-                                        <Button variant="contained" startIcon={<DescriptionIcon />}
-                                          style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodePractice} disabled={this.state.isLoading} color="primary">
-                                          Nộp bài
-                                        </Button>
-                                      </Slide>
-                                    </Box>
-                                  }
+                                  
+                                  <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
+                                    {btnSubmit}
+                                  </Slide>
+                                   
                                   {this.props.user.next_minitask !== undefined ? (
                                     <div style={{ marginLeft: 30, fontSize: 12 }}>
                                       {this.props.user.next_minitask.id === "" ? (

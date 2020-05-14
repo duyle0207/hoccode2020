@@ -24,6 +24,8 @@ import CodeIcon from '@material-ui/icons/Code';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SearchIcon from '@material-ui/icons/Search';
 import SendIcon from '@material-ui/icons/Send';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+
 
 import Minitask from "./Minitask";
 import UserRank from './UserRank';
@@ -32,6 +34,8 @@ import UserRank from './UserRank';
 import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { Link } from "react-router-dom";
+
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withSnackbar, SnackbarProvider } from 'notistack';
@@ -63,6 +67,8 @@ class RoomDetail extends Component {
             isLoading: true,
             users_fight: [],
             isUserJoinFight: '',
+            minitaskList: [],
+            firstIdMinitask: ""
         }
     }
 
@@ -92,6 +98,10 @@ class RoomDetail extends Component {
                 // Get list minitask
                 axios.get(`http://localhost:8081/api/v1/curd/listminitaskfight/${id}`).then(res => {
                     const fight_minitask = res.data;
+                    const completed = res.data;
+                    this.setState({ minitaskList: completed, firstIdMinitask: completed[0].id })
+                    console.log(this.state.minitaskList);
+                    console.log(this.state.firstIdMinitask);
                     this.setState({
                         fight_minitask,
                     }, () => {
@@ -117,10 +127,19 @@ class RoomDetail extends Component {
         });
 
         // Websocket
-        connectWebSocket((msg)=>{
+        connectWebSocket((msg) => {
             alert("hello")
             console.log(msg.data);
         });
+
+        // axios
+        //     .get(`http://localhost:8081/api/v1/curd/listminitaskfight/5ea6ec54e939f21a5432ba66`)
+        //     .then(res => {
+        //         const completed = res.data;
+        //         this.setState({ minitaskList: completed, firstIdMinitask: completed[0].id })
+        //         console.log(this.state.minitaskList);
+        //         console.log(this.state.firstIdMinitask);
+        //     });
     }
 
     getParams = pathname => {
@@ -369,9 +388,9 @@ class RoomDetail extends Component {
     }
 
     renderFighType = (fight_type) => {
-        if(fight_type === "private") {
+        if (fight_type === "private") {
             return <Chip size="small" label="Riêng tư" style={{ backgroundColor: "#C24535", color: "white" }} />;
-        } else if(fight_type === "public"){
+        } else if (fight_type === "public") {
             return <Chip size="small" label="Công khai" style={{ backgroundColor: "#77C148", color: "white" }} />
         }
     }
@@ -508,13 +527,13 @@ class RoomDetail extends Component {
 
         const leaderBoard = users_fight.map((user, index) => {
             return <Fade in={true} direction="left" {...(true ? { timeout: 1000 } : {})}>
-                <UserRank user={user} rank={index} isCurrentUser={this.props.user.email===user.email}/>
+                <UserRank user={user} rank={index} isCurrentUser={this.props.user.email === user.email} />
             </Fade>
         });
 
         if (!isUserJoinFight && fight.fight_type === "private" && this.props.user.email !== fight.user_created) {
             return <Slide in={true} direction="down" {...(true ? { timeout: 1000 } : {})} style={{ minWidth: 100 }}>
-                <Notfoundpage/>
+                <Notfoundpage />
             </Slide>
         }
 
@@ -637,6 +656,15 @@ class RoomDetail extends Component {
                                         </Grid>
                                     </Box>
                                 </Grid>
+                                <Grid item xs={2}>
+                                    <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }}
+                                        component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
+                                        startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
+                                        <Typography style={{ color: "white", fontWeight: 500 }}>
+                                            Bắt đầu
+                                        </Typography>
+                                    </Button>
+                                </Grid>
                             </Grid>
                         </Fade>
                         <Divider />
@@ -694,8 +722,8 @@ class RoomDetail extends Component {
                                                     <Box my={1}>
                                                         {
                                                             fight_minitask_list.length === 0 ?
-                                                            <Typography style={{ fontWeight: 200, fontSize: 18, color: "gray" }}>Không có dữ liệu</Typography> :
-                                                            fight_minitask_list
+                                                                <Typography style={{ fontWeight: 200, fontSize: 18, color: "gray" }}>Không có dữ liệu</Typography> :
+                                                                fight_minitask_list
                                                         }
                                                     </Box>
                                                 </Box>

@@ -225,9 +225,9 @@ class ProfilePage extends React.Component {
               </MenuItem>
             </Link>
 
-            <Link to={`${url}/contest`}>
+            <Link to={`${url}/fight`}>
               <MenuItem
-                selected={pathname === `${url}/contest`}
+                selected={pathname === `${url}/fight`}
                 onClick={this.onClickMenuItem(1)}
                 dense="true"
               >
@@ -365,6 +365,33 @@ class ProfilePage extends React.Component {
                 <RoomDetail location={this.props.location} userData={this.props.user} />
               </Route>
               {/* <Route path={`${path}/admin`}>
+
+          <Switch>
+            <Route exact path={path}>
+              <Overview url={url} />
+            </Route>
+            <Route path={`${path}/overview`}>
+              <Overview url={url} />
+            </Route>
+            <Route path={`${path}/practice`}>
+              <PracticePage url={url} />
+            </Route>
+            <Route path={`${path}/course`}>
+              <CourseBody url={url} />
+            </Route>
+            <Route path={`${path}/fight`}>
+              <RoomPracticePage url={url} />
+            </Route>
+            <Route path={`${path}/courses/:courseId/tasks`}>
+              <TaskBody location={this.props.location} />
+            </Route>
+            <Route path={`${path}/print`}>
+              <PrintBody userData={this.props.user} />
+            </Route>
+            <Route path={`${path}/fight-detail/:id`}>
+              <RoomDetail userData={this.props.user} />
+            </Route>
+            {/* <Route path={`${path}/admin`}>
               <ReactAdmin />
             </Route> */}
               <Route path={`${path}/create-contest`}>

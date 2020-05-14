@@ -73,6 +73,11 @@ function App() {
                 path="/minitask/:minitaskId"
                 component={MiniTaskPage}
               />
+              {/* Private route for fight page */}
+              <PrivateRoute
+                path="/fight/:fightId/minitask/:minitaskId"
+                component={MiniTaskPage}
+              />
               <Route path="/createminitask" exact component={CreateMiniTask} />
               <PrivateRoute path="/admin" component={ReactAdmin} />
               <PrivateRoute path="/profile" component={ProfilePage} />
