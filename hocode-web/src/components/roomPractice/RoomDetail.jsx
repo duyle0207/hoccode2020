@@ -136,7 +136,7 @@ class RoomDetail extends Component {
         //     .get(`http://localhost:8081/api/v1/curd/listminitaskfight/5ea6ec54e939f21a5432ba66`)
         //     .then(res => {
         //         const completed = res.data;
-        //         this.setState({ minitaskList: completed, firstIdMinitask: completed[0].id })
+        //         this.setState({ minitaskList: completed, firstIdMinitask: completed[0].id})
         //         console.log(this.state.minitaskList);
         //         console.log(this.state.firstIdMinitask);
         //     });
@@ -660,6 +660,15 @@ class RoomDetail extends Component {
                                     <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }}
                                         component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
                                         startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
+                                        <Typography style={{ color: "white", fontWeight: 500 }}>
+                                            Bắt đầu
+                                        </Typography>
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }} 
+                                            component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
+                                            startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
                                         <Typography style={{ color: "white", fontWeight: 500 }}>
                                             Bắt đầu
                                         </Typography>
