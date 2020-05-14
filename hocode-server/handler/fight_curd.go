@@ -44,8 +44,6 @@ func (h *Handler) GetOneFight(c echo.Context) (err error) {
 
 	bk := &model.Fight{}
 
-	fmt.Println("Zô")
-
 	id := c.Param("id")
 
 	fmt.Println(id)

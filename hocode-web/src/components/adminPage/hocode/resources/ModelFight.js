@@ -15,9 +15,9 @@ import {
   DateTimeInput,
   NumberInput,
   ImageField,
-  SelectInput
+  // SelectInput
 } from "react-admin";
-import Skeleton from "@material-ui/lab/Skeleton";
+// import Skeleton from "@material-ui/lab/Skeleton";
 
 import Slide from '@material-ui/core/Slide';
 
@@ -35,8 +35,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Box from '@material-ui/core/Box';
-import Tooltip from "@material-ui/core/Tooltip";
-import Chip from "@material-ui/core/Chip";
+// import Tooltip from "@material-ui/core/Tooltip";
+// import Chip from "@material-ui/core/Chip";
 
 import Card from '@material-ui/core/Card';
 
@@ -58,12 +58,12 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
+// import Select from '@material-ui/core/Select';
+// import MenuItem from '@material-ui/core/MenuItem';
+// import InputLabel from '@material-ui/core/InputLabel';
 
-import Slider from '@material-ui/core/Slider';
-import FormControl from '@material-ui/core/FormControl';
+// import Slider from '@material-ui/core/Slider';
+// import FormControl from '@material-ui/core/FormControl';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import MomentUtils from '@date-io/moment';
@@ -214,7 +214,7 @@ class ModelFightEdit extends Component {
   }
   getMinitaskFromBank(task) {
     if (this.isDuplicateMinitask(task.id)) {
-      const temp_task_minitask = this.state.minitask;
+      // const temp_task_minitask = this.state.minitask;
       var data = {
         fight_id: this.props.id,
         minitask_id: task.id
@@ -241,7 +241,7 @@ class ModelFightEdit extends Component {
   }
 
   removeMinitask(id) {
-    const temp_task_minitask = this.state.minitask;
+    // const temp_task_minitask = this.state.minitask;
     axios.delete(`http://localhost:8081/api/v1/curd/delminitask/${this.props.id}/${id}`)
          .then(res => {
            axios.get(`http://localhost:8081/api/v1/curd/listminitaskfight/${this.props.id}`)

@@ -20,15 +20,15 @@ import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 import EmojiEventsIcon from '@material-ui/icons/EmojiEvents';
 
 const ICONS = {
-  books: <MenuBookIcon style={{marginRight: 1}} />,
-  events: <EventIcon style={{marginRight: 1}} />,
-  courses: <GestureIcon style={{marginRight: 1}} />,
-  tasks: <SportsSoccerIcon style={{marginRight: 1}} />,
-  minitasks: <SportsVolleyballIcon style={{marginRight: 1}} />,
-  profile: <ListIcon style={{marginRight: 1}} />,
-  certs: <CardGiftcardIcon style={{marginRight: 1}} />,
-  users: <SupervisorAccountIcon style={{marginRight: 1}} />,
-  fights: <EmojiEventsIcon style={{marginRight:1}}/>
+  books: <MenuBookIcon style={{ marginRight: 1 }} />,
+  events: <EventIcon style={{ marginRight: 1 }} />,
+  courses: <GestureIcon style={{ marginRight: 1 }} />,
+  tasks: <SportsSoccerIcon style={{ marginRight: 1 }} />,
+  minitasks: <SportsVolleyballIcon style={{ marginRight: 1 }} />,
+  profile: <ListIcon style={{ marginRight: 1 }} />,
+  certs: <CardGiftcardIcon style={{ marginRight: 1 }} />,
+  users: <SupervisorAccountIcon style={{ marginRight: 1 }} />,
+  fights: <EmojiEventsIcon style={{ marginRight: 1 }} />
 };
 
 const Menu = ({ resources, onMenuClick, logout }) => (
@@ -39,8 +39,8 @@ const Menu = ({ resources, onMenuClick, logout }) => (
         <p style={{ fontSize: 14, marginLeft: "1.2em", color: "#1f74be" }}>
           Quay lại trang chủ
         </p>
-      </MenuItem> 
-      
+      </MenuItem>
+
     </Link>
     {/* <MenuItemLink
               key="goHome"
@@ -52,16 +52,16 @@ const Menu = ({ resources, onMenuClick, logout }) => (
             /> */}
     {resources
       ? resources.map(resource =>
-          resource.hasList ? (
-            <MenuItemLink
-              key={resource.name}
-              to={`/${resource.name}`}
-              primaryText={`${changeIDToName(titleCase(resource.name))}`}
-              onClick={onMenuClick}
-              leftIcon={ICONS[resource.name]}
-            />
-          ) : null
-        )
+        resource.hasList ? (
+          <MenuItemLink
+            key={resource.name}
+            to={`/${resource.name}`}
+            primaryText={`${changeIDToName(titleCase(resource.name))}`}
+            onClick={onMenuClick}
+            leftIcon={ICONS[resource.name]}
+          />
+        ) : null
+      )
       : ""}
     <Responsive small={logout} medium={null} />
   </div>
@@ -93,6 +93,7 @@ const changeIDToName = name => {
       break;
     case "Fights":
       title = "Thi đấu"
+    break;
     default:
       title = name;
       break;

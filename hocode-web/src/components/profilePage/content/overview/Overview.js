@@ -22,6 +22,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Minitask from './Minitask';
 import Fade from '@material-ui/core/Fade';
+import Fight from './Fight';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -81,6 +82,8 @@ class Overview extends React.Component {
       newestCourse: [],
       tab: 0,
       threeRandomMinitask: [],
+      user_fight_info: {},
+      twoNewestFights: [],
     };
     this.getApi = this.getApi.bind(this);
   }
@@ -141,6 +144,14 @@ class Overview extends React.Component {
         console.log(res.data);
         this.setState({ threeRandomMinitask: res.data });
       }),
+      axios.get(`http://localhost:8081/api/v1/curd/user-fight-info/`).then(res => {
+        console.log(res.data);
+        this.setState({ user_fight_info: res.data });
+      }),
+      axios.get(`http://localhost:8081/api/v1/curd/2NewestFights/`).then(res => {
+        console.log(res.data);
+        this.setState({ twoNewestFights: res.data });
+      }),
     ]);
     this.setState({ isLoading: false });
   };
@@ -180,7 +191,7 @@ class Overview extends React.Component {
   }
 
   render() {
-    const { isLoading, isLoadingCoursePassInfo, totalCourse, chartInfo, courses, newestCourse, tab, threeRandomMinitask } = this.state;
+    const { isLoading, isLoadingCoursePassInfo, totalCourse, chartInfo, courses, newestCourse, tab, threeRandomMinitask, user_fight_info, twoNewestFights } = this.state;
     const { classes } = this.props;
     let url = this.props.url;
     const newestCourseList = newestCourse.map((course, i) => {
@@ -193,7 +204,11 @@ class Overview extends React.Component {
 
     const threeRandomMinitaskList = threeRandomMinitask.map((minitask, i) => {
       return <Minitask minitask={minitask} />
-    })
+    });
+
+    const twoNewestFightsList = twoNewestFights.map((fight, index) => {
+      return <Fight fight={fight} />
+    });
 
     return (
       <Grid spacing={2}>
@@ -229,7 +244,7 @@ class Overview extends React.Component {
                         <CardUser user={this.props.user} />
                       </Grid>
                       <Grid item xs={9} md={9} sm={9}>
-                        <UserInfo totalCourse={totalCourse} userCourse={courses} minitaskInfo={chartInfo} />
+                        <UserInfo totalCourse={totalCourse} userCourse={courses} minitaskInfo={chartInfo} fightInfo={user_fight_info} />
                       </Grid>
                     </Grid>
                   </Box>
@@ -349,6 +364,23 @@ class Overview extends React.Component {
                   </Grid>
                 </Fade>
               </TabPanel>
+              <Box my={2}>
+                <Typography variant="h3" style={{ fontSize: 30, fontWeight: 500, color: "#3B3B3B" }}>Cuộc thi lập trình</Typography>
+              </Box>
+              <Grid container xs={12} spacing={2}>
+                {twoNewestFightsList}
+                <Grid container xs={12} spacing={2} justify="flex-end">
+                  <Box my={3} mr={1}>
+                    <Link
+                      style={{ textDecoration: 'none' }}
+                      className="item"
+                      to={"/profile/contest"}
+                    >
+                      <Typography style={{ fontSize: 18, fontWeight: 400, textTransform: 'none' }}>Xem tất cả</Typography>
+                    </Link>
+                  </Box>
+                </Grid>
+              </Grid>
               <Box my={2}>
                 <Typography variant="h3" style={{ fontSize: 30, fontWeight: 500, color: "#3B3B3B" }}>Luyện tập hàng ngày</Typography>
               </Box>

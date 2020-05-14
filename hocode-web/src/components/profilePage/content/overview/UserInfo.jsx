@@ -19,7 +19,7 @@ const BorderLinearProgress = withStyles({
 
 class UserInfo extends Component {
     render() {
-        const { totalCourse, userCourse, minitaskInfo } = this.props;
+        const { totalCourse, userCourse, minitaskInfo, fightInfo } = this.props;
         return (
             <React.Fragment>
                 <Fade in={true} {...(true ? { timeout: 1500 } : {})}>
@@ -28,7 +28,7 @@ class UserInfo extends Component {
                             <Box>
                                 <Typography variant="h4" style={{ fontSize: 20, fontWeight: 550 }}>
                                     Khóa học
-                            </Typography>
+                                </Typography>
                             </Box>
                             <Box mb={1}>
                                 <Typography variant="h4" style={{ fontSize: 30, fontWeight: 600, color: "#3B3B3B" }}>
@@ -66,11 +66,11 @@ class UserInfo extends Component {
                             <Box>
                                 <Typography variant="h4" style={{ fontSize: 20, fontWeight: 550 }}>
                                     Cuộc thi
-                            </Typography>
+                                </Typography>
                             </Box>
                             <Box mb={1}>
                                 <Typography variant="h4" style={{ fontSize: 30, fontWeight: 600, color: "#3B3B3B" }}>
-                                    1/3
+                                    {(fightInfo.total_private_joined_fight + fightInfo.total_public_joined_fight)+"/"+(fightInfo.total_private_fight + fightInfo.total_public_fight)}
                             </Typography>
                             </Box>
                             <Box>

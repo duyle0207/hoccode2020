@@ -2,6 +2,8 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
+	model "github.com/duyle0207/hoccode2020/models"
 	"net"
 	"time"
 
@@ -318,6 +320,32 @@ func main() {
 
 	rs.Use(middleware.JWT([]byte("secret")))
 	rs.GET("", h.TestAuth)
+
+	// Websocket
+
+	pool := model.NewPool()
+	go pool.Start()
+
+	e.GET("/ws", func(c echo.Context) error {
+		fmt.Println("[WEB SOCKET ROUTE]")
+
+		conn,err := h.Upgrade(c.Response(), c.Request())
+
+		if err != nil {
+			_, _ = fmt.Fprintf(c.Response(), "%+v\n", err)
+		}
+
+		userFightWebSocket := &model.UserFightWebSocket{
+			UserID: "",
+			Conn:   conn,
+			Pool:   pool,
+		}
+
+		pool.GetIn <- userFightWebSocket
+		userFightWebSocket.HandleRequest()
+
+		return err
+	})
 
 	rs.GET("/getCourseLeaderBoard/:course_id", h.GetCourseLeaderBoard)
 

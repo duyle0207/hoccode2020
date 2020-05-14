@@ -17,7 +17,8 @@ import {
     Tooltip,
     Chip,
     TableBody, TableCell, TableHead, TableRow,
-    Slide
+    Slide,
+    CardMedia
 } from "@material-ui/core";
 
 import Silde from '@material-ui/core/Slide';
@@ -36,6 +37,8 @@ import axios from "axios";
 import Modal from 'react-awesome-modal';
 
 import MDReactComponent from 'markdown-react-js';
+
+import { withSnackbar, SnackbarProvider } from 'notistack';
 
 class CreateRoomPage extends Component {
 
@@ -485,13 +488,38 @@ class CreateRoomPage extends Component {
                 });
             } else {
                 // call api here
-                alert("api");
+                const { end_time, start_time, fight_name, numbers_std, fight_desc, backgroud_img, fight_minitask } = this.state;
+                console.log(start_time);
+                axios.post(`http://localhost:8081/api/v1/curd/fights`, {
+                    "_id": "",
+                    "fight_name": fight_name,
+                    "numbers_std": parseInt(numbers_std),
+                    "fight_desc": fight_desc,
+                    "backgroud_img": backgroud_img,
+                    "time_start": start_time,
+                    "time_end": end_time,
+                    "user_created": "",
+                    "del": false,
+                    "fight_type": "private"
+                }).then(res => {
+                    for (var x = 0; x < fight_minitask.length; x++) {
+                        axios.post(`http://localhost:8081/api/v1/curd/fightminitask`, {
+                            "_id": "",
+                            "fight_id": res.data.id,
+                            "minitask_id": fight_minitask[x].id
+                        }).then(res => {
+                        });
+                    }
+                    this.props.enqueueSnackbar('Tạo cuộc thi thành công', {
+                        variant: 'success',
+                    });
+                });
             }
         });
     }
 
     closeModalError = () => {
-        this.setState({isOpenError: false})
+        this.setState({ isOpenError: false })
     }
 
     render() {
@@ -515,344 +543,354 @@ class CreateRoomPage extends Component {
         } = this.state;
         return (
             <React.Fragment>
-                <Modal visible={this.state.open} effect="fadeInDown" onClickAway={() => this.closeModal()}>
-                    <Box p={2}>
-                        <MDReactComponent text={this.state.minitaskDesc} />
-                    </Box>
-                </Modal>
-                <Modal visible={isOpenError} effect="fadeInDown" onClickAway={() => this.closeModalError()}>
-                    <Box p={2}>
-                        <Box p={1}>
-                            <Typography variant="h6">Lỗi</Typography>
-                        </Box>
-                        <Box p={1}>
-                            <Typography variant="h2">{errorMessage}</Typography>
-                        </Box>
-                        {/* <MDReactComponent text={errorMessage} /> */}
-                    </Box>
-                </Modal>
-                <Slide in={true} direction="up" {...(true ? { timeout: 1200 } : {})}>
-                    <Grid>
-                        <Typography style={{ fontWeight: 200, fontSize: 35 }}>Tạo cuộc thi</Typography>
-                    </Grid>
-                </Slide>
-                <Slide in={true} direction="up" {...(true ? { timeout: 1200 } : {})}>
-                    <Box my={2} style={{ backgroundColor: "white", borderRadius: "8px" }}>
+                <SnackbarProvider maxSnack={1}>
+                    <Modal visible={this.state.open} effect="fadeInDown" onClickAway={() => this.closeModal()}>
                         <Box p={2}>
-                            <Box my={4}>
-                                <Grid xs={12} container>
-                                    <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
-                                        <Typography style={{ fontWeight: 500, fontSize: 17 }}>Tên cuộc thi</Typography>
-                                    </Grid>
-                                    <Grid xs={10} sm={10} md={10}>
-                                        <TextField
-                                            id="outlined-basic" label="Tên cuộc thi" variant="outlined" fullWidth
-                                            value={fight_name}
-                                            error={isFightNameError}
-                                            helperText={fight_name_error}
-                                            onChange={this.onChangeFightName}
-                                        />
-                                    </Grid>
-                                </Grid>
+                            <MDReactComponent text={this.state.minitaskDesc} />
+                        </Box>
+                    </Modal>
+                    <Modal visible={isOpenError} effect="fadeInDown" onClickAway={() => this.closeModalError()}>
+                        <Box p={2}>
+                            <Box p={1}>
+                                <Typography variant="h6">Lỗi</Typography>
                             </Box>
-                            <Box my={4}>
-                                <Grid xs={12} container>
-                                    <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
-                                        <Typography style={{ fontWeight: 500, fontSize: 17 }}>Mô tả cuộc thi</Typography>
-                                    </Grid>
-                                    <Grid xs={10} sm={10} md={10}>
-                                        <TextField id="outlined-basic" label="Mô tả cuộc thi" multiline
-                                            rows={4} variant="outlined" fullWidth
-                                            value={fight_desc}
-                                            error={isFightDescError}
-                                            helperText={fight_desc_error}
-                                            onChange={this.onChangeFightDesc}
-                                        />
-                                    </Grid>
-                                </Grid>
+                            <Box p={1}>
+                                <Typography variant="h2">{errorMessage}</Typography>
                             </Box>
-                            <Box my={4}>
-                                <Grid xs={12} container>
-                                    <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
-                                        <Typography style={{ fontWeight: 500, fontSize: 17 }}>Ảnh</Typography>
-                                    </Grid>
-                                    <Grid xs={5} sm={5} md={5}>
-                                        <TextField id="outlined-basic" label="Ảnh cuộc thi" variant="outlined" fullWidth
-                                            value={backgroud_img}
-                                            error={isFightBackGroundImgError}
-                                            helperText={fight_backgroundImg_error}
-                                            onChange={this.onChangeFightBackgroundImg}
-                                        />
-                                    </Grid>
-                                    <Grid container item xs={5} sm={5} md={5} justify="center">
-                                        <img src="https://vnreview.vn/image/14/91/03/1491033.jpg" alt="Smiley face" height="200" width="200" />
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                            <Box my={4}>
-                                <Grid xs={12} container>
-                                    <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
-                                        <Typography style={{ fontWeight: 500, fontSize: 17 }}>Ngày bắt đầu</Typography>
-                                    </Grid>
-                                    <Grid xs={3} sm={3} md={3}>
-                                        <MuiPickersUtilsProvider utils={MomentUtils}>
-                                            <DateTimePicker
-                                                label="Ngày bắt đầu"
-                                                helperText={start_time_error_message}
-                                                error={!isStartTimeValid}
-                                                ampm={false}
-                                                disablePast
-                                                inputVariant="outlined"
-                                                value={start_time}
-                                                onChange={this.handleStartTimeChange}
-                                                showTodayButton
-                                                format="DD/MM/YYYY hh:mm a"
+                            {/* <MDReactComponent text={errorMessage} /> */}
+                        </Box>
+                    </Modal>
+                    <Slide in={true} direction="up" {...(true ? { timeout: 1200 } : {})}>
+                        <Grid>
+                            <Typography style={{ fontWeight: 200, fontSize: 35 }}>Tạo cuộc thi</Typography>
+                        </Grid>
+                    </Slide>
+                    <Slide in={true} direction="up" {...(true ? { timeout: 1200 } : {})}>
+                        <Box my={2} style={{ backgroundColor: "white", borderRadius: "8px" }}>
+                            <Box p={2}>
+                                <Box my={4}>
+                                    <Grid xs={12} container>
+                                        <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
+                                            <Typography style={{ fontWeight: 500, fontSize: 17 }}>Tên cuộc thi</Typography>
+                                        </Grid>
+                                        <Grid xs={10} sm={10} md={10}>
+                                            <TextField
+                                                id="outlined-basic" label="Tên cuộc thi" variant="outlined" fullWidth
+                                                value={fight_name}
+                                                error={isFightNameError}
+                                                helperText={fight_name_error}
+                                                onChange={this.onChangeFightName}
                                             />
-                                        </MuiPickersUtilsProvider>
+                                        </Grid>
                                     </Grid>
-                                    <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
-                                        <Typography style={{ fontWeight: 500, fontSize: 17 }}>Số lượng người tham gia</Typography>
-                                    </Grid>
-                                    <Grid xs={5} sm={5} md={5}>
-                                        <TextField style={{ minWidth: 200 }} id="outlined-basic" label="Số lượng người tham gia" type="number" min="1" variant="outlined"
-                                            value={numbers_std}
-                                            error={isFightNumStdError}
-                                            helperText={fight_numStd_error}
-                                            onChange={this.onChangeNumStd}
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                            <Box my={4}>
-                                <Grid xs={12} container>
-                                    <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
-                                        <Typography style={{ fontWeight: 500, fontSize: 17 }}>Ngày kết thúc</Typography>
-                                    </Grid>
-                                    <Grid xs={3} sm={3} md={3}>
-                                        <MuiPickersUtilsProvider utils={MomentUtils}>
-                                            <DateTimePicker
-                                                disablePast
-                                                helperText={end_time_error_message}
-                                                error={!isEndTimeValid}
-                                                label="Ngày kết thúc"
-                                                inputVariant="outlined"
-                                                value={end_time}
-                                                onChange={this.handleEndTimeChange}
-                                                showTodayButton
-                                                format="DD/MM/YYYY hh:mm a"
+                                </Box>
+                                <Box my={4}>
+                                    <Grid xs={12} container>
+                                        <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
+                                            <Typography style={{ fontWeight: 500, fontSize: 17 }}>Mô tả cuộc thi</Typography>
+                                        </Grid>
+                                        <Grid xs={10} sm={10} md={10}>
+                                            <TextField id="outlined-basic" label="Mô tả cuộc thi" multiline
+                                                rows={4} variant="outlined" fullWidth
+                                                value={fight_desc}
+                                                error={isFightDescError}
+                                                helperText={fight_desc_error}
+                                                onChange={this.onChangeFightDesc}
                                             />
-                                        </MuiPickersUtilsProvider>
+                                        </Grid>
                                     </Grid>
-                                    <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
-                                        <Typography style={{ fontWeight: 500, fontSize: 17 }}>Loại cuộc thi</Typography>
+                                </Box>
+                                <Box my={4}>
+                                    <Grid xs={12} container>
+                                        <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
+                                            <Typography style={{ fontWeight: 500, fontSize: 17 }}>Ảnh</Typography>
+                                        </Grid>
+                                        <Grid xs={5} sm={5} md={5}>
+                                            <TextField id="outlined-basic" label="Ảnh cuộc thi" variant="outlined" fullWidth
+                                                value={backgroud_img}
+                                                error={isFightBackGroundImgError}
+                                                helperText={fight_backgroundImg_error}
+                                                onChange={this.onChangeFightBackgroundImg}
+                                            />
+                                        </Grid>
+                                        <Grid container item xs={5} sm={5} md={5} justify="center">
+                                            <Box mx={2} border={2}>
+                                                <CardMedia
+                                                    component="img"
+                                                    alt="Ảnh cuộc thi"
+                                                    height="200"
+                                                    image={backgroud_img===""?"https://icye.vn/Images/images/contest.jpg":backgroud_img}
+                                                    title="Ảnh cuộc thi"
+                                                />
+                                            </Box>
+                                        </Grid>
                                     </Grid>
-                                    <Grid xs={5} sm={5} md={5}>
-                                        <FormControl variant="outlined" style={{ minWidth: 200 }}>
-                                            <InputLabel id="demo-simple-select-outlined-label">Loại cuộc thi</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-outlined-label"
-                                                id="demo-simple-select-outlined"
-                                                value={2}
-                                                disabled
-                                                // onChange={handleChange}
-                                                label="Loại cuộc thi"
-                                            >
-                                                {/* <MenuItem value="">
+                                </Box>
+                                <Box my={4}>
+                                    <Grid xs={12} container>
+                                        <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
+                                            <Typography style={{ fontWeight: 500, fontSize: 17 }}>Ngày bắt đầu</Typography>
+                                        </Grid>
+                                        <Grid xs={3} sm={3} md={3}>
+                                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                <DateTimePicker
+                                                    label="Ngày bắt đầu"
+                                                    helperText={start_time_error_message}
+                                                    error={!isStartTimeValid}
+                                                    ampm={false}
+                                                    disablePast
+                                                    inputVariant="outlined"
+                                                    value={start_time}
+                                                    onChange={this.handleStartTimeChange}
+                                                    showTodayButton
+                                                    format="DD/MM/YYYY hh:mm a"
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                        </Grid>
+                                        <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
+                                            <Typography style={{ fontWeight: 500, fontSize: 17 }}>Số lượng người tham gia</Typography>
+                                        </Grid>
+                                        <Grid xs={5} sm={5} md={5}>
+                                            <TextField style={{ minWidth: 200 }} id="outlined-basic" label="Số lượng người tham gia" type="number" min="1" variant="outlined"
+                                                value={numbers_std}
+                                                error={isFightNumStdError}
+                                                helperText={fight_numStd_error}
+                                                onChange={this.onChangeNumStd}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                                <Box my={4}>
+                                    <Grid xs={12} container>
+                                        <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
+                                            <Typography style={{ fontWeight: 500, fontSize: 17 }}>Ngày kết thúc</Typography>
+                                        </Grid>
+                                        <Grid xs={3} sm={3} md={3}>
+                                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                <DateTimePicker
+                                                    disablePast
+                                                    helperText={end_time_error_message}
+                                                    error={!isEndTimeValid}
+                                                    label="Ngày kết thúc"
+                                                    inputVariant="outlined"
+                                                    value={end_time}
+                                                    onChange={this.handleEndTimeChange}
+                                                    showTodayButton
+                                                    format="DD/MM/YYYY hh:mm a"
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                        </Grid>
+                                        <Grid container item xs={2} sm={2} md={2} alignItems="flex-start">
+                                            <Typography style={{ fontWeight: 500, fontSize: 17 }}>Loại cuộc thi</Typography>
+                                        </Grid>
+                                        <Grid xs={5} sm={5} md={5}>
+                                            <FormControl variant="outlined" style={{ minWidth: 200 }}>
+                                                <InputLabel id="demo-simple-select-outlined-label">Loại cuộc thi</InputLabel>
+                                                <Select
+                                                    labelId="demo-simple-select-outlined-label"
+                                                    id="demo-simple-select-outlined"
+                                                    value={2}
+                                                    disabled
+                                                    // onChange={handleChange}
+                                                    label="Loại cuộc thi"
+                                                >
+                                                    {/* <MenuItem value="">
                                                     <em>None</em>
                                                 </MenuItem> */}
-                                                {/* <MenuItem value={1}>Công khai</MenuItem> */}
-                                                <MenuItem value={2}>Riêng tư</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                                                    {/* <MenuItem value={1}>Công khai</MenuItem> */}
+                                                    <MenuItem value={2}>Riêng tư</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
                                     </Grid>
-                                </Grid>
+                                </Box>
                             </Box>
                         </Box>
-                    </Box>
-                </Slide>
-                <Slide in={true} direction="up" {...(true ? { timeout: 1700 } : {})}>
-                    <Grid>
-                        <Typography style={{ fontWeight: 200, fontSize: 35 }}>Thêm thách thức</Typography>
-                    </Grid>
-                </Slide>
-                <Slide in={true} direction="up" {...(true ? { timeout: 1700 } : {})}>
-                    <Box my={2} style={{ backgroundColor: "white", borderRadius: "8px" }}>
-                        <Grid xs={12} container spacing={2}>
-                            <Grid item xs={6}>
-                                <Paper >
-                                    <Box height={449} bgcolor="#1F74BE" color="primary.contrastText" p={{ xs: 2, sm: 2, md: 2 }}>
-                                        <Box display="flex">
-                                            <Box p={1} flexGrow={1}>
-                                                <Typography variant="h5" gutterBottom>
-                                                    Thách thức ({this.state.fight_minitask.length})
-                                                </Typography>
-                                            </Box>
-                                            <Box>
-                                                {this.state.fight_minitask.length > 0 ?
-                                                    <Button variant="contained" color="#b39ddb" onClick={this.saveMinitaskList}>Import</Button> :
-                                                    ""
-                                                }
-                                            </Box>
-                                        </Box>
-                                        {this.state.fight_minitask.length > 0 ?
-                                            <div style={{ overflow: 'auto', minHeight: '350px', backgroundColor: "white" }}>
-                                                <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
-                                                    <TableHead>
-                                                        <TableRow style={{
-                                                            backgroundColor: "#ffred5f5",
-                                                            height: "5px"
-                                                        }}>
-                                                            <TableCell>Tên thách thức</TableCell>
-                                                            {/* <TableCell align="right">Minitask name</TableCell> */}
-                                                            <TableCell align="right">Điểm</TableCell>
-                                                            {/* <TableCell align="right">Minitask Desc</TableCell> */}
-                                                            <TableCell align="right">Độ khó</TableCell>
-                                                            <TableCell align="right"></TableCell>
-                                                            <TableCell align="right"></TableCell>
-                                                        </TableRow>
-                                                    </TableHead>
-                                                    <TableBody>
-                                                        {this.state.fight_minitask.map(row => (
-                                                            <Silde in={true} direction="left" {...(true ? { timeout: 100 } : {})}>
-                                                                <TableRow bgcolor={row.isNew ? "#bbdefb" : ""} key={row.task_name}>
-                                                                    <TableCell component="th" scope="row">
-                                                                        {row.mini_task_name}
-                                                                    </TableCell>
-                                                                    {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
-                                                                    <TableCell align="right">{row.code_point}</TableCell>
-                                                                    {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
-                                                                    <TableCell align="right">
-                                                                        <Tooltip title="Độ khó" placement="top">
-                                                                            <div style={{ marginLeft: 10 }}>
-                                                                                {this.renderLevelMinitaskChip(row.level)}
-                                                                            </div>
-                                                                        </Tooltip>
-                                                                    </TableCell>
-                                                                    <TableCell align="right" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">Mô tả</Button></TableCell>
-                                                                    <TableCell align="right">
-                                                                        <Button onClick={() => { this.removeMinitask(row) }} startIcon={<DeleteForeverIcon />} size="large" color="secondary"> Xóa</Button>
-                                                                    </TableCell>
-                                                                </TableRow>
-                                                            </Silde>
-                                                        ))}
-                                                    </TableBody>
-                                                </Table>
-                                            </div>
-                                            :
-                                            <Typography variant="subtitle1" gutterBottom>
-                                                Chưa có thách thức nào.
-                                            </Typography>}
-                                    </Box>
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Box p={2} boxShadow={2}>
-                                    <Box p={1}>
-                                        <Grid xs={12} container justify="center" spacing={2}>
-                                            <Grid xs={5} item>
-                                                <Paper component="form">
-                                                    <IconButton aria-label="search">
-                                                        <SearchIcon />
-                                                    </IconButton>
-                                                    <InputBase
-                                                        placeholder="Search"
-                                                        inputProps={{ 'aria-label': 'search google maps' }}
-                                                        onChange={this.onChangeSearch}
-                                                    />
-                                                    <Divider orientation="vertical" />
-                                                </Paper>
-                                            </Grid>
-                                            <Grid xs={3} bgcolor="white" item>
-                                                <FormControl fullWidth={true}>
-                                                    <InputLabel id="demo-simple-select-label">Level</InputLabel>
-                                                    <Select
-                                                        labelId="demo-simple-select-label"
-                                                        id="demo-simple-select"
-                                                        value={this.state.sortByLevel}
-                                                        onChange={this.onChangeSort}
-                                                    >
-                                                        <MenuItem value={10}>Easy</MenuItem>
-                                                        <MenuItem value={20}>Medium</MenuItem>
-                                                        <MenuItem value={30}>Hard</MenuItem>
-                                                        <MenuItem value={40}>All</MenuItem>
-                                                    </Select>
-                                                </FormControl>
-                                            </Grid>
-                                            <Grid xs={4} bgcolor="white" item>
-                                                <Typography id="range-slider" gutterBottom>
-                                                    Code point
-                                            </Typography>
-                                                <Slider
-                                                    value={this.state.sliderValue}
-                                                    onChange={this.onChangeSlider}
-                                                    valueLabelDisplay="auto"
-                                                    aria-labelledby="range-slider"
-                                                    min={0}
-                                                    max={200}
-                                                />
-                                            </Grid>
-                                        </Grid>
-                                    </Box>
-                                    <div style={{ overflow: 'auto', height: '340px' }}>
-                                        <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
-                                            <TableHead style={{ backgroundColor: "#F1F1F1", minHeight: "50px" }}>
-                                                <TableRow>
-                                                    <TableCell></TableCell>
-                                                    <TableCell>Tên thách thức</TableCell>
-                                                    <TableCell align="right">Điểm</TableCell>
-                                                    <TableCell align="right">Độ khó</TableCell>
-                                                    <TableCell align="right"></TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {this.state.tempMinitaskList.map(row => (
-                                                    <TableRow key={row.task_name}>
-                                                        <TableCell align="center">
-                                                            <Button
-                                                                variant="outlined"
-                                                                size="small"
-                                                                startIcon={<ArrowBackIcon />}
-                                                                aria-label="move selected right"
-                                                                onClick={() => this.getMinitaskFromBank(row)}
-                                                            >
-                                                                {/* &lt; */}
-                                                            </Button>
-                                                        </TableCell>
-                                                        <TableCell component="th" scope="row">
-                                                            <Typography style={{ fontWeight: 700, fontSize: 14 }}>
-                                                                {row.mini_task_name}
-                                                            </Typography>
-                                                        </TableCell>
-                                                        {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
-                                                        <TableCell align="right">{row.code_point}</TableCell>
-                                                        {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
-                                                        <TableCell align="right">
-                                                            <Tooltip title="Độ khó" placement="top">
-                                                                <div style={{ marginLeft: 10 }}>
-                                                                    {/* {row.level} */}
-                                                                    {this.renderLevelMinitaskChip(row.level)}
-                                                                </div>
-                                                            </Tooltip>
-                                                        </TableCell>
-                                                        <TableCell align="center" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">Mô tả</Button></TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                    </div>
-                                </Box>
-                            </Grid>
+                    </Slide>
+                    <Slide in={true} direction="up" {...(true ? { timeout: 1700 } : {})}>
+                        <Grid>
+                            <Typography style={{ fontWeight: 200, fontSize: 35 }}>Thêm thách thức</Typography>
                         </Grid>
-                        <Box p={2}>
-                            <Button variant="contained" onClick={this.saveFight} style={{ backgroundColor: "#7BC043", color: "white" }}>
-                                Lưu
+                    </Slide>
+                    <Slide in={true} direction="up" {...(true ? { timeout: 1700 } : {})}>
+                        <Box my={2} style={{ backgroundColor: "white", borderRadius: "8px" }}>
+                            <Grid xs={12} container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Paper >
+                                        <Box height={449} bgcolor="#1F74BE" color="primary.contrastText" p={{ xs: 2, sm: 2, md: 2 }}>
+                                            <Box display="flex">
+                                                <Box p={1} flexGrow={1}>
+                                                    <Typography variant="h5" gutterBottom>
+                                                        Thách thức ({this.state.fight_minitask.length})
+                                                </Typography>
+                                                </Box>
+                                                <Box>
+                                                    {this.state.fight_minitask.length > 0 ?
+                                                        <Button variant="contained" color="#b39ddb" onClick={this.saveMinitaskList}>Import</Button> :
+                                                        ""
+                                                    }
+                                                </Box>
+                                            </Box>
+                                            {this.state.fight_minitask.length > 0 ?
+                                                <div style={{ overflow: 'auto', minHeight: '350px', backgroundColor: "white" }}>
+                                                    <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
+                                                        <TableHead>
+                                                            <TableRow style={{
+                                                                backgroundColor: "#ffred5f5",
+                                                                height: "5px"
+                                                            }}>
+                                                                <TableCell>Tên thách thức</TableCell>
+                                                                {/* <TableCell align="right">Minitask name</TableCell> */}
+                                                                <TableCell align="right">Điểm</TableCell>
+                                                                {/* <TableCell align="right">Minitask Desc</TableCell> */}
+                                                                <TableCell align="right">Độ khó</TableCell>
+                                                                <TableCell align="right"></TableCell>
+                                                                <TableCell align="right"></TableCell>
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            {this.state.fight_minitask.map(row => (
+                                                                <Silde in={true} direction="left" {...(true ? { timeout: 100 } : {})}>
+                                                                    <TableRow bgcolor={row.isNew ? "#bbdefb" : ""} key={row.task_name}>
+                                                                        <TableCell component="th" scope="row">
+                                                                            {row.mini_task_name}
+                                                                        </TableCell>
+                                                                        {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
+                                                                        <TableCell align="right">{row.code_point}</TableCell>
+                                                                        {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
+                                                                        <TableCell align="right">
+                                                                            <Tooltip title="Độ khó" placement="top">
+                                                                                <div style={{ marginLeft: 10 }}>
+                                                                                    {this.renderLevelMinitaskChip(row.level)}
+                                                                                </div>
+                                                                            </Tooltip>
+                                                                        </TableCell>
+                                                                        <TableCell align="right" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">Mô tả</Button></TableCell>
+                                                                        <TableCell align="right">
+                                                                            <Button onClick={() => { this.removeMinitask(row) }} startIcon={<DeleteForeverIcon />} size="large" color="secondary"> Xóa</Button>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                </Silde>
+                                                            ))}
+                                                        </TableBody>
+                                                    </Table>
+                                                </div>
+                                                :
+                                                <Typography variant="subtitle1" gutterBottom>
+                                                    Chưa có thách thức nào.
+                                            </Typography>}
+                                        </Box>
+                                    </Paper>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Box p={2} boxShadow={2}>
+                                        <Box p={1}>
+                                            <Grid xs={12} container justify="center" spacing={2}>
+                                                <Grid xs={5} item>
+                                                    <Paper component="form">
+                                                        <IconButton aria-label="search">
+                                                            <SearchIcon />
+                                                        </IconButton>
+                                                        <InputBase
+                                                            placeholder="Search"
+                                                            inputProps={{ 'aria-label': 'search google maps' }}
+                                                            onChange={this.onChangeSearch}
+                                                        />
+                                                        <Divider orientation="vertical" />
+                                                    </Paper>
+                                                </Grid>
+                                                <Grid xs={3} bgcolor="white" item>
+                                                    <FormControl fullWidth={true}>
+                                                        <InputLabel id="demo-simple-select-label">Level</InputLabel>
+                                                        <Select
+                                                            labelId="demo-simple-select-label"
+                                                            id="demo-simple-select"
+                                                            value={this.state.sortByLevel}
+                                                            onChange={this.onChangeSort}
+                                                        >
+                                                            <MenuItem value={10}>Easy</MenuItem>
+                                                            <MenuItem value={20}>Medium</MenuItem>
+                                                            <MenuItem value={30}>Hard</MenuItem>
+                                                            <MenuItem value={40}>All</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid xs={4} bgcolor="white" item>
+                                                    <Typography id="range-slider" gutterBottom>
+                                                        Code point
+                                            </Typography>
+                                                    <Slider
+                                                        value={this.state.sliderValue}
+                                                        onChange={this.onChangeSlider}
+                                                        valueLabelDisplay="auto"
+                                                        aria-labelledby="range-slider"
+                                                        min={0}
+                                                        max={200}
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </Box>
+                                        <div style={{ overflow: 'auto', height: '340px' }}>
+                                            <Table style={{ tableLayout: 'fixed' }} size="small" aria-label="a dense table">
+                                                <TableHead style={{ backgroundColor: "#F1F1F1", minHeight: "50px" }}>
+                                                    <TableRow>
+                                                        <TableCell></TableCell>
+                                                        <TableCell>Tên thách thức</TableCell>
+                                                        <TableCell align="right">Điểm</TableCell>
+                                                        <TableCell align="right">Độ khó</TableCell>
+                                                        <TableCell align="right"></TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {this.state.tempMinitaskList.map(row => (
+                                                        <TableRow key={row.task_name}>
+                                                            <TableCell align="center">
+                                                                <Button
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    startIcon={<ArrowBackIcon />}
+                                                                    aria-label="move selected right"
+                                                                    onClick={() => this.getMinitaskFromBank(row)}
+                                                                >
+                                                                    {/* &lt; */}
+                                                                </Button>
+                                                            </TableCell>
+                                                            <TableCell component="th" scope="row">
+                                                                <Typography style={{ fontWeight: 700, fontSize: 14 }}>
+                                                                    {row.mini_task_name}
+                                                                </Typography>
+                                                            </TableCell>
+                                                            {/* <TableCell align="right">{row.mini_task_name}</TableCell> */}
+                                                            <TableCell align="right">{row.code_point}</TableCell>
+                                                            {/* <TableCell align="right">{row.mini_task_desc}</TableCell> */}
+                                                            <TableCell align="right">
+                                                                <Tooltip title="Độ khó" placement="top">
+                                                                    <div style={{ marginLeft: 10 }}>
+                                                                        {/* {row.level} */}
+                                                                        {this.renderLevelMinitaskChip(row.level)}
+                                                                    </div>
+                                                                </Tooltip>
+                                                            </TableCell>
+                                                            <TableCell align="center" onClick={() => this.getMinitaskDesc(row.id)}><Button color="primary">Mô tả</Button></TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                            <Box p={2}>
+                                <Button variant="contained" onClick={this.saveFight} style={{ backgroundColor: "#7BC043", color: "white" }}>
+                                    Lưu
                             </Button>
+                            </Box>
                         </Box>
-                    </Box>
-                </Slide>
+                    </Slide>
+                </SnackbarProvider>
             </React.Fragment>
         );
     }
 }
 
-export default CreateRoomPage;
+export default withSnackbar(CreateRoomPage);

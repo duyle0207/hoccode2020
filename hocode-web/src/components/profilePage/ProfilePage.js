@@ -35,7 +35,9 @@ import KeyboardIcon from '@material-ui/icons/Keyboard';
 import RoomPracticePage from '../roomPractice/RoomPracticePage';
 import GroupIcon from '@material-ui/icons/Group';
 import CreateRoomPage from '../roomPractice/CreateRoomPage';
+import UpdateFightPage from '../roomPractice/UpdateFightPage';
 import RoomDetail from '../roomPractice/RoomDetail';
+import MainLeaderBoard from '../roomPractice/MainLeaderBoard';
 
 const drawerWidth = 240;
 const styles = theme => ({
@@ -52,7 +54,7 @@ const styles = theme => ({
   navRight: {
     top: "65px",
     order: 2,
-    width: "225px",
+    width: "210px",
     height: "calc(100vh - 65px)",
     display: "none",
     padding: "16px 32px",
@@ -165,7 +167,7 @@ class ProfilePage extends React.Component {
               <img
                 src={process.env.PUBLIC_URL + "/logo.png"}
                 alt=""
-                style={{ height: "40px" }}
+                style={{ height: "30px" }}
               ></img>
             </Link>
           </div>
@@ -337,52 +339,59 @@ class ProfilePage extends React.Component {
         </nav>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-
-          <Switch>
-            <Route exact path={path}>
-              <Overview url={url} />
-            </Route>
-            <Route path={`${path}/overview`}>
-              <Overview url={url} />
-            </Route>
-            <Route path={`${path}/practice`}>
-              <PracticePage url={url} />
-            </Route>
-            <Route path={`${path}/course`}>
-              <CourseBody url={url} />
-            </Route>
-            <Route path={`${path}/contest`}>
-              <RoomPracticePage url={url} />
-            </Route>
-            <Route path={`${path}/courses/:courseId/tasks`}>
-              <TaskBody location={this.props.location} />
-            </Route>
-            <Route path={`${path}/print`}>
-              <PrintBody userData={this.props.user} />
-            </Route>
-            <Route path={`${path}/contest-detail/:id`}>
-              <RoomDetail userData={this.props.user} />
-            </Route>
-            {/* <Route path={`${path}/admin`}>
+            <Switch>
+              <Route exact path={path}>
+                <Overview url={url} />
+              </Route>
+              <Route path={`${path}/overview`}>
+                <Overview url={url} />
+              </Route>
+              <Route path={`${path}/practice`}>
+                <PracticePage url={url} />
+              </Route>
+              <Route path={`${path}/course`}>
+                <CourseBody url={url} />
+              </Route>
+              <Route path={`${path}/contest`}>
+                <RoomPracticePage url={url} />
+              </Route>
+              <Route path={`${path}/courses/:courseId/tasks`}>
+                <TaskBody location={this.props.location} />
+              </Route>
+              <Route path={`${path}/print`}>
+                <PrintBody userData={this.props.user} />
+              </Route>
+              <Route path={`${path}/contest-detail/:id`}>
+                <RoomDetail location={this.props.location} userData={this.props.user} />
+              </Route>
+              {/* <Route path={`${path}/admin`}>
               <ReactAdmin />
             </Route> */}
-            <Route path={`${path}/create-contest`}>
-              <CreateRoomPage />
-            </Route>
-            <Route path={`${path}/account`}>
-              <Account />
-            </Route>
-            <Route exact path={`${path}/minitasks/createminitask`}>
-              <Paper style={{ padding: 10 }}>
-                <CreateMiniTask location={this.props.location} />
-              </Paper>
-            </Route>
-            {/* <Route exact path={`${path}/minitasks/:minitasksId/edit`}>
+              <Route path={`${path}/create-contest`}>
+                <CreateRoomPage />
+              </Route>
+              <Route path={`${path}/update-contest/:id`}>
+                <UpdateFightPage location={this.props.location}  />
+              </Route>
+              <Route path={`${path}/account`}>
+                <Account />
+              </Route>
+              <Route exact path={`${path}/minitasks/createminitask`}>
+                <Paper style={{ padding: 10 }}>
+                  <CreateMiniTask location={this.props.location} />
+                </Paper>
+              </Route>
+              <Route exact path={`${path}/fight-leader-board`}>
+                <Paper style={{ padding: 10 }}>
+                  <MainLeaderBoard location={this.props.location} />
+                </Paper>
+              </Route>
+              {/* <Route exact path={`${path}/minitasks/:minitasksId/edit`}>
               <Paper style={{ padding: 10 }}>
                 <MinitaskEdit location={this.props.location} />
               </Paper>
             </Route> */}
-          </Switch>
+            </Switch>
         </main>
       </div>
     );

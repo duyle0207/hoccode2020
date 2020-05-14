@@ -32,8 +32,24 @@ class Minitask extends Component {
         }
     }
 
+    renderChinhPhucButton = (contestStatus, isUserJoinFight, minitask_id) => {
+        if (isUserJoinFight) {
+            if (contestStatus === 0) {
+                return <Box>
+                    <Button variant="contained" component={Link} to={`/minitask/${minitask_id}`} style={{ backgroundColor: "#4FA34F", color: "white" }}>
+                        <Typography style={{ color: "white", fontWeight: 500 }} >Chinh phục</Typography>
+                    </Button>
+                </Box>
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
     render() {
-        var { status, level, name, minitask } = this.props;
+        var { status, level, name, minitask, contestStatus, isUserJoinFight } = this.props;
 
         return (
             <React.Fragment>
@@ -46,8 +62,8 @@ class Minitask extends Component {
                             </Grid>
                             <Grid item xs={8} sm={8} md={8}>
                                 <Grid container mx={2} xs={12}>
-                                    <Grid item xs={4} md={4} sm={4}>
-                                        <Typography style={{ color: "#0373BB", fontWeight: "500", fontSize: 18 }}>{name}</Typography>
+                                    <Grid container item xs={12} md={12} sm={12}>
+                                        <Typography noWrap style={{ color: "#0373BB", fontWeight: "500", fontSize: 18 }}>{name}</Typography>
                                     </Grid>
                                 </Grid>
                                 <Grid container mx={2} xs={12}>
@@ -60,11 +76,9 @@ class Minitask extends Component {
                                 </Grid>
                             </Grid>
                             <Grid container item xs={3} sm={3} md={3} justify="center" alignContent="center">
-                                <Box>
-                                    <Button variant="contained" component={Link} to={`/minitask/${minitask.id}`} style={{ backgroundColor: "#4FA34F", color: "white" }}>
-                                        <Typography style={{color:"white", fontWeight:500}}>Chinh phục</Typography>
-                                    </Button>
-                                </Box>
+                                {
+                                    this.renderChinhPhucButton(contestStatus, isUserJoinFight, minitask.id)
+                                }
                             </Grid>
                         </Grid>
                     </Box>
