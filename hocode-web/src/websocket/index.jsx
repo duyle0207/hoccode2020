@@ -23,10 +23,7 @@ let connectWebSocket = cb => {
 };
 
 let sendMsg = msg => {
-  socket.send(JSON.stringify({
-    type: 1,
-    body: "body nè"
-  }));
+  socket.send(msg);
 };
 
 export { connectWebSocket, sendMsg };

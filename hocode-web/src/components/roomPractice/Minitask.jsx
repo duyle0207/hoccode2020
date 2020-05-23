@@ -49,7 +49,7 @@ class Minitask extends Component {
     }
 
     render() {
-        var { status, level, name, minitask, contestStatus, isUserJoinFight } = this.props;
+        var { status, level, name, minitask, } = this.props;
 
         return (
             <React.Fragment>
@@ -75,11 +75,11 @@ class Minitask extends Component {
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid container item xs={3} sm={3} md={3} justify="center" alignContent="center">
+                            {/* <Grid container item xs={3} sm={3} md={3} justify="center" alignContent="center">
                                 {
                                     this.renderChinhPhucButton(contestStatus, isUserJoinFight, minitask.id)
                                 }
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </Box>
                     <Divider />

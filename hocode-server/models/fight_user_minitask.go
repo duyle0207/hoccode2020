@@ -12,6 +12,7 @@ type (
 		Minitask_id string        `json:"minitask_id" bson:"minitask_id"`
 		Status      string        `json:"status" bson:"status"`
 		Tried       int           `json:"tried" bson:"tried"`
+		Point		int 		  `json:"point" bson:"point"`
 		Start_time  string        `json:"start_time" bson:"start_time"`
 		End_time    string        `json:"end_time" bson:"end_time"`
 	}

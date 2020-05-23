@@ -33,7 +33,13 @@ class GeneralLeaderBoard extends Component {
     }
 
     send = () => {
-        sendMsg(this.state.meessage);
+        sendMsg(JSON.stringify({
+            fight_id: "",
+            user_id: "",
+            minitask_id: "",
+            point: 0,
+            request: "get-leader-board",
+        }))
     }
 
     handleMessageChange = e => {

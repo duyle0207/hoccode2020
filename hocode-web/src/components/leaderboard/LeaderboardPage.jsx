@@ -206,9 +206,9 @@ class leaderboardPage extends Component {
                                 <Container fixed>
                                     <Grid item xs={12}>
                                         <Grid container justify="center" spacing={1}>
-                                            <TopUser user={topUser[1]} rank={2 + "nd"} />
-                                            <TopUser user={topUser[0]} rank={1 + "st"} />
-                                            <TopUser user={topUser[2]} rank={3 + "rd"} />
+                                            <TopUser leader_board_type="general" user={topUser[1]} rank={2 + "nd"} />
+                                            <TopUser leader_board_type="general" user={topUser[0]} rank={1 + "st"} />
+                                            <TopUser leader_board_type="general" user={topUser[2]} rank={3 + "rd"} />
                                         </Grid>
                                     </Grid>
                                 </Container>

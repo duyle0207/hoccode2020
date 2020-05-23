@@ -34,7 +34,7 @@ import UserRank from './UserRank';
 import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -44,7 +44,11 @@ import HashLoader from "react-spinners/HashLoader";
 import { connect } from "react-redux";
 import Notfoundpage from './Notfoundpage';
 
-import { connectWebSocket } from "../../websocket"
+
+import { sendMsg } from "../../websocket";
+
+// import { connectWebSocket } from "../../websocket"
+import { withRouter } from 'react-router-dom'
 // import { Link } from "react-router-dom";
 
 class RoomDetail extends Component {
@@ -68,7 +72,8 @@ class RoomDetail extends Component {
             users_fight: [],
             isUserJoinFight: '',
             minitaskList: [],
-            firstIdMinitask: ""
+            firstIdMinitask: "",
+            isLoadingStartBtn: false,
         }
     }
 
@@ -127,10 +132,10 @@ class RoomDetail extends Component {
         });
 
         // Websocket
-        connectWebSocket((msg) => {
-            alert("hello")
-            console.log(msg.data);
-        });
+        // connectWebSocket((msg) => {
+        //     // alert("hello")
+        //     console.log(msg.data);
+        // });
 
         // axios
         //     .get(`http://localhost:8081/api/v1/curd/listminitaskfight/5ea6ec54e939f21a5432ba66`)
@@ -167,15 +172,15 @@ class RoomDetail extends Component {
             <Grid item xs={1} md={1} sm={1}>
                 <Typography style={{ fontWeight: 700, fontSize: 18 }}>#</Typography>
             </Grid>
-            <Grid item xs={5} md={5} sm={5} wrap="nowrap">
+            <Grid item xs={7} md={7} sm={7} wrap="nowrap">
                 <Typography style={{ fontWeight: 700, fontSize: 18 }}>Tên đăng nhập</Typography>
             </Grid>
-            <Grid item xs={3} md={3} sm={3}>
+            <Grid item container justify="center" xs={4} md={4} sm={4}>
                 <Typography style={{ fontWeight: 700, fontSize: 18 }}>Điểm</Typography>
             </Grid>
-            <Grid item xs={3} md={3} sm={3}>
+            {/* <Grid item xs={4} md={4} sm={4}>
                 <Typography style={{ fontWeight: 700, fontSize: 18 }}>Thời gian</Typography>
-            </Grid>
+            </Grid> */}
         </Grid>;
     }
 
@@ -280,6 +285,7 @@ class RoomDetail extends Component {
                 // kick user
                 axios.delete(`http://localhost:8081/api/v1/curd/kick-user-out-fight/${deleted_user.id}/${fight.id}/`).then(res => {
                     if (res.data === "ok") {
+                        this.send(fight.id);
                         this.props.enqueueSnackbar('Xóa thành công', {
                             variant: 'success',
                         });
@@ -297,6 +303,19 @@ class RoomDetail extends Component {
         this.setState({ isOpenSearchFriend: false });
     }
 
+    send = (id) => {
+
+        console.log("send");
+
+        sendMsg(JSON.stringify({
+            fight_id: id,
+            user_id: "",
+            minitask_id: "",
+            point: 0,
+            request: "get-leader-board",
+        }))
+    }
+
     handleJoinFight = () => {
         const { users_fight, fight } = this.state;
         if (users_fight.length < fight.numbers_std) {
@@ -310,6 +329,7 @@ class RoomDetail extends Component {
                 this.props.enqueueSnackbar('Đăng ký thành công', {
                     variant: 'success',
                 });
+                this.send(fight.id);
             });
         } else {
             this.props.enqueueSnackbar('Vượt quá số lượng người dùng cho phép', {
@@ -362,6 +382,7 @@ class RoomDetail extends Component {
                     }
                 }
             }
+            this.send(fight.id);
         } else {
             this.props.enqueueSnackbar('Vượt quá số lượng người dùng cho phép', {
                 variant: 'success',
@@ -393,6 +414,37 @@ class RoomDetail extends Component {
         } else if (fight_type === "public") {
             return <Chip size="small" label="Công khai" style={{ backgroundColor: "#77C148", color: "white" }} />
         }
+    }
+
+    handleClickStartButton = () => {
+        const { fight } = this.state;
+        this.setState({ isLoadingStartBtn: true })
+        axios.get(`http://localhost:8081/api/v1/curd/start-fight/${fight.id}`).then(res => {
+            console.log(res.data);
+            this.setState({ isLoadingStartBtn: false });
+            this.props.history.push(`/fight/${fight.id}/minitask/${this.state.firstIdMinitask}`)
+        });
+    }
+
+    renderStartButton = () => {
+        const { isUserJoinFight, contestStatus, isLoadingStartBtn } = this.state;
+        if (isUserJoinFight && contestStatus !== 1) {
+            return <Button variant="contained" onClick={this.handleClickStartButton} style={{ backgroundColor: "#DE1F45 ", color: "white" }}
+                // component={Link} to={`/fight/${fight.id}/minitask/${this.state.firstIdMinitask}`}
+                startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
+                <Typography style={{ color: "white", fontWeight: 500 }}>
+                    {
+                        isLoadingStartBtn ?
+                            <CircularProgress size={20} style={{ color: "white", fontSize: 10 }} /> : "Bắt đầu"
+                    }
+                </Typography>
+            </Button>
+        }
+    }
+
+    handleClickViewLeaderBoard = () => {
+        const { fight } = this.state;
+        this.props.history.push(`/profile/fight-leader-board/${fight.id}`);
     }
 
     render() {
@@ -609,9 +661,10 @@ class RoomDetail extends Component {
                                         <CardMedia
                                             component="img"
                                             alt="Contemplative Reptile"
-                                            height="200"
+                                            height="220"
                                             src={fight.backgroud_img}
                                             title="Contemplative Reptile"
+                                            style={{ borderRadius: 16 }}
                                         />
                                     </Box>
                                 </Grid>
@@ -619,7 +672,7 @@ class RoomDetail extends Component {
                                     <Box mx={2} mt={2} display="flex">
                                         <Grid container xs={12}>
                                             <Grid container item xs={6} sm={6} md={6}>
-                                                <Typography style={{ fontSize: 35, fontWeight: 400 }}>
+                                                <Typography style={{ fontSize: 35, fontWeight: 900, color: "#353535 " }}>
                                                     {fight.fight_name} {this.renderFighType(fight.fight_type)}
                                                 </Typography>
                                             </Grid>
@@ -656,24 +709,6 @@ class RoomDetail extends Component {
                                         </Grid>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={2}>
-                                    <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }}
-                                        component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
-                                        startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
-                                        <Typography style={{ color: "white", fontWeight: 500 }}>
-                                            Bắt đầu
-                                        </Typography>
-                                    </Button>
-                                </Grid>
-                                <Grid item xs={2}>
-                                    <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }} 
-                                            component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
-                                            startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
-                                        <Typography style={{ color: "white", fontWeight: 500 }}>
-                                            Bắt đầu
-                                        </Typography>
-                                    </Button>
-                                </Grid>
                             </Grid>
                         </Fade>
                         <Divider />
@@ -692,7 +727,7 @@ class RoomDetail extends Component {
                                                                 </Box>
                                                             </Box>
                                                             <Box mx={1}>
-                                                                <Typography style={{ fontWeight: 500, fontSize: 22 }}>Xếp hạng</Typography>
+                                                                <Typography style={{ fontWeight: 500, fontSize: 22 }}>Danh sách thí sinh</Typography>
                                                             </Box>
                                                         </Box>
                                                         <Box my={1} p={1}>
@@ -718,16 +753,19 @@ class RoomDetail extends Component {
                                         <Grid item xs={7} md={7} sm={7} disable="true">
                                             <Paper>
                                                 <Box p={1}>
-                                                    <Box my={1} mx={1} display="flex">
-                                                        <Box mx={1} justifyContent="center" alignItems="center">
-                                                            <Box>
+                                                    <Grid container>
+                                                        <Grid container xs={1}>
+                                                            <Box ml={2}>
                                                                 <CodeIcon fontSize="large" />
                                                             </Box>
-                                                        </Box>
-                                                        <Box mx={1}>
+                                                        </Grid>
+                                                        <Grid container xs={7} justify="flex-start">
                                                             <Typography style={{ fontWeight: 500, fontSize: 22 }}>Thách thức ({fight_minitask.length})</Typography>
-                                                        </Box>
-                                                    </Box>
+                                                        </Grid>
+                                                        <Grid container xs={4} justify="flex-end" alignItems="flex-end">
+                                                            {this.renderStartButton()}
+                                                        </Grid>
+                                                    </Grid>
                                                     <Box my={1}>
                                                         {
                                                             fight_minitask_list.length === 0 ?
@@ -740,25 +778,42 @@ class RoomDetail extends Component {
                                         </Grid>
                                         <Grid item xs={5} md={5} sm={5}>
                                             <Paper>
-                                                <Box p={1}>
-                                                    <Box my={1} display="flex">
-                                                        <Box mx={1} justifyContent="center" alignItems="center">
-                                                            <Box>
-                                                                <EqualizerIcon fontSize="large" />
+                                                <Grid>
+                                                    <Box p={1}>
+                                                        <Box my={1} display="flex">
+                                                            <Grid container xs={1}>
+                                                                <Box mx={1} justifyContent="center" alignItems="center">
+                                                                    <Box>
+                                                                        <EqualizerIcon fontSize="large" />
+                                                                    </Box>
+                                                                </Box>
+                                                            </Grid>
+                                                            <Grid container xs={7}>
+                                                                <Box mx={1}>
+                                                                    <Typography style={{ fontWeight: 500, fontSize: 22 }}>Danh sách thí sinh</Typography>
+                                                                </Box>
+                                                            </Grid>
+                                                            <Grid container xs={4} justify="flex-end">
+                                                                <Fade in={true}>
+                                                                    <Box mx={1}>
+                                                                        <Button variant="contained" onClick={this.handleClickViewLeaderBoard} style={{ backgroundColor: "#007ABB" }}>
+                                                                            <Typography style={{ fontSize: 15, fontWeight: 500, color: "#FFFFFF" }}>
+                                                                                Bảng xếp hạng
+                                                                            </Typography>
+                                                                        </Button>
+                                                                    </Box>
+                                                                </Fade>
+                                                            </Grid>
+                                                        </Box>
+                                                        <Box my={1} p={1}>
+                                                            {this.headerLeaderBoard()}
+                                                            <Divider />
+                                                            <Box my={1}>
+                                                                {leaderBoard}
                                                             </Box>
                                                         </Box>
-                                                        <Box mx={1}>
-                                                            <Typography style={{ fontWeight: 500, fontSize: 22 }}>Xếp hạng</Typography>
-                                                        </Box>
                                                     </Box>
-                                                    <Box my={1} p={1}>
-                                                        {this.headerLeaderBoard()}
-                                                        <Divider />
-                                                        <Box my={1}>
-                                                            {leaderBoard}
-                                                        </Box>
-                                                    </Box>
-                                                </Box>
+                                                </Grid>
                                             </Paper>
                                         </Grid>
                                     </Grid>
@@ -775,4 +830,4 @@ const mapStateToProps = state => ({
     user: state.rootReducer.user
 });
 
-export default withSnackbar(connect(mapStateToProps, null)(RoomDetail));
+export default withSnackbar(connect(mapStateToProps, null)(withRouter(RoomDetail)));
