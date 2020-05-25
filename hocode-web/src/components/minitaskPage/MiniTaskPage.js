@@ -51,7 +51,12 @@ import Slide from '@material-ui/core/Slide';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import { getUser } from "../../js/actions/userAction";
+import Typography from '@material-ui/core/Typography';
+import Notfoundpage from '../roomPractice/Notfoundpage';
+// import Fade from '@material-ui/core/Fade';
+// import { getUser } from "../../js/actions/userAction";
+
+import { sendMsg } from "../../websocket";
 
 class MiniTaskPage extends Component {
   constructor(props) {
@@ -75,14 +80,23 @@ class MiniTaskPage extends Component {
       isLoadingCode: true,
       // stopwatch
       hour: 0,
-      minute:0,
-      second:0,
+      minute: 0,
+      second: 0,
       //
-      minitaskListId: [], 
-      minitaskUser: {}, 
-      userFight: {}, 
+      minitaskListId: [],
+      minitaskUser: {},
+      userFight: {},
       fightminitaskdone: [],
-      startTime: " "
+      startTime: " ",
+      //
+      contestStatus: '',
+      isUserJoinFight: '',
+      //
+      isUserCompleteFight: '',
+      // time complete
+      hourComplete: 0,
+      minuteComplete: 0,
+      secondComplete: 0,
     };
 
     this.executeCode = this.executeCode.bind(this);
@@ -110,50 +124,106 @@ class MiniTaskPage extends Component {
     }
 
     if (pathname.startsWith("/fight/")) {
+      axios.get(`http://localhost:8081/api/v1/curd/is-user-done-fight/${params.fightId}`).then(res => {
+        console.log(res.data);
+        this.setState({ isUserCompleteFight: res.data }, () => {
+          axios
+            .get(`http://localhost:8081/api/v1/curd/getone-userfight/${params.fightId}`)
+            .then(res => {
+              const { isUserCompleteFight } = this.state;
+              console.log(isUserCompleteFight);
+              if (isUserCompleteFight) {
+                var miliSecComplete = new Date(res.data.end_time) - new Date(res.data.start_time);
+
+                var secondComplete = Math.floor((miliSecComplete / 1000) % 60),
+                  minuteComplete = Math.floor((miliSecComplete / (1000 * 60)) % 60),
+                  hourComplete = Math.floor((miliSecComplete / (1000 * 60 * 60)) % 24);
+
+                console.log(secondComplete);
+
+                this.setState({
+                  secondComplete,
+                  minuteComplete,
+                  hourComplete,
+                });
+              } else {
+                var miliSec = new Date() - new Date(res.data.start_time);
+
+                var seconds = Math.floor((miliSec / 1000) % 60),
+                  minutes = Math.floor((miliSec / (1000 * 60)) % 60),
+                  hours = Math.floor((miliSec / (1000 * 60 * 60)) % 24);
+
+                this.setState({
+                  userFight: res.data,
+                  startTime: res.data.start_time,
+                  hour: hours,
+                  minute: minutes,
+                  second: seconds
+                })
+              }
+            });
+        });
+      });
       this.setState({ isUserFight: true });
       axios
-      .get(`http://localhost:8081/api/v1/curd/listminitaskfight/${params.fightId}`)
-      .then(res => {
+        .get(`http://localhost:8081/api/v1/curd/listminitaskfight/${params.fightId}`)
+        .then(res => {
           const dt = res.data;
-          const IdMinitask = []; 
+          const IdMinitask = [];
 
-          for(var i =0 ; i < dt.length; i++) {
+          for (var i = 0; i < dt.length; i++) {
+
             IdMinitask.push(dt[i])
 
           }
-          this.setState({ minitaskListId: IdMinitask})
-          console.log(this.state.minitaskListId);
+          this.setState({ minitaskListId: IdMinitask })
+          // console.log(this.state.minitaskListId);
+        });
+
+      axios.get(`http://localhost:8081/api/v1/curd/fights/${params.fightId}`).then(res => {
+        var code;
+        const fight = res.data;
+        if ((new Date() < new Date(fight.time_start))) {
+          code = -1;
+        }
+        if ((new Date() > new Date(fight.time_start)) && (new Date() < new Date(fight.time_end))) {
+          // Đang diển ra
+          code = 0;
+        }
+        if ((new Date() > new Date(fight.time_end))) {
+          code = 1;
+        }
+        this.setState({ contestStatus: code }, () => {
+          axios.get(`http://localhost:8081/api/v1/curd/isUserJoinFight/${params.fightId}/`).then(isUserJoin => {
+            // console.log(isUserJoin);
+            this.setState({
+              isUserJoinFight: isUserJoin.data,
+            });
+          });
+        });
       });
 
       axios
-      .get(`http://localhost:8081/api/v1/curd/getone-userfight/${params.fightId}`)
-      .then(res => {
-          this.setState({ userFight: res.data})
-          console.log(this.state.userFight);
-      });
-
-      axios
-      .get(`http://localhost:8081/api/v1/curd/getall-minitask/${params.fightId}`)
-      .then(res => {
+        .get(`http://localhost:8081/api/v1/curd/getall-minitask/${params.fightId}`)
+        .then(res => {
           const dt = res.data;
-          const IdMinitaskDone = []; 
+          const IdMinitaskDone = [];
 
-          for(var i =0 ; i < dt.length; i++) {
+          for (var i = 0; i < dt.length; i++) {
             IdMinitaskDone.push(dt[i].minitask_id)
-
           }
-          this.setState({ fightminitaskdone: IdMinitaskDone})
-          console.log(this.state.fightminitaskdone);
-      });
+          this.setState({ fightminitaskdone: IdMinitaskDone })
+          // console.log(this.state.fightminitaskdone);
+        });
 
 
       //set start time for user
-      var today = new Date();
-      var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-      var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      var dateStart = date+' '+time;
-      this.setState({startTime: dateStart});
-      console.log(dateStart);
+      // var today = new Date();
+      // var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+      // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      // var dateStart = date + ' ' + time;
+      // this.setState({ startTime: this.state.userFight.start_time });
+
 
       // axios
       // .get(`http://localhost:8081/api/v1/curd/getone-minitask/${params.fightId}/${params.minitaskId}/`)
@@ -165,8 +235,8 @@ class MiniTaskPage extends Component {
 
 
     }
-    console.log(params);
-    console.log(this.state.isUserFight);
+    // console.log(params);
+    // console.log(this.state.isUserFight);
 
     axios
       .get(`http://localhost:8081/api/v1/minitasks/${params.minitaskId}`)
@@ -174,7 +244,7 @@ class MiniTaskPage extends Component {
         const minitask = res.data;
         document.title = minitask.mini_task_name;
         const numbers = minitask.numbers_doing
-        console.log(numbers);
+        // console.log(numbers);
         this.setState((state, props) => ({
           minitask: minitask,
           isLoadingComponent: false
@@ -195,15 +265,15 @@ class MiniTaskPage extends Component {
           userCode: minitask.template_code
         }));
       } */
-        console.log(this.state.user_minitask_practice);
+        // console.log(this.state.user_minitask_practice);
         this.setState((state, props) => ({
           userCode: (this.state.isUserStudy && this.state.user_minitask_practice.status === "done") ?
             this.state.user_minitask_practice.user_code : minitask.template_code
         }));
-        console.log(this.state.userCode);
+        // console.log(this.state.userCode);
 
         this.setState({ numbers_doing: numbers });
-        console.log(this.state.numbers_doing);
+        // console.log(this.state.numbers_doing);
       });
 
     axios
@@ -211,7 +281,7 @@ class MiniTaskPage extends Component {
       .then(res => {
         const completed = res.data;
         this.setState({ completedMinitask: completed })
-        console.log(this.state.completedMinitask);
+        // console.log(this.state.completedMinitask);
       });
     // setTimeout(()=>{console.log(this.state.minitask.mini_task_desc)},2000)
 
@@ -219,13 +289,25 @@ class MiniTaskPage extends Component {
     setInterval(() => {
       this.setState((state, props) => {
         return {
-            hour  : state.hour == 59 ? state.hour + 1 : state.hour ,
-            minute: state.second == 59 ? state.minute + 1 : state.minute,
-            second: state.second == 59 ? 0 : state.second + 1
-          };
-        });
-      }, 1000);
+          hour: state.hour === 59 ? state.hour + 1 : state.hour,
+          minute: state.second === 59 ? state.minute + 1 : state.minute,
+          second: state.second === 59 ? 0 : state.second + 1
+        };
+      });
+    }, 1000);
   }
+
+  send = (id) => {
+    console.log("send");
+    sendMsg(JSON.stringify({
+      fight_id: id,
+      user_id: "",
+      minitask_id: "",
+      point: 0,
+      request: "get-leader-board",
+    }))
+  }
+
   componentDidUpdate(prevProps) {
     if (
       prevProps.match.params.minitaskId !== this.props.match.params.minitaskId
@@ -254,7 +336,7 @@ class MiniTaskPage extends Component {
             userCode: (this.state.isUserStudy && this.state.user_minitask_practice.status === "done") ?
               this.state.user_minitask_practice.user_code : minitask.template_code
           }));
-          console.log(this.state.userCode);
+          // console.log(this.state.userCode);
           this.setState({ numbers_doing: numbers });
         });
       // do something
@@ -642,6 +724,7 @@ class MiniTaskPage extends Component {
               this.props.submitUpdateMinitask(
                 this.state.minitask.id,
                 this.state.minitask.task_id,
+
                 params.courseId
               );
               Swal.fire({
@@ -712,9 +795,9 @@ class MiniTaskPage extends Component {
 
     axios
       .get(`http://localhost:8081/api/v1/curd/getone-minitask/${params.fightId}/${this.state.minitask.id}/`)
-      .then(res=>{
+      .then(res => {
         console.log(res.data);
-        this.setState({minitaskUser: res.data})
+        this.setState({ minitaskUser: res.data })
         console.log(this.state.minitaskUser);
       })
 
@@ -742,12 +825,12 @@ class MiniTaskPage extends Component {
 
           console.log(this.state.minitaskUser.status);
           var today = new Date();
-          var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+          var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
           var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-          var dateTime = date+' '+time;
+          var dateTime = date + ' ' + time;
 
           if (this.state.result.stdout.WASSUCCESSFUL === "true") {
-            if(this.props.user.id !== this.state.minitaskUser.user_id && 
+            if (this.props.user.id !== this.state.minitaskUser.user_id &&
               params.fightId !== this.state.minitaskUser.fight_id &&
               this.state.minitaskUser.minitask_id !== this.state.minitask.id) {
                 axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
@@ -779,16 +862,55 @@ class MiniTaskPage extends Component {
                   this.setState({minitaskUser: newStatus})
                   axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
                   .then(res=>{
+              axios.get(`http://localhost:8081/api/v1/curd/handle-user-done-fight/${params.fightId}`).then(res => {
+                console.log(res.data);
+              });
+              axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
+                id: "",
+                fight_id: params.fightId,
+                user_id: this.props.user.id,
+                minitask_id: this.state.minitask.id,
+                status: "done",
+                start_time: this.state.startTime,
+                end_time: dateTime
+              }).then(res => {
+                console.log(res.data);
+                //add code point for users
+                var newFightUser = this.state.userFight;
+                newFightUser.point = this.state.minitask.code_point + newFightUser.point
+                axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`, newFightUser)
+                  .then(res => {
                     console.log(res.data);
-                      //add code point for users
+                    this.send(params.fightId)
+                  });
+              });
+            } else {
+              console.log("Đã tồn tại minitask user fight");
+              var newStatus = this.state.minitaskUser
+              if (newStatus.status !== "done") {
+                newStatus.status = "done"
+                // axios.get(`http://localhost:8081/api/v1/curd/handle-user-done-fight/${params.fightId}`).then(res => {
+                //   console.log(res.data);
+                // });
+
+                // Fix here
+
+                newStatus.end_time = dateTime
+                this.setState({ minitaskUser: newStatus })
+                axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
+                  .then(res => {
+                    console.log(res.data);
+                    //add code point for users
                     var newFightUser = this.state.userFight;
                     newFightUser.point = this.state.minitask.code_point + newFightUser.point
-                    axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`,newFightUser)
-                      .then(res=>{console.log(res.data)});
+                    axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`, newFightUser)
+                      .then(res => {
+                        console.log(res.data);
+                        this.send(params.fightId);
+                      });
                   });
-                }
-                
               }
+            }
             Swal.fire({
               type: "success",
               title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
@@ -806,28 +928,30 @@ class MiniTaskPage extends Component {
               containerId: "B"
             });
           } else {
-              if(this.props.user.id !== this.state.minitaskUser.user_id && 
-                params.fightId !== this.state.minitaskUser.fight_id &&
-                this.state.minitaskUser.minitask_id !== this.state.minitask.id){
-                  axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
-                    id: "",
-                    fight_id: params.fightId,
-                    user_id: this.props.user.id,
-                    minitask_id: this.state.minitask.id,
-                    status: "tried",
-                    tried: this.state.minitaskUser.tried + 1,
-                    start_time: dateTime
-                  }).then(res => {
-                    console.log(res.data);
-                  });
-                } else {
-                  var newStatus = this.state.minitaskUser
-                  newStatus.tried += 1
-                  this.setState({minitaskUser: newStatus})
-                  axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
-                    .then(res=>{});
-                  }
-            
+            if (this.props.user.id !== this.state.minitaskUser.user_id &&
+              params.fightId !== this.state.minitaskUser.fight_id &&
+              this.state.minitaskUser.minitask_id !== this.state.minitask.id) {
+              axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
+                id: "",
+                fight_id: params.fightId,
+                user_id: this.props.user.id,
+                minitask_id: this.state.minitask.id,
+                status: "tried",
+                tried: this.state.minitaskUser.tried + 1,
+                start_time: dateTime
+              }).then(res => {
+                console.log(res.data);
+                this.send(params.fightId);
+              });
+            } else {
+              newStatus = this.state.minitaskUser;
+              newStatus.tried += 1
+              this.setState({ minitaskUser: newStatus })
+              axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
+                .then(res => {
+                  this.send(params.fightId);
+                });
+            }
           }
         }.bind(this)
       )
@@ -839,13 +963,31 @@ class MiniTaskPage extends Component {
               errorRuntime: error
             }
           }));
+          this.send(params.fightId);
           console.log(error);
         }.bind(this)
       );
   }
 
+  renderCodingTime = (isUserCompleteFight) => {
+    if (!isUserCompleteFight) {
+      return <Typography style={{ fontSize: 16, fontWeight: 600 }}>
+        Time: {this.state.hour < 10 ? "0" + this.state.hour : this.state.hour}:{this.state.minute < 10 ? "0" + this.state.minute : this.state.minute}:{this
+          .state.second < 10
+          ? "0" + this.state.second
+          : this.state.second}
+      </Typography>
+    } else {
+      return <Typography style={{ fontSize: 16, fontWeight: 600 }}>
+        Time: {this.state.hourComplete < 10 ? "0" + this.state.hourComplete : this.state.hourComplete}
+              :{this.state.minuteComplete < 10 ? "0" + this.state.minuteComplete : this.state.minuteComplete}:
+              {this.state.secondComplete < 10 ? "0" + this.state.secondComplete : this.state.secondComplete}
+      </Typography>
+    }
+  }
+
   render() {
-    const { minitask, result, theme, isLoadingCode } = this.state;
+    const { minitask, result, theme, isLoadingCode, contestStatus, isUserJoinFight, isUserFight, isUserCompleteFight } = this.state;
     const { isLoadingComponent } = this.state;
     const {
       match: { params }
@@ -865,24 +1007,29 @@ class MiniTaskPage extends Component {
       }
     }
 
-    let btnSubmit;    
-    if ( this.state.isUserStudy) {
+    let btnSubmit;
+    if (this.state.isUserStudy) {
       btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
-      style={{ backgroundColor: "blue" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
-      Nộp bài
-    </Button>)
+        style={{ backgroundColor: "#7BC043" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
+        Nộp bài
+      </Button>)
     }
-     if (this.state.isUserFight) {
+    if (this.state.isUserFight) {
       btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
-      style={{ backgroundColor: "red" }} onClick={this.submitCodeFight} disabled={this.state.isLoading} color="primary">
-      Nộp bài
-    </Button>)
-    } 
-      else {
+        style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodeFight} disabled={this.state.isLoading} color="primary">
+        Nộp bài
+      </Button>)
+    } else {
       btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
-      style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodePractice} disabled={this.state.isLoading} color="primary">
-      Nộp bài
-    </Button>)
+        style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodePractice} disabled={this.state.isLoading} color="primary">
+        Nộp bài
+      </Button>)
+    }
+
+    if (isUserFight && !isLoadingComponent) {
+      if (contestStatus === 1 || !isUserJoinFight) {
+        return <Notfoundpage/>;
+      }
     }
 
     return (
@@ -910,41 +1057,45 @@ class MiniTaskPage extends Component {
               history={this.props.history}
             />
           </div>
-          <Divider/>
-          {this.state.isUserFight ? (
+          <Divider />
+          {this.state.isUserFight && !isLoadingComponent ? (
             <div className="container">
-              <div className="btn-minitask" style= {{margin:"0 auto", display:"inline-block", marginLeft: 10,  position:"relative"}}>
-                <ButtonGroup variant="contained"  size="large" aria-label=" contained primary button group">
-                 {this.state.minitaskListId.map((object, i) => {
-                     if( this.state.fightminitaskdone.includes(object.id)===true){
-                       return (
-                        <Button obj={object} key={i} 
-                        component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${object.id}`} className="btn-minitask-item" 
-                        style={{marginRight: 6, borderRadius: 3, backgroundColor:"#3f51b5 ", border:"1px solid #3f51b5 ", fontSize: 13}}>
-                          <DoneIcon style={{color:"#fff"}}  fontSize="medium"></DoneIcon>
-                        </Button>
-                       )
-                     } else {
-                       return (
-                        <Button obj={object} key={i} 
-                        component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${object.id}`} className="btn-minitask-item" 
-                        style={{marginRight: 6, borderRadius: 3, border:"1px solid #65656d", fontSize: 13}}>{i+1}</Button>
-                       )
-                     }
-                 })}                  
-                </ButtonGroup>
+              <div className="btn-minitask" style={{ margin: "0 auto", display: "inline-block", marginLeft: 10, position: "relative" }}>
+                <Slide in={true} direction="right" {...(true ? { timeout: 1400 } : {})}>
+                  <ButtonGroup variant="contained" size="large" aria-label=" contained primary button group">
+                    {this.state.minitaskListId.map((object, i) => {
+                      if (this.state.fightminitaskdone.includes(object.id) === true) {
+                        return (
+                          <Button obj={object} key={i}
+                            component={Link} to={`/fight/${params.fightId}/minitask/${object.id}`} className="btn-minitask-item"
+                            style={{ marginRight: 6, borderRadius: 3, backgroundColor: "#3f51b5 ", border: "1px solid #3f51b5 ", fontSize: 13 }}>
+                            <DoneIcon style={{ color: "#fff" }} fontSize="medium"></DoneIcon>
+                          </Button>
+                        )
+                      } else {
+                        return (
+                          <Button obj={object} key={i}
+                            component={Link} to={`/fight/${params.fightId}/minitask/${object.id}`} className="btn-minitask-item"
+                            style={{
+                              marginRight: 6, borderRadius: 3, border: "1px solid #65656d", fontSize: 13,
+                              backgroundColor: object.id === params.minitaskId ? "#7278D6" : ""
+                            }}>{i + 1}</Button>
+                        )
+                      }
+                    })}
+                  </ButtonGroup>
+                </Slide>
               </div>
-              <div style={{float:"right" ,marginRight:10}}>
-                <div className="stopwatch" style={{color:"red", fontSize:16, fontWeight:600}}>
-                  Time: {this.state.hour < 10 ? "0" + this.state.hour : this.state.hour}:{this.state.minute < 10 ? "0" + this.state.minute : this.state.minute}:{this
-                    .state.second < 10
-                    ? "0" + this.state.second
-                  : this.state.second}
+              <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
+                <div style={{ float: "right", marginRight: 10 }}>
+                  <div className="stopwatch" style={{ color: "#D94A38", fontSize: 16, fontWeight: 600 }}>
+                    {this.renderCodingTime(isUserCompleteFight)}
+                  </div>
                 </div>
-              </div>
-          </div>
-          ) :null}
-          
+              </Slide>
+            </div>
+          ) : null}
+
           {isLoadingComponent && isLoadingCode ? (
             <div
               className="sweet-loading"
@@ -1129,8 +1280,8 @@ class MiniTaskPage extends Component {
                                     )}
                                 </div>
                               </Grid>
-                              <Divider/>
-                              <Grid container style={{backgroundColor: "white"}} justify="center" alignContent="flex-start" item xs={2} md={2} sm={2}>
+                              <Divider />
+                              <Grid container style={{ backgroundColor: "white" }} justify="center" alignContent="flex-start" item xs={2} md={2} sm={2}>
                                 <div
                                   className="runtest-area"
                                   style={{
@@ -1162,11 +1313,11 @@ class MiniTaskPage extends Component {
                             ></img>
                           </button> */}
                                   </div>
-                                  
                                   <Slide in={true} direction="left" {...(true ? { timeout: 1400 } : {})}>
-                                    {btnSubmit}
+                                    <Box>
+                                      {btnSubmit}
+                                    </Box>
                                   </Slide>
-                                   
                                   {this.props.user.next_minitask !== undefined ? (
                                     <div style={{ marginLeft: 30, fontSize: 12 }}>
                                       {this.props.user.next_minitask.id === "" ? (

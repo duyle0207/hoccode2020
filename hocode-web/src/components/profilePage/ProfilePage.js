@@ -90,7 +90,7 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
-    background: "#F1F1F1"
+    background: "#EFECE9"
   },
   searchComponent: {
     padding: "2px 15px 2px 4px",
@@ -339,32 +339,35 @@ class ProfilePage extends React.Component {
         </nav>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-            <Switch>
-              <Route exact path={path}>
-                <Overview url={url} />
-              </Route>
-              <Route path={`${path}/overview`}>
-                <Overview url={url} />
-              </Route>
-              <Route path={`${path}/practice`}>
-                <PracticePage url={url} />
-              </Route>
-              <Route path={`${path}/course`}>
-                <CourseBody url={url} />
-              </Route>
-              <Route path={`${path}/contest`}>
-                <RoomPracticePage url={url} />
-              </Route>
-              <Route path={`${path}/courses/:courseId/tasks`}>
-                <TaskBody location={this.props.location} />
-              </Route>
-              <Route path={`${path}/print`}>
-                <PrintBody userData={this.props.user} />
-              </Route>
-              <Route path={`${path}/contest-detail/:id`}>
-                <RoomDetail location={this.props.location} userData={this.props.user} />
-              </Route>
-              {/* <Route path={`${path}/admin`}>
+          <Switch>
+            <Route exact path={path}>
+              <Overview url={url} />
+            </Route>
+            <Route path={`${path}/overview`}>
+              <Overview url={url} />
+            </Route>
+            <Route path={`${path}/practice`}>
+              <PracticePage url={url} />
+            </Route>
+            <Route path={`${path}/course`}>
+              <CourseBody url={url} />
+            </Route>
+            <Route path={`${path}/contest`}>
+              <RoomPracticePage url={url} />
+            </Route>
+            <Route path={`${path}/courses/:courseId/tasks`}>
+              <TaskBody location={this.props.location} />
+            </Route>
+            <Route path={`${path}/print`}>
+              <PrintBody userData={this.props.user} />
+            </Route>
+            <Route path={`${path}/contest-detail/:id`}>
+              <RoomDetail location={this.props.location} userData={this.props.user} />
+            </Route>
+            <Route path={`${path}/fight`}>
+              <RoomPracticePage url={url} />
+            </Route>
+            {/* <Route path={`${path}/admin`}>
 
           <Switch>
             <Route exact path={path}>
@@ -394,31 +397,29 @@ class ProfilePage extends React.Component {
             {/* <Route path={`${path}/admin`}>
               <ReactAdmin />
             </Route> */}
-              <Route path={`${path}/create-contest`}>
-                <CreateRoomPage />
-              </Route>
-              <Route path={`${path}/update-contest/:id`}>
-                <UpdateFightPage location={this.props.location}  />
-              </Route>
-              <Route path={`${path}/account`}>
-                <Account />
-              </Route>
-              <Route exact path={`${path}/minitasks/createminitask`}>
-                <Paper style={{ padding: 10 }}>
-                  <CreateMiniTask location={this.props.location} />
-                </Paper>
-              </Route>
-              <Route exact path={`${path}/fight-leader-board`}>
-                <Paper style={{ padding: 10 }}>
-                  <MainLeaderBoard location={this.props.location} />
-                </Paper>
-              </Route>
-              {/* <Route exact path={`${path}/minitasks/:minitasksId/edit`}>
+            <Route path={`${path}/create-contest`}>
+              <CreateRoomPage />
+            </Route>
+            <Route path={`${path}/update-contest/:id`}>
+              <UpdateFightPage location={this.props.location} />
+            </Route>
+            <Route path={`${path}/account`}>
+              <Account />
+            </Route>
+            <Route exact path={`${path}/minitasks/createminitask`}>
+              <Paper style={{ padding: 10 }}>
+                <CreateMiniTask location={this.props.location} />
+              </Paper>
+            </Route>
+            <Route exact path={`${path}/fight-leader-board/:id`}>
+              <MainLeaderBoard location={this.props.location} />
+            </Route>
+            {/* <Route exact path={`${path}/minitasks/:minitasksId/edit`}>
               <Paper style={{ padding: 10 }}>
                 <MinitaskEdit location={this.props.location} />
               </Paper>
             </Route> */}
-            </Switch>
+          </Switch>
         </main>
       </div>
     );

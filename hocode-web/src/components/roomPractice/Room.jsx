@@ -18,6 +18,8 @@ import CreateIcon from '@material-ui/icons/Create';
 
 import axios from 'axios';
 
+import EventNoteIcon from '@material-ui/icons/EventNote';
+
 import { withSnackbar, SnackbarProvider } from 'notistack';
 
 class Room extends Component {
@@ -107,22 +109,22 @@ class Room extends Component {
         const { fight } = this.props;
         if (fight.is_user_register) {
             if (contestStatus === 0 || contestStatus === -1) {
-                return <Button variant="contained" style={{ backgroundColor: "#E8505B" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />}
+                return <Button variant="contained" style={{ backgroundColor: "#E8505B", borderRadius: 18 }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />}
                     component={Link} to={`/profile/contest-detail/${fight.id}`}>
                     <Typography variant="button" style={{ color: "white" }}>Xem chi tiết</Typography>
                 </Button>
             } else if (contestStatus === 1) {
-                return <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/contest-detail/${fight.id}`}>
+                return <Button variant="contained" style={{ backgroundColor: "#E24CE1", borderRadius: 18 }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/contest-detail/${fight.id}`}>
                     <Typography variant="button" style={{ color: "white" }}>Đã kết thúc</Typography>
                 </Button>
             }
         } else {
             if (contestStatus === 1) {
-                return <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/contest-detail/${fight.id}`}>
+                return <Button variant="contained" style={{ backgroundColor: "#E24CE1", borderRadius: 18 }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/contest-detail/${fight.id}`}>
                     <Typography variant="button" style={{ color: "white" }}>Đã kết thúc</Typography>
                 </Button>
             } else {
-                return <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/contest-detail/${fight.id}`}>
+                return <Button variant="contained" style={{ backgroundColor: "#E24CE1", borderRadius: 18 }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />} component={Link} to={`/profile/contest-detail/${fight.id}`}>
                     <Typography variant="button" style={{ color: "white" }}>Đăng ký ngay</Typography>
                 </Button>
             }
@@ -139,71 +141,105 @@ class Room extends Component {
         });
     }
 
+    renderContestStatus = () => {
+        const { contestStatus } = this.state;
+        const { fight } = this.props;
+        if (contestStatus === -1) {
+            return <Typography style={{ fontSize: 15, fontWeight: 400, color: "#777777" }}>
+                Bắt đầu {new Date(fight.time_start).getDay() + " tháng " + new Date(fight.time_start).getMonth().toLocaleString()} <EventNoteIcon style={{ fontSize: 19 }}/>
+            </Typography>
+        } else if (contestStatus === 0) {
+            return <Typography style={{ fontSize: 15, fontWeight: 400, color: "#439555" }}>
+                Đang diển ra
+            </Typography>
+        } else if (contestStatus === 1) {
+            return <Typography style={{ fontSize: 15, fontWeight: 400, color: "#E8505B" }}>
+                Kết thúc
+            </Typography>
+        }
+    }
+
+    renderUserFightButton = () => {
+        const { fight } = this.props;
+        return <Grid container spacing={2} justify="flex-end" alignItems="flex-end">
+            <Grid container justify="flex-end" alignItems="flex-end" justifyContent="center" xs={12}>
+                <Button variant="contained" style={{ backgroundColor: "#E24CE1", borderRadius: 18 }}
+                    startIcon={<CreateIcon style={{ color: "white" }} />} component={Link} to={`/profile/update-contest/${fight.id}`}>
+                    <Typography variant="button" style={{ color: "white" }}>Chỉnh sửa</Typography>
+                </Button>
+            </Grid>
+            <Grid container justify="flex-end" alignItems="flex-end" xs={12}>
+                <Box my={1}>
+                    <Button variant="contained" style={{ backgroundColor: "#E24CE1", borderRadius: 18 }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />}
+                        component={Link} to={`/profile/contest-detail/${fight.id}`}>
+                        <Typography variant="button" style={{ color: "white" }}>Xem chi tiết</Typography>
+                    </Button>
+                </Box>
+            </Grid>
+        </Grid>;
+    }
+
     render() {
-        const { fight, index, isUserRoom } = this.props;
+        const { fight, isUserRoom } = this.props;
 
         return (
             <SnackbarProvider maxSnack={1}>
-                <Box my={1} boxShadow={2} style={{ backgroundColor: index % 2 === 0 ? "white" : "#F5F5F5" }}>
+                <Box my={2} boxShadow={4} borderRadius={16} style={{ backgroundColor: "white" }}>
                     <Grid container xs={12}>
-                        <Grid item xs={12} sm={2} md={2}>
-                            <Box p={2} display="flex" justifyContent="center">
+                        <Grid item xs={12} sm={3} md={3}>
+                            <Box display="flex" justifyContent="center">
                                 <CardMedia
                                     component="img"
-                                    alt="Contemplative Reptile"
-                                    height="150"
+                                    alt="Fight image"
+                                    height="200"
                                     src={fight.backgroud_img}
-                                    title="Contemplative Reptile"
+                                    title="Fight image"
+                                    style={{ borderRadius: 16 }}
                                 />
                                 {/* <img src="https://assets.leetcode.com/static_assets/public/images/LeetCode_Cup.png"
                                 width="100px"
                                 height="100px" alt="banner" /> */}
                             </Box>
                         </Grid>
-                        <Grid item xs={12} sm={6} md={6}>
-                            <Box mt={2}>
-                                <Typography style={{ fontSize: 30, fontWeight: 500 }}>{fight.fight_name}</Typography>
-                            </Box>
-                            <Box>
-                                <Typography noWrap style={{ fontSize: 15, fontWeight: 200 }}>
-                                    {fight.fight_desc}
-                                </Typography>
-                            </Box>
-                        </Grid>
-                        <Grid container item xs={12} sm={2} md={2} justify="center" alignItems="center">
-                            <Box mx={1} display="flex" justifyContent="center" alignItems="center">
-                                <PersonIcon fontSize="large" />
-                            </Box>
-                            <Box display="flex" justifyContent="center" alignItems="center">
-                                <Typography style={{ fontSize: 15, fontWeight: 450 }}>{fight.numbers_std} thí sinh</Typography>
+                        <Grid item xs={12} sm={7} md={7}>
+                            <Box mx={2}>
+                                <Box mt={1}>
+                                    <Typography style={{ fontSize: 25, fontWeight: 600, color: "#459556" }}>{fight.fight_name}</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography noWrap style={{ fontSize: 15, fontWeight: 200 }}>
+                                        {fight.fight_desc}
+                                    </Typography>
+                                </Box>
                             </Box>
                         </Grid>
-                        <Grid container item xs={12} sm={2} md={2} justify="center" alignItems="center" direction="column">
-                            {/* <Grid>
-                            {timer}
-                        </Grid> */}
-                            <Grid>
-                                {
-                                    isUserRoom ?
-                                        <Grid container spacing={2}>
-                                            <Grid container justify="center" justifyContent="center" xs={12}>
-                                                <Button variant="contained" style={{ backgroundColor: "#E24CE1" }}
-                                                    startIcon={<CreateIcon style={{ color: "white" }} />} component={Link} to={`/profile/update-contest/${fight.id}`}>
-                                                    <Typography variant="button" style={{ color: "white" }}>Chỉnh sửa</Typography>
-                                                </Button>
-                                            </Grid>
-                                            <Grid container justify="center" justifyContent="center" xs={12}>
-                                                <Box my={1}>
-                                                    <Button variant="contained" style={{ backgroundColor: "#E24CE1" }} startIcon={<FilterCenterFocusIcon style={{ color: "white" }} />}
-                                                        component={Link} to={`/profile/contest-detail/${fight.id}`}>
-                                                        <Typography variant="button" style={{ color: "white" }}>Xem chi tiết</Typography>
-                                                    </Button>
-                                                </Box>
-                                            </Grid>
-                                        </Grid>
-                                        :
-                                        this.renderJoinContestButton()
-                                }
+                        <Grid container item xs={12} sm={2} md={2}>
+                            <Grid xs={12} container>
+                                <Grid xs={12} container justify="flex-end" alignItems="flex-start">
+                                    <Box mx={4} mt={2}>
+                                        {this.renderContestStatus()}
+                                    </Box>
+                                </Grid>
+                                <Grid xs={12} container justify="flex-end" alignItems="flex-start">
+                                    <Box mx={4} display="flex" style={{ color: "#777777" }}>
+                                        <Box mr={1} display="flex" justifyContent="center" alignItems="center">
+                                            <PersonIcon fontSize="small" />
+                                        </Box>
+                                        <Box display="flex" justifyContent="center" alignItems="center">
+                                            <Typography style={{ fontSize: 15, fontWeight: 400, color: "#777777" }}>{fight.numbers_std} thí sinh</Typography>
+                                        </Box>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                            <Grid xs={12} container justify="flex-end" alignItems="flex-end">
+                                <Box mx={3} my={2}>
+                                    {
+                                        isUserRoom ?
+                                            this.renderUserFightButton()
+                                            :
+                                            this.renderJoinContestButton()
+                                    }
+                                </Box>
                             </Grid>
                         </Grid>
                     </Grid>

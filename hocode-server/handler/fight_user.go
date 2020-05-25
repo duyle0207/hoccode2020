@@ -3,7 +3,9 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
+	"time"
 
 	"github.com/duyle0207/hoccode2020/config"
 
@@ -96,7 +98,8 @@ func (h *Handler) JoinFight_1(c echo.Context) (err error) {
 		UserID:       userID,
 		Point:        0,
 		Tried:        0,
-		FinishedTime: "",
+		IsUserStart: false,
+		//FinishedTime: "",
 	}
 
 	isUserJoin, _ := db.DB(config.NameDb).C("fight_user").Find(bson.M{
@@ -117,7 +120,7 @@ func (h *Handler) JoinFight_1(c echo.Context) (err error) {
 		Email:        email,
 		Point:        0,
 		Tried:        0,
-		FinishedTime: "",
+		//FinishedTime: "",
 	}
 
 	return c.JSON(http.StatusOK, user_rank)
@@ -139,7 +142,8 @@ func (h *Handler) JoinFight(c echo.Context) (err error) {
 		UserID:       userID,
 		Point:        0,
 		Tried:        0,
-		FinishedTime: "",
+		IsUserStart: false,
+		//FinishedTime: "",
 	}
 
 	isUserJoin, _ := db.DB(config.NameDb).C("fight_user").Find(bson.M{
@@ -160,7 +164,7 @@ func (h *Handler) JoinFight(c echo.Context) (err error) {
 		Email:        claims["name"].(string),
 		Point:        0,
 		Tried:        0,
-		FinishedTime: "",
+		//FinishedTime: "",
 	}
 
 	return c.JSON(http.StatusOK, user_rank)
@@ -200,6 +204,20 @@ func (h *Handler) HandleKickUserOutFight(c echo.Context) (err error) {
 		"fight_id": fight_id,
 	}); err != nil {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
+	}
+
+	check, _ := db.DB(config.NameDb).C("fight_user_minitask").Find(bson.M{
+		"user_id":  user_id,
+		"fight_id": fight_id,
+	}).Count()
+
+	if check > 0 {
+		if err = db.DB(config.NameDb).C("fight_user_minitask").Remove(bson.M{
+			"user_id":  user_id,
+			"fight_id": fight_id,
+		}); err != nil {
+			return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
+		}
 	}
 
 	return c.JSON(http.StatusOK, "ok")
@@ -311,15 +329,16 @@ func (h *Handler) GetUserJoiningFight(c echo.Context) error {
 	users := []*model.FightUserRank{}
 
 	for i := range fight_user {
-		user := &model.User{}
+		user := model.User{}
 		db.DB(config.NameDb).C("users").Find(bson.M{
 			"_id": bson.ObjectIdHex(fight_user[i].UserID),
 		}).One(&user)
 
 		user_rank := &model.FightUserRank{
 			ID:           user.ID,
-			Rank:         0,
+			Rank:         i,
 			Email:        user.Email,
+			UserInfo:	  user,
 			Point:        fight_user[i].Point,
 			Tried:        fight_user[i].Tried,
 			FinishedTime: fight_user[i].FinishedTime,
@@ -329,6 +348,263 @@ func (h *Handler) GetUserJoiningFight(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, users)
+}
+
+// handle done fight page
+func (h *Handler) HandleFightPage(c echo.Context) error {
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	// fight id
+	fight_id := c.Param("fight_id")
+
+	// user id
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	// Get fight user mini task
+	fight_user_minitask := []*model.FightUserMinitask{}
+
+	_ = db.DB(config.NameDb).C("fight_user_minitask").Find(bson.M{
+		"status": bson.RegEx{"done", "i"},
+		"fight_id": fight_id,
+		"user_id": userID,
+	}).All(&fight_user_minitask)
+
+	// Get fight mini task
+	fight_minitask := []*model.FightMiniTask{}
+	_ = db.DB(config.NameDb).C("fight_minitask").Find(bson.M{
+		"fight_id": fight_id,
+	}).All(&fight_minitask)
+
+	// check if user done all task or not
+	isUserDoneTask := len(fight_minitask) == len(fight_user_minitask)
+
+	fmt.Println(len(fight_user_minitask))
+
+	if len(fight_minitask) - len(fight_user_minitask) == 1 { // last mini task
+		fight_user := &model.FightUser{}
+		_ = db.DB(config.NameDb).C("fight_user").Find(bson.M{
+			"fight_id":    fight_id,
+			"user_id":     userID,
+		}).One(&fight_user)
+		fmt.Println("[ZO]")
+		fmt.Println(fight_user.ID)
+		// Set End time
+		fight_user.EndTime = time.Now().Local()
+		fight_user.Point = 250250
+		isUserDoneTask = true
+		_, err := db.DB(config.NameDb).C("fight_user").UpsertId(fight_user.ID, &fight_user)
+		fmt.Println(err)
+	}
+
+	return c.JSON(http.StatusOK, isUserDoneTask)
+}
+
+// is user done fight
+func (h *Handler) IsUserDoneFight(c echo.Context) error {
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	// fight id
+	fight_id := c.Param("fight_id")
+
+	// user id
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	// Get fight user mini task
+	fight_user_minitask := []*model.FightUserMinitask{}
+
+	_ = db.DB(config.NameDb).C("fight_user_minitask").Find(bson.M{
+		"status": bson.RegEx{"done", "i"},
+		"fight_id": fight_id,
+		"user_id": userID,
+	}).All(&fight_user_minitask)
+
+	// Get fight mini task
+	fight_minitask := []*model.FightMiniTask{}
+	_ = db.DB(config.NameDb).C("fight_minitask").Find(bson.M{
+		"fight_id": fight_id,
+	}).All(&fight_minitask)
+
+	// check if user done all task or not
+	isUserDoneTask := len(fight_minitask) == len(fight_user_minitask)
+
+	return c.JSON(http.StatusOK, isUserDoneTask)
+}
+
+// user fight leader board
+func (h *Handler) GetUserJoiningFightLeaderBoard(c echo.Context) error {
+
+	start := time.Now()
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	fight_id := c.Param("fight_id")
+
+	fight_user := []*model.FightUser{}
+
+	_ = db.DB(config.NameDb).C("fight_user").Find(bson.M{
+		"fight_id": fight_id,
+	}).Sort("-point").All(&fight_user)
+
+	fight_minitasks := []*model.FightMiniTask{}
+	_ =  db.DB(config.NameDb).C("fight_minitask").Find(bson.M{
+		"fight_id": fight_id,
+	}).All(&fight_minitasks)
+
+	users := []*model.FightUserRank{}
+	for i := range fight_user {
+
+		user := model.User{}
+		db.DB(config.NameDb).C("users").Find(bson.M{
+			"_id": bson.ObjectIdHex(fight_user[i].UserID),
+		}).One(&user)
+
+		// Fight User Mini task
+		fight_user_minitasks := []*model.FightUserMinitask{}
+		_ =  db.DB(config.NameDb).C("fight_user_minitask").Find(bson.M{
+			"fight_id": fight_id,
+			"user_id": fight_user[i].UserID,
+		}).All(&fight_user_minitasks)
+
+		minitasks := []*model.FightUserMinitask{}
+		total_tried := 0
+		for j:=range fight_minitasks {
+			isFound := false
+			minitask := &model.FightUserMinitask{}
+			for a:=range fight_user_minitasks {
+				if fight_minitasks[j].Minitask_id == fight_user_minitasks[a].Minitask_id {
+					isFound = true
+					minitask = fight_user_minitasks[a]
+					minitask.Point = GetMinitaskPoint(fight_minitasks[j].Minitask_id, h)
+					total_tried += fight_user_minitasks[a].Tried
+				}
+			}
+			if !isFound {
+				minitask = &model.FightUserMinitask{
+					ID:          "",
+					Fight_id:    fight_id,
+					User_id:     fight_user[i].UserID,
+					Minitask_id: "",
+					Status:      "tried",
+					Tried:       0,
+					Point:		GetMinitaskPoint(fight_minitasks[j].Minitask_id, h),
+					Start_time:  "",
+					End_time:    "",
+				}
+			}
+			minitasks = append(minitasks, minitask)
+		}
+
+		var coding_time int64 = -1
+		if fight_user[i].IsUserStart {
+			coding_time = time.Since(fight_user[i].StartTime).Milliseconds()
+		}
+
+		// check if user complete or not
+		// Get fight user mini task
+		fight_user_minitask := []*model.FightUserMinitask{}
+
+		_ = db.DB(config.NameDb).C("fight_user_minitask").Find(bson.M{
+			"status": bson.RegEx{"done", "i"},
+			"fight_id": fight_id,
+			"user_id": fight_user[i].UserID,
+		}).All(&fight_user_minitask)
+
+		// Get fight mini task
+		fight_minitask := []*model.FightMiniTask{}
+		_ = db.DB(config.NameDb).C("fight_minitask").Find(bson.M{
+			"fight_id": fight_id,
+		}).All(&fight_minitask)
+
+		// check if user done all task or not
+		isUserDoneTasks := len(fight_minitask) == len(fight_user_minitask)
+
+		user_rank := &model.FightUserRank{
+			ID:           user.ID,
+			Rank:         i,
+			Email:        user.Email,
+			UserInfo:	  user,
+			MiniTasks:	  minitasks,
+			Point:        fight_user[i].Point,
+			Tried:        total_tried,
+			CodingTime:   coding_time,
+			IsDone:		  isUserDoneTasks,
+			FinishedTime: fight_user[i].FinishedTime,
+		}
+
+		//if fight_user[i].IsUserStart {
+		//	fmt.Println("")
+		//	duration := time.Since(fight_user[i].StartTime)
+		//	fmt.Println(user_rank.UserInfo.ID)
+		//	fmt.Println(user_rank.UserInfo.Email)
+		//	fmt.Println(fight_user[i].StartTime)
+		//	fmt.Println(duration.Nanoseconds())
+		//	fmt.Println("")
+		//}
+
+		users = append(users, user_rank)
+	}
+
+	elapsed := time.Since(start)
+	fmt.Printf("FUNC TOOKS %s", elapsed)
+
+	//users = SortLeaderBoard(users, fight_id, h)
+
+	return c.JSON(http.StatusOK, users)
+}
+
+func SortLeaderBoard(users []*model.FightUserRank, fight_id string, h *Handler) []*model.FightUserRank {
+	
+	for i:=0;i< len(users);i++ {
+		fight_user := GetCodingTime(users[i].UserInfo.ID.Hex(), fight_id, h)
+		if fight_user.IsUserStart {
+			users[i].CodingTime = time.Since(fight_user.StartTime).Nanoseconds()
+		} else {
+			users[i].CodingTime = -1
+		}
+	}
+
+	sort.SliceStable(users, func(i, j int) bool {
+		return users[i].CodingTime < users[j].CodingTime
+	})
+
+	return users
+}
+
+// Get Coding time
+func GetCodingTime(user_id string, fight_id string, h *Handler) model.FightUser {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	fight_user := model.FightUser{}
+	_ = db.DB(config.NameDb).C("fight_user").Find(bson.M{
+		"fight_id": fight_id,
+		"user_id": user_id,
+	}).One(&fight_user)
+
+	return fight_user
+}
+
+// Get Mini task Point
+func GetMinitaskPoint(id string, h *Handler) int {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	minitask := &model.MiniTask{}
+
+	_ = db.DB(config.NameDb).C("minitasks").Find(bson.M{
+		"_id": bson.ObjectIdHex(id),
+	}).One(&minitask)
+
+	return minitask.CodePoint
 }
 
 // Get user fight
@@ -379,6 +655,42 @@ func (h *Handler) AddCodePointForUser(c echo.Context) (err error) {
 	db := h.DB.Clone()
 	defer db.Close()
 
+	//
+	// user id
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	// Get fight user mini task
+	fight_user_minitask := []*model.FightUserMinitask{}
+
+	_ = db.DB(config.NameDb).C("fight_user_minitask").Find(bson.M{
+		"status": bson.RegEx{"done", "i"},
+		"fight_id": bk.FightID,
+		"user_id": userID,
+	}).All(&fight_user_minitask)
+
+	// Get fight mini task
+	fight_minitask := []*model.FightMiniTask{}
+	_ = db.DB(config.NameDb).C("fight_minitask").Find(bson.M{
+		"fight_id": bk.FightID,
+	}).All(&fight_minitask)
+
+	// check if user done all task or not
+
+	fmt.Println("[zô]")
+
+	// Here
+
+	fmt.Println(len(fight_user_minitask))
+
+	if len(fight_minitask) - len(fight_user_minitask) == 0{ // last mini task
+		// Set End time
+		bk.EndTime = time.Now().Local()
+		bk.Point = 250250
+	}
+	//
+
 	_, errUs := db.DB(config.NameDb).C("fight_user").UpsertId(bk.ID, bk)
 	if errUs != nil {
 		// return echo.ErrInternalServerError
@@ -416,4 +728,36 @@ func (h *Handler) GetOneFightUser(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, bk)
+}
+
+// Handle user start fight
+func (h *Handler) HandleStartFight(c echo.Context) error {
+	db := h.DB.Clone()
+	defer db.Close()
+
+	fight_id := c.Param("fight_id")
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	fight_user := &model.FightUser{}
+
+	_ = db.DB(config.NameDb).C("fight_user").Find(bson.M{
+		"fight_id": fight_id,
+		"user_id":  userID,
+	}).One((&fight_user))
+
+
+	fmt.Println(fight_user.IsUserStart)
+
+	if fight_user.IsUserStart == false {
+		fight_user.StartTime = time.Now().UTC()
+		fmt.Println("[TIME]")
+		fmt.Println(time.Now().UTC())
+		fight_user.IsUserStart = true
+
+		_, _ = db.DB(config.NameDb).C("fight_user").UpsertId(fight_user.ID, fight_user)
+	}
+
+	return c.JSON(http.StatusOK, fight_user)
 }

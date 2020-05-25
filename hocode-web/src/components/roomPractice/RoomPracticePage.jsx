@@ -121,16 +121,16 @@ class RoomPracticePage extends Component {
 
         return (
             <React.Fragment>
-                <Grid className="banner" container xs={12} justify="center">
+                <Grid className="banner" container xs={12} justify="center" style={{borderRadius: 8}}>
                     <Grid xs={12} sm={6} md={6}>
                         <Box mt={4} display="flex" justifyContent="center">
                             <img src="https://assets.leetcode.com/static_assets/public/images/LeetCode_Cup.png"
                                 // width="100%"
-                                height="150px" alt="banner" />
+                                height="60px" alt="banner" />
                         </Box>
                         <Box mt={2} display="flex" justifyContent="center">
                             <Typography style={{ fontSize: 30, fontWeight: 200, color: "#b3b3b3" }}>
-                                <span style={{ fontSize: 30, fontWeight: 200, color: "#FFFFFF" }}>Chiến trường</span> Hocode
+                                <span style={{ fontSize: 30, fontWeight: 200, color: "#FFFFFF" }}>Đấu trường </span> Hocode
                             </Typography>
                         </Box>
                         <Box mb={4} display="flex" justifyContent="center">
@@ -140,9 +140,9 @@ class RoomPracticePage extends Component {
                         </Box>
                     </Grid>
                 </Grid>
-                <Box my={2} display="flex" justifyContent="center">
+                {/* <Box my={2} display="flex" justifyContent="center">
                     <Box flexGrow={1}>
-                        {/* <Typography style={{ fontSize: 28, fontWeight: 460 }}>Chiến trường</Typography> */}
+                        <Typography style={{ fontSize: 28, fontWeight: 460 }}>Chiến trường</Typography>
                     </Box>
                     <Box>
                         <Button variant="contained" style={{ backgroundColor: "#F1B729" }} component={Link} to={`/profile/create-contest`}
@@ -150,7 +150,7 @@ class RoomPracticePage extends Component {
                             <Typography variant="button" style={{ color: "white" }}>Tạo cuộc thi</Typography>
                         </Button>
                     </Box>
-                </Box>
+                </Box> */}
                 {/* <Grid container xs={12}> */}
                 <AppBar position="static" style={{ backgroundColor: "white", color: "black" }}>
                     <Tabs value={tab} onChange={this.handleChangeTab} aria-label="simple tabs example">

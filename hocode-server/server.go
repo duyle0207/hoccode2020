@@ -1,14 +1,9 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
-	model "github.com/duyle0207/hoccode2020/models"
-	"net"
-	"time"
-
-	"github.com/duyle0207/hoccode2020/config"
 	"github.com/duyle0207/hoccode2020/handler"
+	model "github.com/duyle0207/hoccode2020/models"
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -88,37 +83,37 @@ func main() {
 	//}
 
 	// Connect mongo cluster
-	tlsConfig := &tls.Config{}
-
-	dialInfo := &mgo.DialInfo{
-		Addrs:    []string{config.LinkDb, config.LinkDb2, config.LinkDb3},
-		Database: config.NameDb,
-		Username: config.Username,
-		Password: config.Password,
-		Timeout:  60 * time.Second,
-		Source:   config.Source,
-	}
-	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
-		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-		return conn, err
-	}
-	db, err := mgo.DialWithInfo(dialInfo)
-
-	if err != nil {
-		log.Info("Connect mongodb error")
-		e.Logger.Fatal(err)
-	} else {
-		log.Info("Connect mongodb success")
-	}
-
-	//Connect Mongo local
-	//db, err := mgo.Dial("localhost:27017/hocode")
+	//tlsConfig := &tls.Config{}
+	//
+	//dialInfo := &mgo.DialInfo{
+	//	Addrs:    []string{config.LinkDb, config.LinkDb2, config.LinkDb3},
+	//	Database: config.NameDb,
+	//	Username: config.Username,
+	//	Password: config.Password,
+	//	Timeout:  60 * time.Second,
+	//	Source:   config.Source,
+	//}
+	//dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+	//	conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+	//	return conn, err
+	//}
+	//db, err := mgo.DialWithInfo(dialInfo)
+	//
 	//if err != nil {
 	//	log.Info("Connect mongodb error")
 	//	e.Logger.Fatal(err)
 	//} else {
 	//	log.Info("Connect mongodb success")
 	//}
+
+	//Connect Mongo local
+	db, err := mgo.Dial("localhost:27017/hocode")
+	if err != nil {
+		log.Info("Connect mongodb error")
+		e.Logger.Fatal(err)
+	} else {
+		log.Info("Connect mongodb success")
+	}
 
 	// Initialize handler
 	h := &handler.Handler{DB: db}
@@ -291,6 +286,7 @@ func main() {
 	curd.GET("/getUserFight", h.GetUserFight)
 	curd.PUT("/add-point/:id", h.AddCodePointForUser)
 	curd.GET("/getone-userfight/:fight_id", h.GetOneFightUser)
+	curd.GET("/start-fight/:fight_id", h.HandleStartFight)
 
 	// API for curd fight minitask
 	curd.POST("/fightminitask", h.CreateFightMinitask)
@@ -304,6 +300,11 @@ func main() {
 	curd.GET("/getone-minitask/:fightid/:miid/", h.GetOneMinitaskFight)
 	curd.PUT("/updatestatus/:id", h.UpdateFightUserMinitask)
 	curd.GET("/getall-minitask/:fightid", h.GetAllDoneMinitaskFight)
+
+	// Leader Board
+	curd.GET("/user-fight-leader-board/:fight_id", h.GetUserJoiningFightLeaderBoard)
+	curd.GET("/handle-user-done-fight/:fight_id", h.HandleFightPage)
+	curd.GET("/is-user-done-fight/:fight_id", h.IsUserDoneFight)
 
 	// End CURD
 

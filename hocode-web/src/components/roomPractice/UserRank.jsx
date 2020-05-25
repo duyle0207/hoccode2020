@@ -15,15 +15,15 @@ class UserRank extends Component {
                 <Grid item xs={1} md={1} sm={1}>
                     <Typography style={{fontWeight:350, fontSize:16}}>{rank+1}</Typography>
                 </Grid>
-                <Grid item xs={5} md={5} sm={5} wrap="nowrap">
+                <Grid item xs={7} md={7} sm={7} wrap="nowrap">
                     <Typography style={{fontWeight:350, fontSize:16}} noWrap>{user.email}</Typography>
                 </Grid>
-                <Grid item xs={3} md={3} sm={3}>
+                <Grid item container justify="center"  xs={4} md={4} sm={4}>
                     <Typography style={{fontWeight:350, fontSize:16}}>{user.point}</Typography>
                 </Grid>
-                <Grid item xs={3} md={3} sm={3}>
-                    <Typography style={{fontWeight:350, fontSize:16}}>{user.finished_time}</Typography>
-                </Grid>
+                {/* <Grid item container xs={4} md={4} sm={4}>
+                    <Typography noWrap style={{fontWeight:350, fontSize:16}}>{new Date(user.finished_time).toLocaleTimeString() === "06:42:04"}</Typography>
+                </Grid> */}
             </Grid>
         );
     }

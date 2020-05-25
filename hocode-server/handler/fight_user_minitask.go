@@ -68,6 +68,7 @@ func (h *Handler) CreateFightUserMinitask(c echo.Context) (err error) {
 	// 	return echo.ErrInternalServerError
 	// }
 
+
 	_, errUs := db.DB(config.NameDb).C("fight_user_minitask").UpsertId(bk.ID, bk)
 	if errUs != nil {
 		// return echo.ErrInternalServerError
@@ -125,6 +126,7 @@ func (h *Handler) GetAllDoneMinitaskFight(c echo.Context) (err error) {
 			"user_id":  userID,
 			"status":   "done",
 		}).All(&bk)
+
 	return c.JSON(http.StatusOK, bk)
 
 }
