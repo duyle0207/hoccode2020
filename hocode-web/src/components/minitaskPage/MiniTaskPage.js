@@ -756,6 +756,7 @@ class MiniTaskPage extends Component {
                   user_id: this.props.user.id,
                   minitask_id: this.state.minitask.id,
                   status: "done",
+                  tried: 1,
                   start_time: this.state.startTime,
                   end_time: dateTime
                 }).then(res => {
@@ -774,6 +775,7 @@ class MiniTaskPage extends Component {
                 if(newStatus.status !== "done") {
                   newStatus.status = "done"
                   newStatus.end_time = dateTime
+                  newStatus.tried += 1
                   this.setState({minitaskUser: newStatus})
                   axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
                   .then(res=>{
