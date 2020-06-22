@@ -9,6 +9,8 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 	"gopkg.in/mgo.v2"
+	"net/http"
+	"os"
 )
 
 // @title Hocode API
@@ -31,6 +33,10 @@ func main() {
 	sentry.Init(sentry.ClientOptions{
 		Dsn: "https://dc72a0f7e03b48ee9f92721698fbd011@sentry.io/1827288",
 	})
+
+	path, _ := os.Getwd()
+
+	fmt.Println(path)  // for example /home/user
 
 	//sentry.CaptureException(errors.New("Start App"))
 	// Since sentry emits events in the background we need to make sure
@@ -102,7 +108,7 @@ func main() {
 	//if err != nil {
 	//	log.Info("Connect mongodb error")
 	//	e.Logger.Fatal(err)
-	//} else {
+	//} else {	
 	//	log.Info("Connect mongodb success")
 	//}
 
@@ -117,6 +123,11 @@ func main() {
 
 	// Initialize handler
 	h := &handler.Handler{DB: db}
+
+	e.GET("/test-docker", func(c echo.Context) error{
+		println("foo")
+		return c.JSON(http.StatusOK, "")
+	})
 
 	e.GET("/health_check", h.HealthCheck)
 	e.GET("/health_check2", h.HealthCheck)

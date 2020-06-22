@@ -59,7 +59,7 @@ class CourseLeaderBoard extends Component {
                         <React.Fragment>
                             <Fade in={!isLoading} {...(true ? { timeout: 1000 } : {})}>
                                 <Box bgcolor="white" boxShadow={2} mb={3}>
-                                    <Box display="flex" fontStyle="italic">
+                                    <Box display="flex">
                                         <Box p={1} style={{ width: '10%' }} >
                                             <Typography gutterBottom variant="h6" component="h2">
                                                 #

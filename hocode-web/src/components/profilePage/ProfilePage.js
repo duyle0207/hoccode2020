@@ -213,6 +213,17 @@ class ProfilePage extends React.Component {
               </MenuItem>
             </Link>
 
+            <Link to={`${url}/fight`}>
+              <MenuItem
+                selected={pathname === `${url}/fight`}
+                onClick={this.onClickMenuItem(1)}
+                dense="true"
+              >
+                <GroupIcon style={{ fontSize: 16 }} />
+                <p style={{ fontSize: 14, marginLeft: "8px" }}>Chiến đấu</p>
+              </MenuItem>
+            </Link>
+
             <Link to={`${url}/print`}>
               <MenuItem
                 selected={pathname === `${url}/print`}
@@ -222,17 +233,6 @@ class ProfilePage extends React.Component {
                 <p style={{ fontSize: 14, marginLeft: "8px" }}>
                   Nhật ký luyện tập
                 </p>
-              </MenuItem>
-            </Link>
-
-            <Link to={`${url}/fight`}>
-              <MenuItem
-                selected={pathname === `${url}/fight`}
-                onClick={this.onClickMenuItem(1)}
-                dense="true"
-              >
-                <GroupIcon style={{ fontSize: 16 }} />
-                <p style={{ fontSize: 14, marginLeft: "8px" }}>Chiến đấu</p>
               </MenuItem>
             </Link>
             {this.props.user.role === "mod" ||
@@ -424,7 +424,7 @@ class ProfilePage extends React.Component {
       </div>
     );
   }
-}
+} 
 
 const mapStateToProps = state => ({
   auth: state.rootReducer.auth,

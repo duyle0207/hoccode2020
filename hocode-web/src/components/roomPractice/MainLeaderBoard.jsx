@@ -65,6 +65,7 @@ class MainLeaderBoard extends Component {
                         code = 1;
                     }
                     this.setState({ contestStatus: code });
+                    console.log(fight)
                     this.interval = setInterval(() => {
                         const date = this.calculateCountdown(code === -1 ? fight.time_start : fight.time_end);
                         date ? this.setState(date) : this.stop();
@@ -91,6 +92,10 @@ class MainLeaderBoard extends Component {
                 this.setState({ fight_minitasks })
             }),
         ]);
+    }
+
+    stop() {
+        clearInterval(this.interval);
     }
 
     send = () => {
@@ -164,12 +169,14 @@ class MainLeaderBoard extends Component {
         var seconds = Math.floor((miliSec / 1000) % 60),
             minutes = Math.floor((miliSec / (1000 * 60)) % 60),
             hours = Math.floor((miliSec / (1000 * 60 * 60)) % 24);
+            var days = Math.floor(miliSec / (24 * 60 * 60 * 1000));
 
         hours = (hours < 10) ? "0" + hours : hours;
         minutes = (minutes < 10) ? "0" + minutes : minutes;
         seconds = (seconds < 10) ? "0" + seconds : seconds;
+        days = (days < 10) ? "0" + days : days;
 
-        return hours + ":" + minutes + ":" + seconds;
+        return days + ":" + hours + ":" + minutes + ":" + seconds;
     }
 
     renderRank = (rank) => {
@@ -325,7 +332,7 @@ class MainLeaderBoard extends Component {
                         <Grid container justify="center" xs={12}>
                             <Typography style={{ fontSize: 14, fontWeight: 400, color: "#70757A", fontStyle: "Italic" }}>
                                 {
-                                    user.coding_time === -1 ? "00:00:00" :
+                                    user.coding_time === -1 ? "00:00:00:00" :
                                         this.renderCodingTime(user.coding_time)
                                 }
                             </Typography>
@@ -389,46 +396,50 @@ class MainLeaderBoard extends Component {
                                 </Paper>
                             </Slide>
                             {/* <Divider /> */}
-                            <Box>
-                                <Grid container justify="center" spacing={1}>
-                                    <Slide in={true} direction="right" {...(true ? { timeout: 1500 } : {})}>
-                                        <TopUser
-                                            leader_board_type="fight"
-                                            user={leaderBoard[1].user_info}
-                                            user_fight_info={leaderBoard[1]}
-                                            rank={2 + "nd"}
-                                            coding_time={
-                                                leaderBoard[1].coding_time === -1 ? "00:00:00" :
-                                                    this.renderCodingTime(leaderBoard[1].coding_time)
-                                            }
-                                        />
-                                    </Slide>
-                                    <Fade in={true} {...(true ? { timeout: 1500 } : {})}>
-                                        <TopUser 
-                                            leader_board_type="fight" 
-                                            user={leaderBoard[0].user_info} 
-                                            user_fight_info={leaderBoard[0]} 
-                                            rank={1 + "st"} 
-                                            coding_time={
-                                                leaderBoard[0].coding_time === -1 ? "00:00:00" :
-                                                    this.renderCodingTime(leaderBoard[0].coding_time)
-                                            }
-                                        />
-                                    </Fade>
-                                    <Slide in={true} direction="left" {...(true ? { timeout: 1500 } : {})}>
-                                        <TopUser 
-                                            leader_board_type="fight" 
-                                            user={leaderBoard[2].user_info} 
-                                            user_fight_info={leaderBoard[2]} 
-                                            rank={3 + "rd"} 
-                                            coding_time={
-                                                leaderBoard[2].coding_time === -1 ? "00:00:00" :
-                                                    this.renderCodingTime(leaderBoard[2].coding_time)
-                                            }
-                                        />
-                                    </Slide>
-                                </Grid>
-                            </Box>
+                            {
+                                leaderBoard === 3 ?
+                                    <Box>
+                                        <Grid container justify="center" spacing={1}>
+                                            <Slide in={true} direction="right" {...(true ? { timeout: 1500 } : {})}>
+                                                <TopUser
+                                                    leader_board_type="fight"
+                                                    user={leaderBoard[1].user_info}
+                                                    user_fight_info={leaderBoard[1]}
+                                                    rank={2 + "nd"}
+                                                    coding_time={
+                                                        leaderBoard[1].coding_time === -1 ? "00:00:00" :
+                                                            this.renderCodingTime(leaderBoard[1].coding_time)
+                                                    }
+                                                />
+                                            </Slide>
+                                            <Fade in={true} {...(true ? { timeout: 1500 } : {})}>
+                                                <TopUser
+                                                    leader_board_type="fight"
+                                                    user={leaderBoard[0].user_info}
+                                                    user_fight_info={leaderBoard[0]}
+                                                    rank={1 + "st"}
+                                                    coding_time={
+                                                        leaderBoard[0].coding_time === -1 ? "00:00:00" :
+                                                            this.renderCodingTime(leaderBoard[0].coding_time)
+                                                    }
+                                                />
+                                            </Fade>
+                                            <Slide in={true} direction="left" {...(true ? { timeout: 1500 } : {})}>
+                                                <TopUser
+                                                    leader_board_type="fight"
+                                                    user={leaderBoard[2].user_info}
+                                                    user_fight_info={leaderBoard[2]}
+                                                    rank={3 + "rd"}
+                                                    coding_time={
+                                                        leaderBoard[2].coding_time === -1 ? "00:00:00" :
+                                                            this.renderCodingTime(leaderBoard[2].coding_time)
+                                                    }
+                                                />
+                                            </Slide>
+                                        </Grid>
+                                    </Box>
+                                    : ""
+                            }
                             <TableContainer >
                                 <Slide in={true} direction="up" {...(true ? { timeout: 1500 } : {})}>
                                     <Paper>

@@ -201,7 +201,7 @@ class Room extends Component {
                                 height="100px" alt="banner" /> */}
                             </Box>
                         </Grid>
-                        <Grid item xs={12} sm={7} md={7}>
+                        <Grid item xs={12} sm={5} md={5}>
                             <Box mx={2}>
                                 <Box mt={1}>
                                     <Typography style={{ fontSize: 25, fontWeight: 600, color: "#459556" }}>{fight.fight_name}</Typography>
@@ -213,7 +213,7 @@ class Room extends Component {
                                 </Box>
                             </Box>
                         </Grid>
-                        <Grid container item xs={12} sm={2} md={2}>
+                        <Grid container item xs={12} sm={4} md={4}>
                             <Grid xs={12} container>
                                 <Grid xs={12} container justify="flex-end" alignItems="flex-start">
                                     <Box mx={4} mt={2}>

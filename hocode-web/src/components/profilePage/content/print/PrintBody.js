@@ -34,7 +34,7 @@ class PrintBody extends Component {
       isLoading: true,
       certificateViewStart: {},
       certificate: {},
-      review_point: 0,
+      review_point: 5000,
       user_codepoint: 0,
       isLoadingCert: false,
       user_course: [],

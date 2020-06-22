@@ -69,7 +69,7 @@ class MiniTaskPage extends Component {
       isLoading: false,
       isLoadingComponent: true,
       open: false,
-      isUserStudy: true,
+      isUserStudy: false,
       isUserFight: false,
       // variable for numbers of doing with get code point.
       numbers_doing: 0,
@@ -79,6 +79,7 @@ class MiniTaskPage extends Component {
       user_minitask_practice: {},
       isLoadingCode: true,
       // stopwatch
+      days: 0,
       hour: 0,
       minute: 0,
       second: 0,
@@ -94,6 +95,7 @@ class MiniTaskPage extends Component {
       //
       isUserCompleteFight: '',
       // time complete
+      dayComplete: 0,
       hourComplete: 0,
       minuteComplete: 0,
       secondComplete: 0,
@@ -119,11 +121,12 @@ class MiniTaskPage extends Component {
       match: { params }
     } = this.props;
 
-    if (pathname.startsWith("/minitask")) {
-      this.setState({ isUserStudy: false });
+    if (pathname.startsWith("/tasks/")) {
+      this.setState({ isUserStudy: true });
     }
 
     if (pathname.startsWith("/fight/")) {
+      this.setState({ isUserFight: true });
       axios.get(`http://localhost:8081/api/v1/curd/is-user-done-fight/${params.fightId}`).then(res => {
         console.log(res.data);
         this.setState({ isUserCompleteFight: res.data }, () => {
@@ -132,6 +135,7 @@ class MiniTaskPage extends Component {
             .then(res => {
               const { isUserCompleteFight } = this.state;
               console.log(isUserCompleteFight);
+              console.log(res.data);
               if (isUserCompleteFight) {
                 var miliSecComplete = new Date(res.data.end_time) - new Date(res.data.start_time);
 
@@ -139,9 +143,10 @@ class MiniTaskPage extends Component {
                   minuteComplete = Math.floor((miliSecComplete / (1000 * 60)) % 60),
                   hourComplete = Math.floor((miliSecComplete / (1000 * 60 * 60)) % 24);
 
-                console.log(secondComplete);
+                var dayComplete = Math.floor(miliSecComplete / (24 * 60 * 60 * 1000));
 
                 this.setState({
+                  dayComplete,
                   secondComplete,
                   minuteComplete,
                   hourComplete,
@@ -153,9 +158,14 @@ class MiniTaskPage extends Component {
                   minutes = Math.floor((miliSec / (1000 * 60)) % 60),
                   hours = Math.floor((miliSec / (1000 * 60 * 60)) % 24);
 
+                var days = Math.floor(miliSec / (24 * 60 * 60 * 1000));
+
+                const date = new Date(res.data.start_time).getTime();
+                console.log(date);
                 this.setState({
                   userFight: res.data,
                   startTime: res.data.start_time,
+                  days: days,
                   hour: hours,
                   minute: minutes,
                   second: seconds
@@ -164,7 +174,6 @@ class MiniTaskPage extends Component {
             });
         });
       });
-      this.setState({ isUserFight: true });
       axios
         .get(`http://localhost:8081/api/v1/curd/listminitaskfight/${params.fightId}`)
         .then(res => {
@@ -180,6 +189,13 @@ class MiniTaskPage extends Component {
           // console.log(this.state.minitaskListId);
         });
 
+      axios.get(`http://localhost:8081/api/v1/curd/isUserJoinFight/${params.fightId}/`).then(isUserJoin => {
+        // console.log(isUserJoin);
+        this.setState({
+          isUserJoinFight: isUserJoin.data,
+        });
+      });
+      
       axios.get(`http://localhost:8081/api/v1/curd/fights/${params.fightId}`).then(res => {
         var code;
         const fight = res.data;
@@ -295,6 +311,9 @@ class MiniTaskPage extends Component {
         };
       });
     }, 1000);
+    // console.log("MODE");
+    // console.log(this.state.isUserFight);
+    // console.log(this.state.isUserStudy);
   }
 
   send = (id) => {
@@ -943,22 +962,23 @@ class MiniTaskPage extends Component {
   renderCodingTime = (isUserCompleteFight) => {
     if (!isUserCompleteFight) {
       return <Typography style={{ fontSize: 16, fontWeight: 600 }}>
-        Time: {this.state.hour < 10 ? "0" + this.state.hour : this.state.hour}:{this.state.minute < 10 ? "0" + this.state.minute : this.state.minute}:{this
-          .state.second < 10
-          ? "0" + this.state.second
-          : this.state.second}
+        Thời gian: {this.state.days < 10 ? "0" + this.state.days : this.state.days} ngày &nbsp;
+               {this.state.hour < 10 ? "0" + this.state.hour : this.state.hour} giờ &nbsp;
+               {this.state.minute < 10 ? "0" + this.state.minute : this.state.minute} phút &nbsp;
+               {this.state.second < 10 ? "0" + this.state.second : this.state.second} giây
       </Typography>
     } else {
       return <Typography style={{ fontSize: 16, fontWeight: 600 }}>
-        Time: {this.state.hourComplete < 10 ? "0" + this.state.hourComplete : this.state.hourComplete}
-              :{this.state.minuteComplete < 10 ? "0" + this.state.minuteComplete : this.state.minuteComplete}:
-              {this.state.secondComplete < 10 ? "0" + this.state.secondComplete : this.state.secondComplete}
+        Thời gian: {this.state.dayComplete < 10 ? "0" + this.state.dayComplete : this.state.dayComplete} ngày &nbsp;
+              {this.state.hourComplete < 10 ? "0" + this.state.hourComplete : this.state.hourComplete} giờ &nbsp;
+              :{this.state.minuteComplete < 10 ? "0" + this.state.minuteComplete : this.state.minuteComplete} phút &nbsp;
+              {this.state.secondComplete < 10 ? "0" + this.state.secondComplete : this.state.secondComplete} giây
       </Typography>
     }
   }
 
   render() {
-    const { minitask, result, theme, isLoadingCode, contestStatus, isUserJoinFight, isUserFight, isUserCompleteFight } = this.state;
+    const { minitask, result, theme, isLoadingCode, contestStatus, isUserJoinFight, isUserFight, isUserCompleteFight, isUserStudy } = this.state;
     const { isLoadingComponent } = this.state;
     const {
       match: { params }
@@ -979,13 +999,13 @@ class MiniTaskPage extends Component {
     }
 
     let btnSubmit;
-    if (this.state.isUserStudy) {
+    if (isUserStudy) {
       btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
         style={{ backgroundColor: "#7BC043" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
         Nộp bài
       </Button>)
     }
-    if (this.state.isUserFight) {
+    else if (isUserFight) {
       btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
         style={{ backgroundColor: "#7BC043" }} onClick={this.submitCodeFight} disabled={this.state.isLoading} color="primary">
         Nộp bài
@@ -998,8 +1018,10 @@ class MiniTaskPage extends Component {
     }
 
     if (isUserFight && !isLoadingComponent) {
+      console.log("Check: " + isUserFight + " - " + isLoadingComponent);
       if (contestStatus === 1 || !isUserJoinFight) {
-        return <Notfoundpage/>;
+        console.log("Check 2: " + contestStatus + " - " + isUserJoinFight);
+        return <Notfoundpage />;
       }
     }
 

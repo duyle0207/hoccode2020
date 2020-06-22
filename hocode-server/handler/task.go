@@ -31,6 +31,9 @@ func (h *Handler) Task(c echo.Context) (err error) {
 	limit, _ := strconv.Atoi(c.QueryParam("limit"))
 	offset, _ := strconv.Atoi(c.QueryParam("offset"))
 
+	fmt.Println("[LIMIT]")
+	fmt.Println(limit)
+
 	db := h.DB.Clone()
 	defer db.Close()
 

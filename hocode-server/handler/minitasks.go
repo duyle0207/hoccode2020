@@ -26,7 +26,6 @@ import (
 // @Produce  json
 // @Success 200 {array} model.MiniTask
 // @Router /minitasks [get]
-
 func (h *Handler) SearchMinitasks(c echo.Context) (err error) {
 
 	minitaskList := []*model.MiniTask{}
@@ -44,7 +43,7 @@ func (h *Handler) SearchMinitasks(c echo.Context) (err error) {
 
 	if err = db.DB(config.NameDb).C("minitasks").
 		Find(bson.M{
-			"mini_task_name": bson.RegEx{mini_task_name, "i"},
+			"name_func": bson.RegEx{mini_task_name, "i"},
 			"del":            bson.M{"$ne": true},
 		}).
 		Skip(offset).
@@ -81,7 +80,7 @@ func (h *Handler) SearchMinitasksPracticePage(c echo.Context) (err error) {
 	if mini_task_status == "" && mini_task_level != "" { // Except status
 		db.DB(config.NameDb).C("minitasks").
 			Find(bson.M{
-				"mini_task_name": bson.RegEx{mini_task_name, "i"},
+				"name_func": bson.RegEx{mini_task_name, "i"},
 				"level":          mini_task_level,
 				"del":            bson.M{"$ne": true},
 			}).
@@ -94,7 +93,7 @@ func (h *Handler) SearchMinitasksPracticePage(c echo.Context) (err error) {
 		result := []*model.MiniTask{}
 		db.DB(config.NameDb).C("minitasks").
 			Find(bson.M{
-				"mini_task_name": bson.RegEx{mini_task_name, "i"},
+				"name_func": bson.RegEx{mini_task_name, "i"},
 				"level":          mini_task_level,
 				"del":            bson.M{"$ne": true},
 			}).
@@ -140,7 +139,7 @@ func (h *Handler) SearchMinitasksPracticePage(c echo.Context) (err error) {
 		result := []*model.MiniTask{}
 		db.DB(config.NameDb).C("minitasks").
 			Find(bson.M{
-				"mini_task_name": bson.RegEx{mini_task_name, "i"},
+				"name_func": bson.RegEx{mini_task_name, "i"},
 				//"level": mini_task_level,
 				"del": bson.M{"$ne": true},
 			}).
@@ -186,7 +185,7 @@ func (h *Handler) SearchMinitasksPracticePage(c echo.Context) (err error) {
 
 		db.DB(config.NameDb).C("minitasks").
 			Find(bson.M{
-				"mini_task_name": bson.RegEx{mini_task_name, "i"},
+				"name_func": bson.RegEx{mini_task_name, "i"},
 				//"level": mini_task_level,
 				//"del":            bson.M{"$ne": true},
 			}).

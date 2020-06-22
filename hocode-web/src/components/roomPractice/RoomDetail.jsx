@@ -363,6 +363,7 @@ class RoomDetail extends Component {
                 if (users_fight[i]["isNew"]) {
                     if (users_fight.length <= fight.numbers_std) {
                         users_fight[i]["isNew"] = false;
+                        this.send(fight.id);
                         axios.post(`http://localhost:8081/api/v1/curd/jointFight_1/${fight.id}/${users_fight[i].id}/${users_fight[i].email}/`).then(res => {
                             this.props.enqueueSnackbar(`Đã thêm ${res.data.email} vào cuộc thi!`, {
                                 variant: 'success',
@@ -373,7 +374,7 @@ class RoomDetail extends Component {
                             user: users_fight[i].email,
                             link: `http://localhost:3000/profile/contest-detail/${fight.id}`
                         }).then(res => {
-                            console.log(res);
+                            // console.log(res);
                         });
                     } else {
                         this.props.enqueueSnackbar('Vượt quá số lượng người dùng cho phép', {
@@ -382,7 +383,6 @@ class RoomDetail extends Component {
                     }
                 }
             }
-            this.send(fight.id);
         } else {
             this.props.enqueueSnackbar('Vượt quá số lượng người dùng cho phép', {
                 variant: 'success',
@@ -756,11 +756,11 @@ class RoomDetail extends Component {
                                                     <Grid container>
                                                         <Grid container xs={1}>
                                                             <Box ml={2}>
-                                                                <CodeIcon fontSize="large" />
+                                                                <CodeIcon style={{ fontSize: 30 }}/>
                                                             </Box>
                                                         </Grid>
                                                         <Grid container xs={7} justify="flex-start">
-                                                            <Typography style={{ fontWeight: 500, fontSize: 22 }}>Thách thức ({fight_minitask.length})</Typography>
+                                                            <Typography style={{ fontWeight: 600, fontSize: 22 }}>Thách thức ({fight_minitask.length})</Typography>
                                                         </Grid>
                                                         <Grid container xs={4} justify="flex-end" alignItems="flex-end">
                                                             {this.renderStartButton()}
@@ -790,7 +790,7 @@ class RoomDetail extends Component {
                                                             </Grid>
                                                             <Grid container xs={7}>
                                                                 <Box mx={1}>
-                                                                    <Typography style={{ fontWeight: 500, fontSize: 22 }}>Danh sách thí sinh</Typography>
+                                                                    <Typography style={{ fontWeight: 600, fontSize: 22 }}>Danh sách thí sinh</Typography>
                                                                 </Box>
                                                             </Grid>
                                                             <Grid container xs={4} justify="flex-end">
@@ -798,7 +798,7 @@ class RoomDetail extends Component {
                                                                     <Box mx={1}>
                                                                         <Button variant="contained" onClick={this.handleClickViewLeaderBoard} style={{ backgroundColor: "#007ABB" }}>
                                                                             <Typography style={{ fontSize: 15, fontWeight: 500, color: "#FFFFFF" }}>
-                                                                                Bảng xếp hạng
+                                                                                Xếp hạng
                                                                             </Typography>
                                                                         </Button>
                                                                     </Box>

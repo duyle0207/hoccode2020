@@ -140,7 +140,7 @@ class RoomPracticePage extends Component {
                         </Box>
                     </Grid>
                 </Grid>
-                {/* <Box my={2} display="flex" justifyContent="center">
+                <Box my={2} display="flex" justifyContent="center">
                     <Box flexGrow={1}>
                         <Typography style={{ fontSize: 28, fontWeight: 460 }}>Chiến trường</Typography>
                     </Box>
@@ -150,7 +150,7 @@ class RoomPracticePage extends Component {
                             <Typography variant="button" style={{ color: "white" }}>Tạo cuộc thi</Typography>
                         </Button>
                     </Box>
-                </Box> */}
+                </Box>
                 {/* <Grid container xs={12}> */}
                 <AppBar position="static" style={{ backgroundColor: "white", color: "black" }}>
                     <Tabs value={tab} onChange={this.handleChangeTab} aria-label="simple tabs example">

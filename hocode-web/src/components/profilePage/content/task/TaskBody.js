@@ -89,11 +89,11 @@ class TaskBody extends Component {
   }
 
   handleChange(event) {
-    this.setState({reason: event.target.value});
+    this.setState({ reason: event.target.value });
   }
 
   handleSubmit(event) {
-    this.setState({showForm: false});
+    this.setState({ showForm: false });
 
     let location = this.props.location;
     const currentParams = getParams(location.pathname);
@@ -112,12 +112,12 @@ class TaskBody extends Component {
         // const course = res.data;
         // this.setState({ course: course });
       });
-    
+
     // get course name 
     var nameCourse = this.state.course.course_name;
     // eslint-disable-next-line no-useless-concat
     let msg_deny = "Subject: Thông báo từ Hocode\r\n" + "Khóa học " + nameCourse + " của bạn không được ban quản trị xét duyệt.\r\n"
-    let reasonsText =  "Lí do: " + this.state.reason
+    let reasonsText = "Lí do: " + this.state.reason
     var content = msg_deny + reasonsText
     console.log(msg_deny)
     this.handleSendEmail(content)
@@ -139,7 +139,7 @@ class TaskBody extends Component {
     const currentParams = getParams(location.pathname);
     console.log(currentParams);
 
-    this.setState({courseId: currentParams.courseId});
+    this.setState({ courseId: currentParams.courseId });
 
     axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${currentParams.courseId}`).then(res => {
       console.log("[CoursePass]")
@@ -162,7 +162,7 @@ class TaskBody extends Component {
           break;
         }
       }
-      if(!isFound) {
+      if (!isFound) {
         this.setState({ userCourse: 0 });
       }
       console.log(this.state.userCourse);
@@ -179,7 +179,7 @@ class TaskBody extends Component {
         this.setState({ tasks: tasks1, isLoading: false });
       });
 
-    
+
 
     axios
       .get(`http://localhost:8081/api/v1/courses/${currentParams.courseId}`)
@@ -292,7 +292,7 @@ class TaskBody extends Component {
     return result;
   }
 
-  
+
   // handle send email after click buttons. 
   handleSendEmail(msg) {
     var to_mail = []
@@ -310,7 +310,7 @@ class TaskBody extends Component {
         mail
       )
       .then(response => {
-        
+
       });
   }
 
@@ -333,8 +333,8 @@ class TaskBody extends Component {
         // const course = res.data;
         // this.setState({ course: course });
       });
-    
-     // get course name 
+
+    // get course name 
     var nameCourse = this.state.course.course_name;
     let msg_accept = "Khóa học" + nameCourse + " của bạn đã được ban quản trị xét duyệt thành công"
     console.log(msg_accept)
@@ -342,8 +342,8 @@ class TaskBody extends Component {
   }
 
   handleBtnDeny() {
-    this.setState({showForm: true})
-    
+    this.setState({ showForm: true })
+
   }
 
   // show alert 
@@ -352,45 +352,46 @@ class TaskBody extends Component {
   }
 
   handleCancel() {
-    this.setState({showForm: false})
+    this.setState({ showForm: false })
   }
   // show form reasons 
   showFormReasons = () => {
     return (
-      <div style={{borderRadius:"5px", backgroundColor:"#f2f2f2", padding: "20px", margin: "0 auto"}} className="container">
-        <form  onSubmit={this.handleSubmit}>
+      <div style={{ borderRadius: "5px", backgroundColor: "#f2f2f2", padding: "20px", margin: "0 auto" }} className="container">
+        <form onSubmit={this.handleSubmit}>
           <label>Góp ý:</label>
-          <textarea 
-          style={{height:200,
-                width:"100%", padding:"12px",
-                border:"1px solid #ccc",
-                borderTopLeftRadius:4,
-                boxSizing: "border-box",
-                marginTop:6,
-                marginBottom: 16,
-                resize:"vertical"
-          }} id="reasons" name="reasons" value={this.state.reason} onChange={this.handleChange} />
+          <textarea
+            style={{
+              height: 200,
+              width: "100%", padding: "12px",
+              border: "1px solid #ccc",
+              borderTopLeftRadius: 4,
+              boxSizing: "border-box",
+              marginTop: 6,
+              marginBottom: 16,
+              resize: "vertical"
+            }} id="reasons" name="reasons" value={this.state.reason} onChange={this.handleChange} />
           <input
             style={{
               backgroundColor: "#4CAF50",
               color: "white",
               padding: "12px 12px",
-              border: "none", 
+              border: "none",
               borderRadius: "4px",
-              cursor:PointerEvent,
+              cursor: PointerEvent,
             }}
-          type="submit" value="Submit"  placeholder="Ý kiến góp ý..."/>
+            type="submit" value="Submit" placeholder="Ý kiến góp ý..." />
           <button style={{
             backgroundColor: "#4CAF50",
             color: "white",
             padding: "12px 12px",
-            border: "none", 
+            border: "none",
             borderRadius: "4px",
-            cursor:PointerEvent,
-            position:"relative", marginLeft:"10px"
+            cursor: PointerEvent,
+            position: "relative", marginLeft: "10px"
           }} onClick={() => this.handleCancel()} >Cancel</button>
         </form>
-      </div>      
+      </div>
     );
   }
   render() {
@@ -530,15 +531,15 @@ class TaskBody extends Component {
                     <Grid item xs={4} sm={4}>
                       <Card>
                         <CardMedia
-                          style={{ height: 120 }}
+                          style={{ height: 120, borderRadius: 8 }}
                           image={this.state.course.background_image}
                           title="Contemplative Reptile"
                         />
                         <CardContent>
                           {timer}
                           <Box display="flex" color="#5c6bc0" justifyContent="flex-end">
-                            <Typography variant="h4">
-                              {this.state.userCourse? this.state.userCourse : 0} <EmojiNatureIcon />
+                            <Typography variant="h5">
+                              {this.state.userCourse ? this.state.userCourse : 0} <EmojiNatureIcon />
                             </Typography>
                           </Box>
                         </CardContent>
@@ -546,8 +547,8 @@ class TaskBody extends Component {
                     </Grid>
                     <Grid item xs={8} sm={8}>
                       <Box display="flex">
-                        <Box flexGrow={1} mt={3} mb={2}>
-                          <Typography variant="h3" component="h3">
+                        <Box flexGrow={1} mt={1} mb={2}>
+                          <Typography variant="h3" component="h3" style={{fontWeight: 400}}>
                             {course.course_name}
                           </Typography>
                         </Box>
@@ -560,7 +561,7 @@ class TaskBody extends Component {
                                   aria-label="small outlined button group"
                                   color="primary"
                                   onClick={
-                                    () => { this.handleBtnAccepted(); this.showAlert();}
+                                    () => { this.handleBtnAccepted(); this.showAlert(); }
                                   }>
                                   Duyệt khóa học
                                 </Button>
@@ -582,8 +583,8 @@ class TaskBody extends Component {
                       </Box>
                       <Grid
                         item
-                        xs={8}
-                        sm={8}
+                        xs={12}
+                        sm={12}
                         container
                         style={{ justifyContent: "space-between" }}
                       >
@@ -608,7 +609,7 @@ class TaskBody extends Component {
                             variant="body2"
                             color="textSecondary"
                             component="p"
-                            style={{ marginLeft: 6 }}
+                            style={{ marginLeft: 6, fontWeight: 600 }}
                           >
                             {/* {course.total_minitask} */}
                             {course.user_create !== ""
@@ -638,40 +639,39 @@ class TaskBody extends Component {
                             variant="body2"
                             color="textSecondary"
                             component="p"
-                            style={{ marginLeft: 4 }}
+                            style={{ marginLeft: 4, fontWeight: 600 }}
                           >
                             {/* {course.total_minitask} */}
                             Đánh giá({course.rating ? course.rating.length : 0})
                           </Typography>
                         </Grid>
-                        <Box display="flex" mt={1}>
-                          <LaptopIcon fontSize="large" />
-                          <Typography
-                            variant="h6"
-                            color="textSecondary"
-                            component="p"
-                            style={{ marginLeft: 6 }}
-                          >
-                            {/* {course.total_minitask} */}
-                            {this.state.totalMinitask} bài học
+                        <Grid
+                          item
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "flex-start"
+                          }}
+                        >
+                          <Box display="flex">
+                            <LaptopIcon fontSize="medium" />
+                            <Typography
+                              variant="body2"
+                              color="textSecondary"
+                              component="p"
+                              style={{ marginLeft: 7, fontSize: 15, fontWeight: 500 }}
+                            >
+                              {/* {course.total_minitask} */}
+                              {this.state.totalMinitask} bài học
                             </Typography>
-                        </Box>
-                        <Grid item xs={12} sm={12} style={{ paddingTop: '15px' }}>
-                          <Typography variant="overline">
+                          </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={12} style={{ paddingTop: '15px'}}>
+                          <Typography style={{fontSize: 15, color: "#757575", fontWeight: 400, lineHeight: "25.5px"}}>
                             {course.course_desc}
                           </Typography>
                         </Grid>
-                        <Box>
-                          {/* <Typography variant="cation" display="block" gutterBottom>
-                            Ngày bắt đầu: {new Date(course.start_time).toISOString().replace(/T/, ' ').replace(/\..+/, '')}
-                            Ngày bắt đầu: {course.start_time}
-                          </Typography> */}
-                          {/* <Typography variant="cation" display="block" gutterBottom>
-                            Ngày kết thúc: {course.end_time}
-                          </Typography> */}
-                        </Box>
                       </Grid>
-
                       <Grid
                         item
                         style={{
@@ -685,9 +685,6 @@ class TaskBody extends Component {
                   </Grid>
                 </Paper>
               </Grid>
-              <Box p={1}>
-
-              </Box>
               <Grid xs={12} justify="center" >
                 <AppBar position="static" style={{ backgroundColor: "#FAFAFA", color: "#242424" }}>
                   <Tabs value={value} onChange={this.handleChangeValue} variant="fullWidth"
@@ -707,16 +704,16 @@ class TaskBody extends Component {
                 <TabPanel value={value} index={1}>
                   <Box display="flex" justifyContent="center" p={1} className="Hello">
                     <Grid item xs={12} sm={12} >
-                      <CourseLeaderBoard courseId={this.state.courseId}/>
+                      <CourseLeaderBoard courseId={this.state.courseId} />
                     </Grid>
                   </Box>
                 </TabPanel>
               </Grid>
             </React.Fragment>
           )}
-        {this.state.showForm ? this.showFormReasons(): null}
+        {this.state.showForm ? this.showFormReasons() : null}
       </Grid>
-      
+
     );
   }
 }
