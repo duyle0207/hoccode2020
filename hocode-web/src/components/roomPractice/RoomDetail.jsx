@@ -709,6 +709,24 @@ class RoomDetail extends Component {
                                         </Grid>
                                     </Box>
                                 </Grid>
+                                <Grid item xs={2}>
+                                    <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }}
+                                        component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
+                                        startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
+                                        <Typography style={{ color: "white", fontWeight: 500 }}>
+                                            Bắt đầu
+                                        </Typography>
+                                    </Button>
+                                </Grid>
+                                {/* <Grid item xs={2}>
+                                    <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }} 
+                                            component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
+                                            startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
+                                        <Typography style={{ color: "white", fontWeight: 500 }}>
+                                            Bắt đầu
+                                        </Typography>
+                                    </Button>
+                                </Grid> */}
                             </Grid>
                         </Fade>
                         <Divider />
