@@ -150,6 +150,22 @@ class ModelFightCreate extends Component {
     }
 }
 
+const required = (message = 'Required') =>
+  value => value ? undefined : message;
+
+const endDateValidation = (value, allValues) => {
+  if (new Date(value) - new Date(allValues.time_start) <= 0 &&
+    new Date(value) - new Date()) {
+    return 'End date must be longer than start date and current';
+  }
+}
+
+const startDateValidation = (value, allValues) => {
+  if (new Date(value) - new Date() <= 0) {
+    return 'End date must be longer than current';
+  }
+}
+
 class ModelFightEdit extends Component {
 
   constructor(props) {
@@ -288,6 +304,20 @@ class ModelFightEdit extends Component {
                   <TextInput resettable source="backgroud_img" />
                   <TextInput resettable multiline source="fight_desc" />
                   <NumberInput label="Số lượng thí sinh" source="numbers_std"/>
+                  <MuiPickersUtilsProvider utils={MomentUtils}>
+                    <DateTimeInput
+                      source="time_start"
+                      label="Start time"
+                      options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
+                      validate={[required()]}
+                    />
+                    <DateTimeInput
+                      source="time_end"
+                      label="End time"
+                      options={{ format: 'DD/MM/YYYY, HH:mm:ss', clearable: true, ampm: false, disablePast: true }}
+                      validate={[required(), endDateValidation]}
+                    />
+                  </MuiPickersUtilsProvider>
                 </SimpleForm>
               </Edit>
             </Grid>
