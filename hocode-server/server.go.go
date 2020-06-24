@@ -163,7 +163,6 @@ func main() {
 
 	r.GET("/courses", h.Courses)
 	r.GET("/totalCourse", h.GetTotalCourse)
-	r.GET("/getNewestCourse", h.GetNewestCourse)
 	r.GET("/courses/:id", h.CourseByID)
 	r.GET("/courses/:id/tasks", h.TaskByCoursesID)
 
@@ -217,6 +216,8 @@ func main() {
 	curd.GET("/getUserMinitaskPractice", h.GetUserPracticeMinitask)
 
 	curd.GET("/getChartInfo", h.GetChartInfo)
+
+	curd.GET("/getNewestCourse", h.GetNewestCourse)
 
 	curd.GET("/configs", h.GetListConfigs)
 	curd.GET("/configs/byname/:id", h.GetConfigByName)
@@ -287,7 +288,7 @@ func main() {
 	curd.GET("/fights/:type/:page/", h.GetFightListViaType)
 	curd.GET("/privateFights", h.GetPrivateFight)
 
-	// user fight
+	// user fightgetNewestCourse
 	curd.GET("/user-fight/:fight_id", h.GetUserJoiningFight)
 	curd.GET("/user-fight-info/", h.GetUserFightInfo)
 	curd.POST("/jointFight_1/:fight_id/:user_id/:email/", h.JoinFight_1)
@@ -411,7 +412,7 @@ func main() {
 	// e.Use(middleware.Static("/static"))
 	// e.Static("/", "static")
 	// e.GET("/", h.Gethome)
-	// e.Static("/*", "../hocode-web/build")
+	// e.Static("/*", "../hocode-weblistminitaskfight/build")
 	// e.File("/*", "../hocode-web/build/index.html")
 	// e.GET("/swagger/*", echoSwagger.WrapHandler)
 

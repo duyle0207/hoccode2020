@@ -211,12 +211,18 @@ func (h *Handler) HandleKickUserOutFight(c echo.Context) (err error) {
 		"fight_id": fight_id,
 	}).Count()
 
+	fmt.Println("[COUNT FIGHT USER MINITASK]")
+	fmt.Println(check)
+
+
 	if check > 0 {
-		if err = db.DB(config.NameDb).C("fight_user_minitask").Remove(bson.M{
-			"user_id":  user_id,
-			"fight_id": fight_id,
-		}); err != nil {
-			return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
+		for i:=0;i<check;i++ {
+			if err = db.DB(config.NameDb).C("fight_user_minitask").Remove(bson.M{
+				"user_id":  user_id,
+				"fight_id": fight_id,
+			}); err != nil {
+				return &echo.HTTPError{Code: http.StatusBadRequest, Message: err}
+			}
 		}
 	}
 
@@ -238,6 +244,11 @@ func (h *Handler) IsUserJoinFight(c echo.Context) error {
 		"user_id":  id,
 		"fight_id": fight_id,
 	}).Count()
+
+	fmt.Println("[Fight_id]")
+	fmt.Println(fight_id)
+	fmt.Println("[User_ID]")
+	fmt.Println(id)
 
 	return c.JSON(http.StatusOK, count > 0)
 }

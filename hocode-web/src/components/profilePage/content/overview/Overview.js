@@ -136,7 +136,7 @@ class Overview extends React.Component {
         console.log(res.data);
         this.setState({ chartInfo: res.data });
       }),
-      axios.get(`http://localhost:8081/api/v1/getNewestCourse`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/curd/getNewestCourse`).then(res => {
         console.log(res.data);
         this.setState({ newestCourse: res.data });
       }),

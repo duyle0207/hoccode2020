@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strconv"
 
@@ -82,6 +83,10 @@ func (h *Handler) GetListMinitaskByFightID(c echo.Context) (err error) {
 	defer db.Clone()
 	bk := []*model.FightMiniTask{}
 
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
 	db.DB(config.NameDb).C("fight_minitask").
 		Find(bson.M{
 			"fight_id": fightID,
@@ -97,6 +102,19 @@ func (h *Handler) GetListMinitaskByFightID(c echo.Context) (err error) {
 				},
 			).One(&miniTask)
 		fmt.Println(miniTask.MiniTaskName)
+
+		fight_user_minitask := &model.FightUserMinitask{}
+		fight_user_minitask.Status = "-1"
+		_ = db.DB(config.NameDb).C("fight_user_minitask").Find(bson.M{
+			"fight_id":    fightID,
+			"user_id":     userID,
+			"minitask_id": bk[i].Minitask_id,
+		}).One(&fight_user_minitask)
+		if fight_user_minitask.Status == "-1" {
+			miniTask.Status = "normal"
+		} else {
+			miniTask.Status = fight_user_minitask.Status
+		}
 		miniTaskList = append(miniTaskList, miniTask)
 	}
 

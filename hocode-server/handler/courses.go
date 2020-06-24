@@ -27,15 +27,6 @@ import (
 
 // http://localhost:8080/courses?page=1&limit=5
 
-// Courses godoc
-// @Summary List Courses
-// @ID course_list
-// @Description get courses <a href="/api/v1/courses?page=1&limit=5">/api/v1/courses?page=1&limit=5</a>
-// @Tags Courses
-// @Accept  json
-// @Produce  json
-// @Success 200 {array} model.Course
-// @Router /courses [get]
 func (h *Handler) Courses(c echo.Context) (err error) {
 
 	courses := []*model.Course{}
@@ -93,13 +84,47 @@ func (h *Handler) GetNewestCourse(c echo.Context) (err error) {
 	db := h.DB.Clone()
 	defer db.Close()
 
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
 	courses := []*model.Course{}
+
+	user_course := model.UserCourse{}
+	_ = db.DB(config.NameDb).C("user_course").Find(bson.M{
+		"user_id": userID,
+	}).One(&user_course)
 
 	_ = db.DB(config.NameDb).C("course").Find(bson.M{
 		"status": "Active",
-	}).Skip(0).Limit(4).Sort("-timestamp").All(&courses)
+	}).Sort("-timestamp").All(&courses)
 
-	return c.JSON(http.StatusOK, courses)
+	result := []*model.Course{}
+
+	fmt.Println(user_course.ID)
+
+	for i:=0;i < len(courses) && len(result)<4;i++ {
+		if CheckUnStudyCourse(user_course, courses[i].ID) {
+			fmt.Println(courses[i].CourseName)
+			fmt.Println(CheckUnStudyCourse(user_course, courses[i].ID))
+			result = append(result, courses[i])
+		}
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+func CheckUnStudyCourse(user_course model.UserCourse, studiedCourseID bson.ObjectId) bool {
+	for i:=0;i < len(user_course.CourseInfo);i++{
+		if bson.ObjectIdHex(user_course.CourseInfo[i].CourseID) == studiedCourseID {
+			fmt.Println()
+			fmt.Println(user_course.CourseInfo[i].CourseID)
+			fmt.Println(studiedCourseID)
+			fmt.Println()
+			return false
+		}
+	}
+	return true
 }
 
 func (h *Handler) CreateCourseType(c echo.Context) (err error) {

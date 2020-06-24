@@ -10,7 +10,7 @@ import { Typography } from "@material-ui/core";
 
 const styles = {
   TaskItem: {
-    borderRadius: "4px",
+    borderRadius: "20px",
     overflow: "hidden",
     marginBottom: "50px",
     boxShadow:
@@ -374,7 +374,7 @@ class TaskItem extends Component {
               style={{
                 height: "100%",
                 width: "100%",
-                borderRadius: "4px 4px 0 0"
+                borderRadius: "20px"
               }}
               alt=""
             />
@@ -402,9 +402,7 @@ class TaskItem extends Component {
                   // verticalAlign:"middle"
                 }}
               >
-                {/* <Grid > */}
                 {this.renderMiniItem(minitask)}
-                {/* </Grid> */}
               </Grid>
             ))}
           </Grid>

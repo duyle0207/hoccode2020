@@ -78,7 +78,7 @@ func (h *Handler) Send(c echo.Context) (err error) {
 		map[string]string{"host": email_info.Host, "username": email_info.User, "link":email_info.Link})
 
 	if errr != nil {
-		fmt.Println("file error")
+		fmt.Println("file")
 		log.Fatal(err)
 	}
 	if ok := r.sendMail(); ok {

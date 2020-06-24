@@ -160,11 +160,11 @@ const endDateValidation = (value, allValues) => {
   }
 }
 
-const startDateValidation = (value, allValues) => {
-  if (new Date(value) - new Date() <= 0) {
-    return 'End date must be longer than current';
-  }
-}
+// const startDateValidation = (value, allValues) => {
+//   if (new Date(value) - new Date() <= 0) {
+//     return 'End date must be longer than current';
+//   }
+// }
 
 class ModelFightEdit extends Component {
 

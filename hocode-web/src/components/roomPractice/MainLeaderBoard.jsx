@@ -397,7 +397,7 @@ class MainLeaderBoard extends Component {
                             </Slide>
                             {/* <Divider /> */}
                             {
-                                leaderBoard === 3 ?
+                                leaderBoard.length >= 3 ?
                                     <Box>
                                         <Grid container justify="center" spacing={1}>
                                             <Slide in={true} direction="right" {...(true ? { timeout: 1500 } : {})}>

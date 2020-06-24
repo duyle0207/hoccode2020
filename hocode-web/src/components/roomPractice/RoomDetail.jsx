@@ -26,6 +26,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import SendIcon from '@material-ui/icons/Send';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
+// import {Link} from "react-router-dom";
 
 import Minitask from "./Minitask";
 import UserRank from './UserRank';
@@ -269,15 +270,22 @@ class RoomDetail extends Component {
 
     handleDeleteUserFromInvitedList = (deleted_user) => {
         const { invitedUsers, fight } = this.state;
+        const { user } = this.props;
         var i = -1;
 
         console.log(deleted_user.id);
 
-        invitedUsers.forEach((user, index) => {
-            if (user.id === deleted_user.id) {
-                i = index;
-            }
-        });
+        if(deleted_user.email !== user.email){
+            invitedUsers.forEach((user, index) => {
+                if (user.id === deleted_user.id) {
+                    i = index;
+                }
+            });
+        } else {
+            this.props.enqueueSnackbar('Không thể xóa Host', {
+                variant: 'warning',
+            });
+        }
         if (i !== -1) {
             invitedUsers.splice(i, 1);
             this.setState({ invitedUsers });
@@ -573,7 +581,7 @@ class RoomDetail extends Component {
 
         const fight_minitask_list = fight_minitask.map((minitask, index) => {
             return <Slide direction="right" in={true} {...(true ? { timeout: 1000 } : {})}>
-                <Minitask status={"tried"} level={minitask.level} name={minitask.mini_task_name} minitask={minitask} isUserJoinFight={isUserJoinFight} contestStatus={contestStatus} />
+                <Minitask status={minitask.status} level={minitask.level} name={minitask.mini_task_name} minitask={minitask} isUserJoinFight={isUserJoinFight} contestStatus={contestStatus} />
             </Slide>
         });
 
@@ -709,7 +717,7 @@ class RoomDetail extends Component {
                                         </Grid>
                                     </Box>
                                 </Grid>
-                                <Grid item xs={2}>
+                                {/* <Grid item xs={2}>
                                     <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }}
                                         component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
                                         startIcon={<PlayArrowIcon style={{ color: "white" }} />}>
@@ -717,7 +725,7 @@ class RoomDetail extends Component {
                                             Bắt đầu
                                         </Typography>
                                     </Button>
-                                </Grid>
+                                </Grid> */}
                                 {/* <Grid item xs={2}>
                                     <Button variant="contained" style={{ backgroundColor: "#DE1F45 ", color: "white" }} 
                                             component={Link} to={`/fight/5ea6ec54e939f21a5432ba66/minitask/${this.state.firstIdMinitask}`}
