@@ -117,10 +117,6 @@ func (h *Handler) GetNewestCourse(c echo.Context) (err error) {
 func CheckUnStudyCourse(user_course model.UserCourse, studiedCourseID bson.ObjectId) bool {
 	for i:=0;i < len(user_course.CourseInfo);i++{
 		if bson.ObjectIdHex(user_course.CourseInfo[i].CourseID) == studiedCourseID {
-			fmt.Println()
-			fmt.Println(user_course.CourseInfo[i].CourseID)
-			fmt.Println(studiedCourseID)
-			fmt.Println()
 			return false
 		}
 	}

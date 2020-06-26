@@ -18,11 +18,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Fade from '@material-ui/core/Fade';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import { Link } from "react-router-dom";
-
+import FacebookIcon from '@material-ui/icons/Facebook';
 
 import {
   // FacebookShareCount,
-  FacebookIcon,
+  // FacebookIcon,
   FacebookShareButton
 } from "react-share";
 // import { Button } from "@material-ui/core";
@@ -151,12 +151,12 @@ class CourseItem extends Component {
     }
     return value;
   }
-  
+
   // handle func like course 
-  
+
   handleCountLiked() {
     var newcourse = this.props.course;
-    if(!this.state.liked) {
+    if (!this.state.liked) {
       this.setState((prevState, props) => {
         return {
           liked: true
@@ -169,7 +169,7 @@ class CourseItem extends Component {
         }
       });
     }
-    if(this.state.liked) {
+    if (this.state.liked) {
       newcourse.numbers_like = this.props.course.numbers_like + 1;
     }
     else {
@@ -186,12 +186,54 @@ class CourseItem extends Component {
         // const course = res.data;
         // this.setState({ course: course });
       });
-    
+
     // console.log(newcourse);
-    
+
   }
-  
- 
+
+  renderPraceticeProgress = (page) => {
+    if (page === "overview") {
+      return "";
+    } else {
+      return <React.Fragment>
+        <Box justifyContent="flex-start" p={1} display="flex" color="#757575">
+          <Tooltip title={(this.state.coursePassInfo.total_minitask === 0) ? "0%" :
+            (Math.round((this.state.coursePassInfo.minitask_solved / this.state.coursePassInfo.total_minitask) * 100) * 100) / 100 + "%"} placement="top">
+            <Fade in={!this.state.isLoadingCourseInfo} {...(true ? { timeout: 1000 } : {})}>
+              <LinearProgress
+                variant="determinate"
+                value={this.state.coursePassInfo.total_minitask === 0 ? "0" :
+                  (this.state.coursePassInfo.minitask_solved /
+                    this.state.coursePassInfo.total_minitask) * 100
+                }
+                style={{ width: '100%', height: 7 }}
+              />
+            </Fade>
+          </Tooltip>
+        </Box>
+        <Box display="flex">
+          <Box p={2} flexGrow={1} justifyContent="flex-start" color="#757575">
+            <Typography variant="subtitle2" style={{fontWeight: 10000}}>
+              {(this.state.coursePassInfo.minitask_solved + "/" + this.state.coursePassInfo.total_minitask)}
+            </Typography>
+          </Box>
+          <Box p={1} color="#757575">
+            {this.state.coursePassInfo.isCodePass ?
+              // <Chip label="Pass" style={{ background: "#43a047", color: "white" }} />
+              ""
+              :
+              <React.Fragment>
+                <Typography variant="subtitle2">
+                  {this.state.coursePassInfo.user_code_point} <EmojiNatureIcon />
+                </Typography>
+              </React.Fragment>}
+          </Box>
+        </Box>
+      </React.Fragment>
+    }
+  }
+
+
   render() {
     const { days, hours, min, sec, courseStatus } = this.state;
     const { classes, course, page } = this.props;
@@ -203,26 +245,26 @@ class CourseItem extends Component {
     //   isActive = <p>Cần xét duyệt</p>
     // }
 
-    let chip; 
-    if (course.status === " " || course.status === "Inactive"){
+    let chip;
+    if (course.status === " " || course.status === "Inactive") {
       chip = (<Chip
-      label="Cần xét duyệt"
-      color="primary"
-      style={{
-        width: '80%',
-        height: '80%',
-        fontSize: '63px'
-      }}
+        label="Cần xét duyệt"
+        color="primary"
+        style={{
+          width: '80%',
+          height: '80%',
+          fontSize: '63px'
+        }}
       />)
     } else if (course.status === "Pedding") {
-      chip =( <Chip
-      label="Đang xét duyệt"
-      color="primary"
-      style={{
-        width: '80%',
-        height: '80%',
-        fontSize: '63px'
-      }}
+      chip = (<Chip
+        label="Đang xét duyệt"
+        color="primary"
+        style={{
+          width: '80%',
+          height: '80%',
+          fontSize: '63px'
+        }}
       />)
     }
     let timer;
@@ -309,6 +351,7 @@ class CourseItem extends Component {
           height: "100%",
           display: "flex",
           // justifyContent: "center",
+          borderRadius: 8,
           alignItems: "center",
         }}
         className={`${classes.courseItem} hvr-bounce-in`}
@@ -316,7 +359,7 @@ class CourseItem extends Component {
         {/* <React.Fragment></React.Fragment> */}
         <Grid
           container
-          component={ Link } to={`/profile/courses/${course.id}/tasks`}
+          component={Link} to={`/profile/courses/${course.id}/tasks`}
           style={{
             width: "100%",
             overflow: "hidden",
@@ -327,7 +370,7 @@ class CourseItem extends Component {
             background: `url(${course.background_image}) no-repeat center`,
             backgroundSize: "cover",
           }}
-        > 
+        >
           {/* { course.status === "Pedding"  ?
             <Chip
               label="Cần xét duyệt"
@@ -367,11 +410,18 @@ class CourseItem extends Component {
               }}
             >
               <Link style={{ textDecoration: 'none' }} to={`/profile/courses/${course.id}/tasks`}>
-                <Typography gutterBottom variant="h5" component="h5">
+                <Typography
+                  gutterBottom variant="h5" component="h5"
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 600,
+                    color: "#3B3C54"
+                  }}
+                >
                   {course.course_name}
                 </Typography>
               </Link>
-              
+
             </div>
             <div
               style={{
@@ -389,54 +439,21 @@ class CourseItem extends Component {
                 size="large"
               />{" "}
               <Typography
-                variant="body1"
+                // variant="body1"
                 color="textSecondary"
                 component="p"
                 style={{
                   height: 20,
                   overflow: "hidden",
-                  wordBreak: "break-word"
+                  wordBreak: "break-word",
+                  fontSize: 14,
                 }}
               >
                 {course.course_desc}
               </Typography>
             </div>
             {!this.state.isLoadingCourseInfo ?
-              <React.Fragment>
-                <Box justifyContent="flex-start" p={1} display="flex" color="#757575">
-                  <Tooltip title={(this.state.coursePassInfo.total_minitask === 0) ? "0%" : (this.state.coursePassInfo.minitask_solved /
-                    this.state.coursePassInfo.total_minitask) * 100 + "%"} placement="top">
-                    <Fade in={!this.state.isLoadingCourseInfo} {...(true ? { timeout: 1000 } : {})}>
-                      <LinearProgress
-                        variant="determinate"
-                        value={this.state.coursePassInfo.total_minitask === 0 ? "0" :
-                          (this.state.coursePassInfo.minitask_solved /
-                            this.state.coursePassInfo.total_minitask) * 100
-                        }
-                        style={{ width: '100%', height: 7 }}
-                      />
-                    </Fade>
-                  </Tooltip>
-                </Box>
-                <Box display="flex">
-                  <Box p={2} flexGrow={1} justifyContent="flex-start" color="#757575">
-                    <Typography variant="subtitle2">
-                      {(this.state.coursePassInfo.minitask_solved + "/" + this.state.coursePassInfo.total_minitask)}
-                    </Typography>
-                  </Box>
-                  <Box p={1} color="#757575">
-                    {this.state.coursePassInfo.isCodePass ?
-                      // <Chip label="Pass" style={{ background: "#43a047", color: "white" }} />
-                      ""
-                      :
-                      <React.Fragment>
-                        <Typography variant="subtitle2">
-                          {this.state.coursePassInfo.user_code_point} <EmojiNatureIcon />
-                        </Typography>
-                      </React.Fragment>}
-                  </Box>
-                </Box>
-              </React.Fragment>
+              this.renderPraceticeProgress(page)
               :
               <Box p={1} display="flex" justifyContent="center" color="#757575">
                 <Box>
@@ -509,8 +526,8 @@ class CourseItem extends Component {
                       color="disabled"
                       onClick={
                         () => { this.handleCountLiked() }
-                      } 
-                    />): (<ThumbUpIcon
+                      }
+                    />) : (<ThumbUpIcon
                       style={{
                         // color: "#fff",
                         //backgroundColor: "rgba(0, 0, 0, 0.87)",
@@ -522,15 +539,17 @@ class CourseItem extends Component {
                       color="primary"
                       onClick={
                         () => { this.handleCountLiked() }
-                      } 
-                    />  )}
-                      
-                  </Box>             
-                  
+                      }
+                    />)}
+
+                  </Box>
                   <Typography
                     variant="body2"
                     color="textSecondary"
                     component="p"
+                    style = {{
+                      fontWeight: 1000,
+                    }}
                   >
                     {/* {this.state.totalMinitask} */}
                     {course.numbers_like}
@@ -547,7 +566,17 @@ class CourseItem extends Component {
                 >
                   <Box mt={1}>
                     <FacebookShareButton url="https://www.google.com/" >
-                      <FacebookIcon size={30} round={true} />
+                      <Grid container xs={12}>
+                        <Grid xs={3}>
+                          <FacebookIcon fontSize="medium" />
+                        </Grid>
+                        <Grid xs={9}>
+                          <Box mb={1}>
+                            <span>&nbsp;Chia sẻ</span>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                      {/* <FacebookIcon size={30} round={true} logoFillColor="white" /> */}
                       {/* <FacebookShareCount url="https://www.google.com/">
                         {shareCount => (
                           <span className="myShareCountWrapper">{shareCount}</span>

@@ -16,8 +16,8 @@ import axios from "axios";
 import HashLoader from "react-spinners/HashLoader";
 import Box from "@material-ui/core/Box";
 import PersonIcon from '@material-ui/icons/Person';
-import EditIcon from '@material-ui/icons/Edit';
-import IconButton from '@material-ui/core/IconButton';
+// import EditIcon from '@material-ui/icons/Edit';
+// import IconButton from '@material-ui/core/IconButton';
 import Course from './Course';
 import Practice from './Practice';
 import Slide from '@material-ui/core/Fade';
@@ -104,6 +104,7 @@ class PrintBody extends Component {
   handleDialogCertificateClose = () => {
     this.setState({ openDialogCertificate: false });
   };
+
   renderButtonCertificate(certificateViewStart) {
     if (certificateViewStart.cert !== undefined) {
       if (certificateViewStart.cert.status === "Inactive" || certificateViewStart.cert.status === "") {
@@ -225,7 +226,7 @@ class PrintBody extends Component {
     const { user_course, user_practice_info } = this.state;
     const courseList = user_course.map((course, i) => {
       return <Slide in={true} direction="down" {...(true ? { timeout: 1500 } : {})}>
-        <Course id={course.id} name={course.course_name} backgroundImage={course.background_image} rating={course.rating_value} />
+        <Course desc={course.course_desc} id={course.id} name={course.course_name} backgroundImage={course.background_image} rating={course.rating_value} />
       </Slide>
     });
 
@@ -259,7 +260,8 @@ class PrintBody extends Component {
                 <Grid item xs={12} sm={4} md={4}>
                   <Paper
                     style={{
-                      height: "351px",
+                      height: "100%",
+                      maxHeight: "320px",
                       display: "flex",
                       justifyContent: "center"
                     }}
@@ -274,11 +276,11 @@ class PrintBody extends Component {
                             <Box mt={1} flexGrow={6}>
                               <Typography variant="h5">Thông tin cá nhân</Typography>
                             </Box>
-                            <Box>
+                            {/* <Box>
                               <IconButton color="primary" aria-label="Edit">
                                 <EditIcon />
                               </IconButton>
-                            </Box>
+                            </Box> */}
                           </Box>
                         </Grid>
                         <Grid item xs={12} md={12} sm={12}>
@@ -307,99 +309,99 @@ class PrintBody extends Component {
                               <Grid item container xs={12} md={12} sm={12} zeroMinWidth>
                                 <Typography noWrap variant="overline">Điểm: {this.props.user.codepoint}</Typography>
                               </Grid>
+                            </Grid>
                           </Grid>
                         </Grid>
                       </Grid>
-                    </Grid>
-                    <Grid item xs={12} md={12} sm={12}>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                        style={{ marginLeft: 4, textAlign: "center" }}
-                      >
-                        Bạn sẽ nhận được chứng chỉ nếu số đậu của bạn lớn hơn{" "}
-                        {this.state.review_point}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} sm={12}>
-                      <Box p={2}>
-                        {this.renderButtonCertificate(this.state.certificateViewStart)}
-                      </Box>
-                    </Grid>
+                      <Grid item xs={12} md={12} sm={12}>
+                        <Box mx={1}>
+                          {this.renderButtonCertificate(this.state.certificateViewStart)}
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={12} sm={12}>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                          style={{ marginLeft: 4, textAlign: "center" }}
+                        >
+                          Bạn sẽ nhận được chứng chỉ nếu số đậu của bạn lớn hơn{" "}
+                          {this.state.review_point}
+                        </Typography>
+                      </Grid>
                     </Grid>
                   </Paper>
-              </Grid>
-              <Grid item xs={12} sm={8} md={8}>
-                <Paper
-                  style={{
-                    minHeight: 350,
-                    overflowY: "auto",
-                    display: "flex",
-                    flexDirection: "column"
-                  }}
-                >
-                  <Grid container>
-                    <Grid item container style={{ flexGrow: 1 }}>
-                      <Box p={2}>
-                        <Typography noWrap variant="h6">Học tập</Typography>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  <Box p={2}>
-                    <Grid container spacing={2}>
-                      {courseList.length === 0 ?
-                        <Box p={1}>
-                          <Typography variant="h3">Bạn chưa tham gia khóa học nào</Typography>
-                        </Box>
-                        :
-                        courseList
-                      }
-                    </Grid>
-                  </Box>
-                </Paper>
-              </Grid>
-              <Dialog
-                maxWidth={false}
-                open={this.state.openDialogCertificate}
-                onClose={this.handleDialogCertificateClose}
-                aria-labelledby="customized-dialog-title"
-              >
-                {" "}
-                {this.state.isLoadingCert === true ? (
-                  <div
-                    className="sweet-loading"
+                </Grid>
+                <Grid item xs={12} sm={8} md={8}>
+                  <Paper
                     style={{
+                      minHeight: 350,
+                      overflowY: "auto",
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "200px",
-                      height: "200px",
-                      overflow: "hidden"
+                      flexDirection: "column"
                     }}
                   >
-                    <HashLoader
-                      sizeUnit={"px"}
-                      size={50}
-                      color={"#AEA8A8"}
-                      loading={this.state.isLoadingCert}
-                    />
-                  </div>
-                ) : (
-                    this.renderDialog(this.state.certificateViewStart)
-                  )}
-              </Dialog>
-              </Grid>
-            <Box mt={2}>
-              <Grid container xs={12}>
-                <Grid item xs={12}>
-                  <Practice user_practice_info={user_practice_info} />
+                    <Grid container>
+                      <Grid item container style={{ flexGrow: 1 }}>
+                        <Box mx={2} mt={1}>
+                          <Typography noWrap variant="h6">Học tập</Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                    <Box p={2}>
+                      <Grid container spacing={2}>
+                        {courseList.length === 0 ?
+                          <Box p={1}>
+                            <Typography variant="h3">Bạn chưa tham gia khóa học nào</Typography>
+                          </Box>
+                          :
+                          courseList
+                        }
+                      </Grid>
+                    </Box>
+                  </Paper>
                 </Grid>
+                <Dialog
+                  maxWidth={false}
+                  open={this.state.openDialogCertificate}
+                  onClose={this.handleDialogCertificateClose}
+                  aria-labelledby="customized-dialog-title"
+                >
+                  {" "}
+                  {this.state.isLoadingCert === true ? (
+                    <div
+                      className="sweet-loading"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "200px",
+                        height: "200px",
+                        overflow: "hidden"
+                      }}
+                    >
+                      <HashLoader
+                        sizeUnit={"px"}
+                        size={50}
+                        color={"#AEA8A8"}
+                        loading={this.state.isLoadingCert}
+                      />
+                    </div>
+                  ) : (
+                      this.renderDialog(this.state.certificateViewStart)
+                    )}
+                </Dialog>
               </Grid>
-            </Box>
+              <Box mt={2}>
+                <Grid container xs={12}>
+                  <Grid item xs={12}>
+                    <Practice user_practice_info={user_practice_info} />
+                  </Grid>
+                </Grid>
+              </Box>
             </React.Fragment>
-    )
-  }
+          )
+        }
       </>
     );
   }

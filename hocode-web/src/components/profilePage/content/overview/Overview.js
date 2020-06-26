@@ -3,14 +3,14 @@ import React from "react";
 import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import LinearProgress from "@material-ui/core/LinearProgress";
+// import LinearProgress from "@material-ui/core/LinearProgress";
 import Divider from "@material-ui/core/Divider";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import HashLoader from "react-spinners/HashLoader";
 import Chip from "@material-ui/core/Chip";
 import Tooltip from "@material-ui/core/Tooltip";
-import CircularProgress from '@material-ui/core/CircularProgress';
+// import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import CardUser from './CardUser';
@@ -94,21 +94,21 @@ class Overview extends React.Component {
 
   getApi = async () => {
     await Promise.all([
-      axios.get(`http://localhost:8081/auth/usercourse`).then(res => {
+      axios.get(`http://localhost:8081/api/v1/auth/get-studied-course`).then(res => {
         const courses = res.data;
         console.log(courses);
-        this.setState({ courses: courses.course_info });
-        var c = this.state.courses;
-        this.state.courses.forEach((e, i) => {
-          axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${e.course_id}`).then(res => {
-            // console.log("[CoursePass]");
-            // console.log(res.data);
-            // c[i].progress = res.data.minitask_solved +"/"+res.data.total_minitask
-            c[i].completed_tasks_count = res.data.minitask_solved
-            c[i].total_tasks_count = res.data.total_minitask
-            this.setState({ courses: c, isLoadingCoursePassInfo: false });
-          });
-        });
+        this.setState({ courses: courses });
+        // var c = this.state.courses;
+        // this.state.courses.forEach((e, i) => {
+        //   axios.get(`http://localhost:8081/api/v1/curd/getCoursePassInfo/${e.course_id}`).then(res => {
+        //     // console.log("[CoursePass]");
+        //     // console.log(res.data);
+        //     // c[i].progress = res.data.minitask_solved +"/"+res.data.total_minitask
+        //     c[i].completed_tasks_count = res.data.minitask_solved
+        //     c[i].total_tasks_count = res.data.total_minitask
+        //     this.setState({ courses: c, isLoadingCoursePassInfo: false });
+        //   });
+        // });
       }).catch(err => {
         console.log(err);
       }),
@@ -191,13 +191,21 @@ class Overview extends React.Component {
   }
 
   render() {
-    const { isLoading, isLoadingCoursePassInfo, totalCourse, chartInfo, courses, newestCourse, tab, threeRandomMinitask, user_fight_info, twoNewestFights } = this.state;
+    const { isLoading, totalCourse, chartInfo, courses, newestCourse, tab, threeRandomMinitask, user_fight_info, twoNewestFights } = this.state;
     const { classes } = this.props;
-    let url = this.props.url;
+    // let url = this.props.url;
     const newestCourseList = newestCourse.map((course, i) => {
       return <Grid item xs={12} sm={3} md={3}>
         <Typography variant="subtitle1">
           <CourseItem course={course} page={"overview"} />
+        </Typography>
+      </Grid>
+    });
+
+    const studiedCourseList = courses.map((course, i) => {
+      return <Grid item xs={12} sm={3} md={3}>
+        <Typography variant="subtitle1">
+          <CourseItem course={course} />
         </Typography>
       </Grid>
     });
@@ -266,14 +274,14 @@ class Overview extends React.Component {
                       <Grid container xs={12} spacing={2}>
                         {newestCourseList}
                       </Grid>
-                      <Box my={3} mr={1}>
+                      <Box my={3} mr={2}>
                         <Grid container xs={12} spacing={2} justify="flex-end">
                           <Link
                             style={{ textDecoration: 'none' }}
                             className="item"
                             to={"/profile/course"}
                           >
-                            <Typography style={{ fontSize: 18, fontWeight: 400, textTransform: 'none' }}>Xem tất cả</Typography>
+                            <Typography style={{ fontSize: 17, fontWeight: 400, textTransform: 'none', color: "#3D3E56" }}>Xem tất cả</Typography>
                           </Link>
                         </Grid>
                       </Box>
@@ -285,81 +293,13 @@ class Overview extends React.Component {
                 <Fade in={true} {...(true ? { timeout: 1500 } : {})}>
                   <Grid item xs={12} sm={12} md={12}>
                     <Paper className={classes.paper}>
-                      <Grid container style={{ marginBottom: 15 }}>
-                        <Grid item style={{ flexGrow: 1 }}>
-                          <div style={{ fontWeight: "bold" }}>Khóa học đã tham gia</div>{" "}
-                        </Grid>
-                      </Grid>
                       {this.state.courses.length === 0 ? (
                         <div style={{}}>Bạn chưa tham gia khóa học nào.</div>
-                      ) : (
-                          this.state.courses.map(course => {
-                            return (
-                              <React.Fragment key={course.course_id}>
-                                <Grid
-                                  container
-                                  style={{ alignItems: "center", flexWrap: "unset" }}
-                                >
-                                  <Grid item>
-                                    <img
-                                      className={classes.img}
-                                      style={{
-                                        width: "50px",
-                                        height: "50px",
-                                        objectFit: "cover",
-                                        borderRadius: "8px"
-                                      }}
-                                      alt="complex"
-                                      src={course.background_image}
-                                    />
-                                  </Grid>
-                                  <Grid item style={{ flexGrow: 1, padding: 10 }}>
-                                    <Tooltip title="Tên chủ đề" placement="top">
-                                      <div style={{ fontWeight: "bold" }}>
-                                        <Link
-                                          className="item"
-                                          key={course.course_id}
-                                          style={{ textDecoration: "none" }}
-                                          to={`${url}/courses/${course.course_id}/tasks`}
-                                        >
-                                          <Typography variant="subtitle1">
-                                            {course.course_name}
-                                          </Typography>
-                                        </Link>
-                                      </div>
-                                    </Tooltip>
-                                    <Tooltip
-                                      title="Số lượng bài học đã hoàn thành"
-                                      placement="top"
-                                    >
-                                      {isLoadingCoursePassInfo ?
-                                        <CircularProgress size={22} color="black" />
-                                        :
-                                        <div style={{ color: "#9d9d9d" }}>
-                                          {course.completed_tasks_count}/
-                                      {course.total_tasks_count}
-                                        </div>}
-                                    </Tooltip>
-                                  </Grid>
-                                  <Grid item>
-                                    <Tooltip title="Tiến độ" placement="top">
-                                      <LinearProgress
-                                        variant="determinate"
-                                        value={
-                                          (course.completed_tasks_count /
-                                            course.total_tasks_count) *
-                                          100
-                                        }
-                                        style={{ width: 115 }}
-                                      />
-                                    </Tooltip>
-                                  </Grid>
-                                </Grid>
-                                <Divider style={{ margin: "auto" }} />{" "}
-                              </React.Fragment>
-                            );
-                          })
-                        )}
+                      ) :
+                        <Grid container xs={12} spacing={2}>
+                          {studiedCourseList}
+                        </Grid>
+                      }
                     </Paper>
                   </Grid>
                 </Fade>
@@ -370,13 +310,13 @@ class Overview extends React.Component {
               <Grid container xs={12} spacing={2}>
                 {twoNewestFightsList}
                 <Grid container xs={12} spacing={2} justify="flex-end">
-                  <Box my={3} mr={1}>
+                  <Box my={2} mr={1}>
                     <Link
                       style={{ textDecoration: 'none' }}
                       className="item"
                       to={"/profile/contest"}
                     >
-                      <Typography style={{ fontSize: 18, fontWeight: 400, textTransform: 'none' }}>Xem tất cả</Typography>
+                      <Typography style={{ fontSize: 17, fontWeight: 400, textTransform: 'none', color: "#3D3E56" }}>Xem tất cả</Typography>
                     </Link>
                   </Box>
                 </Grid>
@@ -386,7 +326,7 @@ class Overview extends React.Component {
               </Box>
               <Grid container xs={12} spacing={2}>
                 <Grid item xs={8} md={8} sm={8}>
-                  <Paper className={classes.paper}>
+                  <Paper className={classes.paper} style={{ borderRadius: 10 }}>
                     <Grid container xs={12}>
                       <Grid item xs={4} md={4} sm={4}>
                         <Box p={2}>
@@ -421,7 +361,7 @@ class Overview extends React.Component {
                   </Paper>
                 </Grid>
                 <Grid item xs={4} md={4} sm={4}>
-                  <Paper className={classes.paper}>
+                  <Paper className={classes.paper} style={{ borderRadius: 10 }}>
                     <Grid container style={{ marginBottom: 15 }}>
                       <Grid item style={{ flexGrow: 1 }}>
                         <div style={{ fontWeight: "bold" }}>Thách thức mới</div>{" "}

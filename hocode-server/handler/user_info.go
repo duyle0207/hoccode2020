@@ -55,6 +55,35 @@ func (h *Handler) GetUserCourse(c echo.Context) (err error) {
 
 }
 
+func (h *Handler) GetStudiedCourse(c echo.Context) (err error) {
+
+	uc := &model.UserCourse{}
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	ID := claims["id"].(string)
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	result := []*model.Course{}
+	_ = db.DB(config.NameDb).C("user_course").
+		Find(bson.M{
+			"user_id": ID,
+			"del":     bson.M{"$ne": true},
+		}).One(&uc)
+
+	for i:=0;i < len(uc.CourseInfo);i++ {
+		course := &model.Course{}
+		_ = db.DB(config.NameDb).C("course").Find(bson.M{
+			"_id": bson.ObjectIdHex(uc.CourseInfo[i].CourseID),
+		}).One(&course)
+		result = append(result, course)
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
 func (h *Handler) GetUserCourseProfile(c echo.Context) (err error) {
 
 	uc := &model.UserCourse{}
@@ -141,6 +170,61 @@ func (h *Handler) GetListUserCourse(c echo.Context) (err error) {
 	c.Response().Header().Set("x-total-count", strconv.Itoa(len(userCourse)))
 
 	return c.JSON(http.StatusOK, userCourse)
+}
+
+func (h *Handler) UpdateUserCourseWhenRunCourseFailed(c echo.Context) (err error) {
+
+	db := h.DB.Clone()
+	defer db.Close()
+
+	data_modified := []*model.CourseInfo{}
+
+	user_course := &model.UserCourse{}
+
+	course_id := c.Param("course_id")
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["id"].(string)
+
+	// get user course
+	_ = db.DB(config.NameDb).C("user_course").Find(bson.M{
+		"user_id": userID,
+	}).One(&user_course)
+
+	for i:=0;i< len(user_course.CourseInfo);i++ {
+		// check if course already exists
+		if user_course.CourseInfo[i].CourseID == course_id {
+			return c.JSON(http.StatusOK, "do_nothing")
+		}
+	}
+
+	data_modified = user_course.CourseInfo
+
+	//get course
+	course := &model.Course{}
+	_ = db.DB(config.NameDb).C("course").Find(bson.M{
+		"_id": bson.ObjectIdHex(course_id),
+	}).One(course)
+
+	// define new course_info
+	new_CourseInfo := &model.CourseInfo{
+		CourseID:            course_id,
+		CourseName:          course.CourseName,
+		CompletedTasksCount: 0,
+		ToDoTasksCount:      0,
+		TotalTasksCount:     0,
+		PassCourse:          false,
+		BackgroundImage:     course.BackgroundImage,
+		CodePoint:           0,
+	}
+
+	data_modified = append(data_modified, new_CourseInfo)
+	user_course.CourseInfo = data_modified
+	// update user course
+	_, _ = db.DB(config.NameDb).C("user_course").UpsertId(user_course.ID, user_course)
+
+	return c.JSON(http.StatusOK, user_course)
 }
 
 func (h *Handler) UpdateUserCourse(c echo.Context) (err error) {

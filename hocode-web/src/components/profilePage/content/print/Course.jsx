@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 class Course extends Component {
     render() {
-        const { name, rating, backgroundImage, id } = this.props;
+        const { name, rating, backgroundImage, id, desc } = this.props;
 
         return (
             <Grid item xs={12} sm={4} md={4}>
@@ -26,7 +26,7 @@ class Course extends Component {
                             style={{ textDecoration: "none" }}
                             to={`/profile/courses/${id}/tasks`}
                         >
-                            <Typography gutterBottom variant="h5" component="h2">
+                            <Typography gutterBottom variant="h5" component="h2" style={{ fontWeight: 600, color: "#3B3C54" }}>
                                 {name}
                             </Typography>
                         </Link>
@@ -34,9 +34,20 @@ class Course extends Component {
                             <Grid item xs={12} sm={6} md={6}>
                                 <Rating name="read-only" value={rating} precision={0.5} readOnly />
                             </Grid>
-                            <Grid item xs={12} sm={6} md={6}>
-                                <Typography variant="caption"></Typography>
-                            </Grid>
+                        </Grid>
+                        <Grid container xs={12} sm={6} md={6}>
+                            <Typography variant="caption"
+                            color="textSecondary"
+                            component="p"
+                            style={{
+                              height: 20,
+                              overflow: "hidden",
+                              wordBreak: "break-word",
+                              fontSize: 14,
+                            }}
+                            >
+                                {desc}
+                            </Typography>
                         </Grid>
                     </CardContent>
                 </Card>

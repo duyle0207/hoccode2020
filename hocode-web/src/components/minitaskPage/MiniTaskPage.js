@@ -195,7 +195,7 @@ class MiniTaskPage extends Component {
           isUserJoinFight: isUserJoin.data,
         });
       });
-      
+
       axios.get(`http://localhost:8081/api/v1/curd/fights/${params.fightId}`).then(res => {
         var code;
         const fight = res.data;
@@ -743,7 +743,6 @@ class MiniTaskPage extends Component {
               this.props.submitUpdateMinitask(
                 this.state.minitask.id,
                 this.state.minitask.task_id,
-
                 params.courseId
               );
               Swal.fire({
@@ -767,6 +766,11 @@ class MiniTaskPage extends Component {
                 containerId: "B"
               });
             }
+          } else {
+            // Run code failed
+            axios.post(`http://localhost:8081/api/v1/auth/update-user-course-w-run-failed/${params.courseId}`).then(res=>{
+              console.log(res.data);
+            });
           }
         }.bind(this)
       )
@@ -783,183 +787,183 @@ class MiniTaskPage extends Component {
       );
   }
 
-    // code fight submit handle
-    submitCodeFight() {
-      this.setState((state, props) => ({
-        result: {}
-      }));
-      const { minitask } = this.state;
-      //console.log(this.state.userCode);
-      let junit4 = this.createFileTest(minitask);
-  
-      let code = `import java.lang.Math; \n public class Solution {\n    public Solution(){}\n    ${this.state.userCode}\n    }`;
-  
-      const {
-        match: { params }
-      } = this.props;
-      console.log(params.taskId)
-      console.log(this.state.minitask.task_id);
-      // this.props.submitUpdateMinitask(
-      //   this.state.minitask.id,
-      //   params.taskId,
-      //   params.courseId
-      // );
-  
-      this.setState((state, props) => ({
-        isLoading: true
-      }));
-  
-      console.log(code);
-      console.log(junit4);
-  
-      axios
-        .get(`http://localhost:8081/api/v1/curd/getone-minitask/${params.fightId}/${this.state.minitask.id}/`)
-        .then(res => {
-          console.log(res.data);
-          this.setState({ minitaskUser: res.data })
-          console.log(this.state.minitaskUser);
-        })
-  
-      axios
-        .post("http://codejava.tk/runner", {
-          code: code + "\n\n// " + new Date() + "\n\n// " + new Date(),
-          test: junit4
-        })
-        .then(
-          function (response) {
-            console.log(response.data.stdout);
-            console.log(response.data.stderr === "");
-            const error = response.data.stderr;
-            const stdout = response.data.stdout;
-            this.setState((state, props) => ({
-              result: {
-                error: error,
-                stdout: stdout
+  // code fight submit handle
+  submitCodeFight() {
+    this.setState((state, props) => ({
+      result: {}
+    }));
+    const { minitask } = this.state;
+    //console.log(this.state.userCode);
+    let junit4 = this.createFileTest(minitask);
+
+    let code = `import java.lang.Math; \n public class Solution {\n    public Solution(){}\n    ${this.state.userCode}\n    }`;
+
+    const {
+      match: { params }
+    } = this.props;
+    console.log(params.taskId)
+    console.log(this.state.minitask.task_id);
+    // this.props.submitUpdateMinitask(
+    //   this.state.minitask.id,
+    //   params.taskId,
+    //   params.courseId
+    // );
+
+    this.setState((state, props) => ({
+      isLoading: true
+    }));
+
+    console.log(code);
+    console.log(junit4);
+
+    axios
+      .get(`http://localhost:8081/api/v1/curd/getone-minitask/${params.fightId}/${this.state.minitask.id}/`)
+      .then(res => {
+        console.log(res.data);
+        this.setState({ minitaskUser: res.data })
+        console.log(this.state.minitaskUser);
+      })
+
+    axios
+      .post("http://codejava.tk/runner", {
+        code: code + "\n\n// " + new Date() + "\n\n// " + new Date(),
+        test: junit4
+      })
+      .then(
+        function (response) {
+          console.log(response.data.stdout);
+          console.log(response.data.stderr === "");
+          const error = response.data.stderr;
+          const stdout = response.data.stdout;
+          this.setState((state, props) => ({
+            result: {
+              error: error,
+              stdout: stdout
+            }
+          }));
+          console.log(error);
+          this.setState((state, props) => ({
+            isLoading: false
+          }));
+
+          console.log(this.state.minitaskUser.status);
+          var today = new Date();
+          var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+          var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+          var dateTime = date + ' ' + time;
+
+          if (this.state.result.stdout.WASSUCCESSFUL === "true") {
+            if (this.props.user.id !== this.state.minitaskUser.user_id &&
+              params.fightId !== this.state.minitaskUser.fight_id &&
+              this.state.minitaskUser.minitask_id !== this.state.minitask.id) {
+              axios.get(`http://localhost:8081/api/v1/curd/handle-user-done-fight/${params.fightId}`).then(res => {
+                console.log(res.data);
+              });
+              axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
+                id: "",
+                fight_id: params.fightId,
+                user_id: this.props.user.id,
+                minitask_id: this.state.minitask.id,
+                status: "done",
+                tried: 1,
+                start_time: this.state.startTime,
+                end_time: dateTime
+              }).then(res => {
+                console.log(res.data);
+                //add code point for users
+                var newFightUser = this.state.userFight;
+                newFightUser.point = this.state.minitask.code_point + newFightUser.point
+                axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`, newFightUser)
+                  .then(res => {
+                    console.log(res.data);
+                    this.send(params.fightId)
+                  });
+              });
+            } else {
+              console.log("Đã tồn tại minitask user fight");
+              var newStatus = this.state.minitaskUser
+              if (newStatus.status !== "done") {
+                newStatus.status = "done"
+                newStatus.tried += 1
+                // axios.get(`http://localhost:8081/api/v1/curd/handle-user-done-fight/${params.fightId}`).then(res => {
+                //   console.log(res.data);
+                // });
+
+                // Fix here
+
+                newStatus.end_time = dateTime
+                this.setState({ minitaskUser: newStatus })
+                axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
+                  .then(res => {
+                    console.log(res.data);
+                    //add code point for users
+                    var newFightUser = this.state.userFight;
+                    newFightUser.point = this.state.minitask.code_point + newFightUser.point
+                    axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`, newFightUser)
+                      .then(res => {
+                        console.log(res.data);
+                        this.send(params.fightId);
+                      });
+                  });
               }
-            }));
-            console.log(error);
-            this.setState((state, props) => ({
-              isLoading: false
-            }));
-  
-            console.log(this.state.minitaskUser.status);
-            var today = new Date();
-            var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-            var dateTime = date + ' ' + time;
-  
-            if (this.state.result.stdout.WASSUCCESSFUL === "true") {
-              if (this.props.user.id !== this.state.minitaskUser.user_id &&
-                params.fightId !== this.state.minitaskUser.fight_id &&
-                this.state.minitaskUser.minitask_id !== this.state.minitask.id) {
-                axios.get(`http://localhost:8081/api/v1/curd/handle-user-done-fight/${params.fightId}`).then(res => {
-                  console.log(res.data);
-                });
-                axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
-                  id: "",
-                  fight_id: params.fightId,
-                  user_id: this.props.user.id,
-                  minitask_id: this.state.minitask.id,
-                  status: "done",
-                  tried: 1,
-                  start_time: this.state.startTime,
-                  end_time: dateTime
-                }).then(res => {
-                  console.log(res.data);
-                  //add code point for users
-                  var newFightUser = this.state.userFight;
-                  newFightUser.point = this.state.minitask.code_point + newFightUser.point
-                  axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`, newFightUser)
-                    .then(res => {
-                      console.log(res.data);
-                      this.send(params.fightId)
-                    });
-                });
-              } else {
-                console.log("Đã tồn tại minitask user fight");
-                var newStatus = this.state.minitaskUser
-                if (newStatus.status !== "done") {
-                  newStatus.status = "done"
-                  newStatus.tried += 1
-                  // axios.get(`http://localhost:8081/api/v1/curd/handle-user-done-fight/${params.fightId}`).then(res => {
-                  //   console.log(res.data);
-                  // });
-  
-                  // Fix here
-  
-                  newStatus.end_time = dateTime
-                  this.setState({ minitaskUser: newStatus })
-                  axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
-                    .then(res => {
-                      console.log(res.data);
-                      //add code point for users
-                      var newFightUser = this.state.userFight;
-                      newFightUser.point = this.state.minitask.code_point + newFightUser.point
-                      axios.put(`http://localhost:8081/api/v1/curd/add-point/${this.state.userFight.id}`, newFightUser)
-                        .then(res => {
-                          console.log(res.data);
-                          this.send(params.fightId);
-                        });
-                    });
-                }
-              }
-              Swal.fire({
-                type: "success",
-                title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
-                width: 600,
-                padding: "3em",
-                customClass: "hidden_alert",
-                backdrop: `
+            }
+            Swal.fire({
+              type: "success",
+              title: `Chúc mừng, bạn đã hoàn thành bài thực hành này`,
+              width: 600,
+              padding: "3em",
+              customClass: "hidden_alert",
+              backdrop: `
                   rgba(0,0,123,0.4)
                   url("${require("./giphy.gif")}") 
                   center center
                   no-repeat
                 `
-              });
-              toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
-                containerId: "B"
+            });
+            toast("Chúc mừng, bạn đã hoàn thành bài thực hành này!", {
+              containerId: "B"
+            });
+          } else {
+            if (this.props.user.id !== this.state.minitaskUser.user_id &&
+              params.fightId !== this.state.minitaskUser.fight_id &&
+              this.state.minitaskUser.minitask_id !== this.state.minitask.id) {
+              axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
+                id: "",
+                fight_id: params.fightId,
+                user_id: this.props.user.id,
+                minitask_id: this.state.minitask.id,
+                status: "tried",
+                tried: this.state.minitaskUser.tried + 1,
+                start_time: dateTime
+              }).then(res => {
+                console.log(res.data);
+                this.send(params.fightId);
               });
             } else {
-              if (this.props.user.id !== this.state.minitaskUser.user_id &&
-                params.fightId !== this.state.minitaskUser.fight_id &&
-                this.state.minitaskUser.minitask_id !== this.state.minitask.id) {
-                axios.post("http://localhost:8081/api/v1/curd/runfightminitask", {
-                  id: "",
-                  fight_id: params.fightId,
-                  user_id: this.props.user.id,
-                  minitask_id: this.state.minitask.id,
-                  status: "tried",
-                  tried: this.state.minitaskUser.tried + 1,
-                  start_time: dateTime
-                }).then(res => {
-                  console.log(res.data);
+              newStatus = this.state.minitaskUser;
+              newStatus.tried += 1
+              this.setState({ minitaskUser: newStatus })
+              axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
+                .then(res => {
                   this.send(params.fightId);
                 });
-              } else {
-                newStatus = this.state.minitaskUser;
-                newStatus.tried += 1
-                this.setState({ minitaskUser: newStatus })
-                axios.put(`http://localhost:8081/api/v1/curd/updatestatus/${this.state.minitaskUser.id}`, newStatus)
-                  .then(res => {
-                    this.send(params.fightId);
-                  });
-              }
             }
-          }.bind(this)
-        )
-        .catch(
-          function (error) {
-            this.setState((state, props) => ({
-              isLoading: false,
-              result: {
-                errorRuntime: error
-              }
-            }));
-            this.send(params.fightId);
-            console.log(error);
-          }.bind(this)
-        );
-    }  
+          }
+        }.bind(this)
+      )
+      .catch(
+        function (error) {
+          this.setState((state, props) => ({
+            isLoading: false,
+            result: {
+              errorRuntime: error
+            }
+          }));
+          this.send(params.fightId);
+          console.log(error);
+        }.bind(this)
+      );
+  }
 
   renderCodingTime = (isUserCompleteFight) => {
     if (!isUserCompleteFight) {
@@ -1003,7 +1007,7 @@ class MiniTaskPage extends Component {
     let btnSubmit;
     if (isUserStudy) {
       btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
-        style={{ backgroundColor: "#7BC043" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
+        style={{ backgroundColor: "red" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
         Nộp bài
       </Button>)
     }

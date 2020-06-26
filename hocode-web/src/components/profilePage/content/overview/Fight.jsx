@@ -15,7 +15,7 @@ class Fight extends Component {
         const { fight } = this.props;
         return (
             <Grid item container xs={6} md={6} sm={6}>
-                <Paper style={{ width: '100%' }}>
+                <Paper style={{ width: '100%', borderRadius: 10 }}>
                     <Grid container xs={12}>
                         <Box>
                             <CardMedia
@@ -24,14 +24,15 @@ class Fight extends Component {
                                 height="200"
                                 src={fight.backgroud_img}
                                 title="Fight img"
+                                style={{borderRadius: 10}}
                             />
                         </Box>
                     </Grid>
                     <Box mx={2} mb={1}>
                         <Grid container xs={12}>
                             <Grid xs={12} container>
-                                <Box my={2}>
-                                    <Typography style={{ fontSize: 32, fontWeight: 400 }}>
+                                <Box mt={1}>
+                                    <Typography style={{ fontSize: 32, fontWeight: 600, color: "#3B3C54" }}>
                                         {fight.fight_name}
                                     </Typography>
                                 </Box>
@@ -46,14 +47,14 @@ class Fight extends Component {
                             <Grid xs={6} container>
                                 <Box my={3} mb={1}>
                                     <Typography style={{ fontSize: 18, fontWeight: 600 }}>
-                                        Đã đăng ký {fight.numbers_std} đội
-                                </Typography>
+                                        Đã có {fight.numbers_std} đội đăng ký
+                                    </Typography>
                                 </Box>
                             </Grid>
                             <Grid xs={6} container justify="flex-end" alignItems="center">
                                 <Box my={3} mb={1}>
                                     <Button variant="contained" onClick={this.handleJoinFight} style={{ backgroundColor: "#E8505B" }}
-                                    component={Link} to={`/profile/contest-detail/${fight.id}`}>
+                                        component={Link} to={`/profile/contest-detail/${fight.id}`}>
                                         <Typography variant="button" style={{ color: "white" }}>Code ngay</Typography>
                                     </Button>
                                 </Box>

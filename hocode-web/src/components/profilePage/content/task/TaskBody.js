@@ -410,7 +410,9 @@ class TaskBody extends Component {
           <React.Fragment>
             <Box justifyContent="center">
               <Typography align="center" variant="h3">
-                Course hiện tại chưa được mở vui lòng quay lại vào {new Date(course.start_time).toISOString().replace(/T/, ' ').replace(/\..+/, '')} nhé! <InsertEmoticonIcon />
+                Course hiện tại chưa được mở vui lòng quay lại vào {new Date(course.start_time)
+                .toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+                        .replace(/T/, ' ').replace(/\..+/, '')} nhé! <InsertEmoticonIcon />
               </Typography>
             </Box>
           </React.Fragment>

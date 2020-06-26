@@ -310,17 +310,17 @@ class HeaderPracticePage extends Component {
                                             </Chart>
                                             <Grid container xs={12}>
                                                 <Grid container justify="center" alignContent="center" xs={3} sm={3} md={3}>
-                                                    <Typography noWrap variant="overline" style={{ color: "#42A5F5" }}>
+                                                    <Typography noWrap variant="overline" style={{ color: "#42A5F5", fontWeight: 800 }}>
                                                         To do: {chartInfo.todo - (chartInfo.solved + chartInfo.attempted)}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid container justify="center" alignContent="center" xs={5} sm={5} md={5}>
-                                                    <Typography noWrap variant="overline" style={{ color: "#9CCC65" }}>
+                                                    <Typography noWrap variant="overline" style={{ color: "#9CCC65", fontWeight: 800 }}>
                                                         Solved: {chartInfo.solved + "/" + chartInfo.todo}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid container justify="center" alignContent="center" xs={4} sm={4} md={4}>
-                                                    <Typography noWrap variant="overline" style={{ color: "#FF7043" }}>
+                                                    <Typography noWrap variant="overline" style={{ color: "#FF7043", fontWeight: 800 }}>
                                                         Attempted: {chartInfo.attempted}
                                                     </Typography>
                                                 </Grid>
@@ -357,17 +357,17 @@ class HeaderPracticePage extends Component {
                                             }
                                             <Grid container xs={12}>
                                                 <Grid container justify="center" alignContent="center" xs={3} sm={3} md={3}>
-                                                    <Typography variant="overline" style={{ color: "#9CCC65" }}>
+                                                    <Typography variant="overline" style={{ color: "#9CCC65", fontWeight: 800 }}>
                                                         Easy: {chartInfo.easy + "/" + chartInfo.total_easy}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid container justify="center" alignContent="center" xs={5} sm={5} md={5}>
-                                                    <Typography variant="overline" style={{ color: "#42A5F5" }}>
+                                                    <Typography variant="overline" style={{ color: "#42A5F5", fontWeight: 800 }}>
                                                         Medium: {chartInfo.medium + "/" + chartInfo.total_medium}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid container justify="center" alignContent="center" xs={4} sm={4} md={4}>
-                                                    <Typography variant="overline" style={{ color: "#FF7043" }}>
+                                                    <Typography variant="overline" style={{ color: "#FF7043", fontWeight: 800 }}>
                                                         Hard: {chartInfo.hard + "/" + chartInfo.total_hard}
                                                     </Typography>
                                                 </Grid>

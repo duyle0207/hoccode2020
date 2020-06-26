@@ -11,6 +11,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"net/http"
 	"os"
+	_ "google.golang.org/appengine"
 )
 
 // @title Hocode API
@@ -377,12 +378,15 @@ func main() {
 	rs.GET("/listUserCourse", h.GetListUserCourse)
 
 	rs.GET("/usercourse", h.GetUserCourse)
+	rs.GET("/get-studied-course", h.GetStudiedCourse)
 	rs.GET("/usercourseProfile", h.GetUserCourseProfile)
 	rs.GET("/completeminitask", h.GetUserCompleteMititask)
 
 	rs.GET("/courses/:id/tasks", h.AuthTaskByCoursesID)
 
 	rs.POST("/updateusercourse/:course_id", h.UpdateUserCourse)
+
+	rs.POST("/update-user-course-w-run-failed/:course_id", h.UpdateUserCourseWhenRunCourseFailed)
 
 	rs.POST("/nextminitask", h.NextMiniTask)
 

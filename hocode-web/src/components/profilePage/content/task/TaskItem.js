@@ -84,14 +84,18 @@ class TaskItem extends Component {
         // >
         <Grid container justify="center" alignItems="center" >
           <Grid container item xs={4} sm={4} spacing={1} direction="row" justify="flex-start" alignItems="flex-start">
-            <Link
-              to={`/tasks/${minitask.id}/${this.props.courseId}/${task.id}`}
-              style={{
-                textDecoration: "none"
-              }}
-            >
-              <Typography container noWrap style={{ flexGrow: 1 }} variant="button">{minitask.mini_task_name}</Typography>
-            </Link>
+            <Tooltip title={minitask.mini_task_name} placement="top">
+              <Typography container noWrap style={{ flexGrow: 1, wordBreak: "break-all" }}>
+                <Link
+                  to={`/tasks/${minitask.id}/${this.props.courseId}/${task.id}`}
+                  style={{
+                    textDecoration: "none"
+                  }}
+                >
+                  {minitask.mini_task_name}
+                </Link>
+              </Typography>
+            </Tooltip>
           </Grid>
           <Grid container item xs={2} sm={2} spacing={1} direction="row" justify="flex-start" alignItems="flex-start">
             <Tooltip title="Số đậu" placement="top">
@@ -159,7 +163,7 @@ class TaskItem extends Component {
                 }}
 
               > {minitask.numbers_doing > 0 ? (
-                <p><b style={{ color: "red" }}>{minitask.numbers_doing}</b> <i>lượt</i></p>
+                <p><b style={{ color: "red" }}>{minitask.numbers_doing}</b> <i>&nbsp;lượt</i></p>
               ) : (<b><i style={{ color: "red" }}>Hết lượt</i></b>)}
               </div>
             </Tooltip>
@@ -204,16 +208,21 @@ class TaskItem extends Component {
         //     margin: "auto"
         //   }}
         // >
-        <Grid container justify="center" alignItems="center" >
-          <Grid container item xs={4} sm={4} spacing={1} direction="row" justify="flex-start" alignItems="flex-start" >
-            <Link
-              to={`/tasks/${minitask.id}/${this.props.courseId}/${task.id}`}
-              style={{
-                textDecoration: "none"
-              }}
-            >
-              <Typography container noWrap style={{ flexGrow: 1 }} variant="button">{minitask.mini_task_name}</Typography>
-            </Link>
+        <Grid container justify="center" alignItems="center" spacing={1}>
+          <Grid container item xs={12} sm={4} md={4} spacing={1} direction="row" justify="flex-start" alignItems="flex-start" >
+            <Tooltip title={minitask.mini_task_name} placement="top">
+              <Typography container noWrap style={{ flexGrow: 1, wordBreak: "break-all" }}>
+                <Link
+                  to={`/tasks/${minitask.id}/${this.props.courseId}/${task.id}`}
+                  style={{
+                    textDecoration: "none",
+                    fontWeight: 400
+                  }}
+                >
+                  {minitask.mini_task_name}
+                </Link>
+              </Typography>
+            </Tooltip>
           </Grid>
           <Grid container item xs={2} sm={2} spacing={1} >
             <Tooltip title="Số đậu" placement="top">
@@ -275,7 +284,7 @@ class TaskItem extends Component {
                     <b style={{ color: "red" }}>
                       {minitask.numbers_doing}
                     </b>
-                    <i>lượt</i>
+                    <i>&nbsp;lượt</i>
                   </p>
                 ) : (
                   <p>

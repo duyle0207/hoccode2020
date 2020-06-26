@@ -114,7 +114,7 @@ func (h *Handler) GetCourseLeaderBoard(c echo.Context) (err error) {
 	user_course_leaderboard := []*model.UserCourseLeaderBoard{}
 
 	user_course := []*model.UserCourse{}
-	db.DB(config.NameDb).C("user_course").Find(bson.M{}).All(&user_course)
+	_ = db.DB(config.NameDb).C("user_course").Find(bson.M{}).All(&user_course)
 
 	for i := range user_course {
 		for j := range user_course[i].CourseInfo {
