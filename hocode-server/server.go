@@ -1,21 +1,17 @@
 package main
 
 import (
-	"crypto/tls"
 	"fmt"
-	"github.com/duyle0207/hoccode2020/config"
 	"github.com/duyle0207/hoccode2020/handler"
 	model "github.com/duyle0207/hoccode2020/models"
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
+	_ "google.golang.org/appengine"
 	"gopkg.in/mgo.v2"
-	"net"
 	"net/http"
 	"os"
-	_ "google.golang.org/appengine"
-	"time"
 )
 
 // @title Hocode API
@@ -94,37 +90,37 @@ func main() {
 	//}
 
 	// Connect mongo cluster
-	tlsConfig := &tls.Config{}
-
-	dialInfo := &mgo.DialInfo{
-		Addrs:    []string{config.LinkDb, config.LinkDb2, config.LinkDb3},
-		Database: config.NameDb,
-		Username: config.Username,
-		Password: config.Password,
-		Timeout:  60 * time.Second,
-		Source:   config.Source,
-	}
-	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
-		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
-		return conn, err
-	}
-	db, err := mgo.DialWithInfo(dialInfo)
-
-	if err != nil {
-		log.Info("Connect mongodb error")
-		e.Logger.Fatal(err)
-	} else {
-		log.Info("Connect mongodb success")
-	}
-
-	//Connect Mongo local
-	//db, err := mgo.Dial("localhost:27017/hocode")
+	//tlsConfig := &tls.Config{}
+	//
+	//dialInfo := &mgo.DialInfo{
+	//	Addrs:    []string{config.LinkDb, config.LinkDb2, config.LinkDb3},
+	//	Database: config.NameDb,
+	//	Username: config.Username,
+	//	Password: config.Password,
+	//	Timeout:  60 * time.Second,
+	//	Source:   config.Source,
+	//}
+	//dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
+	//	conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
+	//	return conn, err
+	//}
+	//db, err := mgo.DialWithInfo(dialInfo)
+	//
 	//if err != nil {
 	//	log.Info("Connect mongodb error")
 	//	e.Logger.Fatal(err)
 	//} else {
 	//	log.Info("Connect mongodb success")
 	//}
+
+	//Connect Mongo local
+	db, err := mgo.Dial("localhost:27017/hocode")
+	if err != nil {
+		log.Info("Connect mongodb error")
+		e.Logger.Fatal(err)
+	} else {
+		log.Info("Connect mongodb success")
+	}
 
 	// Initialize handler
 	h := &handler.Handler{DB: db}

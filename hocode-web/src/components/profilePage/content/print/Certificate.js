@@ -41,11 +41,11 @@ class Certificate extends Component {
       >
         <div  className="container">
           <div className="row">
-            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6" style={{marginLeft: 100, marginTop: 80}}>
-                <img src="../logo_HCMUTE.png" alt="" height="80" width="80" />
+            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6" style={{marginLeft: 100, marginTop: 90}}>
+                <img src="../logo_HCMUTE.png" alt="" height="95" width="80" />
             </div>
-            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6" style={{position: 'absolute',right: 100, top: 80}}>
-                <img src="../logo.png" alt="" height="80" width="80" />
+            <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6" style={{position: 'absolute',right: 100, top: 110}}>
+                <img src="../logo.png" alt="" height="50" width="110" />
             </div>
           </div>
         </div>
@@ -77,7 +77,7 @@ class Certificate extends Component {
         {Certificate.cert === undefined ?"":new Date(Certificate.cert.timestamp).toLocaleDateString()}
         </Grid>
         <Grid style={{position:"absolute",right:"20%",bottom:"10%",transform:"translateX(50%)"}}>
-        {Certificate.config === undefined ?"": <img src={Certificate.config.electronic_signature} style={{height:90}} alt="electronic_signature"/>}
+        {Certificate.config === undefined ?"": <img src={Certificate.config.electronic_signature} style={{height:50, marginBottom:"20px"}} alt="electronic_signature"/>}
            
         </Grid>
       </Grid>

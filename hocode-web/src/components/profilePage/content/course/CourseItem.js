@@ -213,7 +213,7 @@ class CourseItem extends Component {
         </Box>
         <Box display="flex">
           <Box p={2} flexGrow={1} justifyContent="flex-start" color="#757575">
-            <Typography variant="subtitle2" style={{fontWeight: 10000}}>
+            <Typography variant="subtitle2" style={{ fontWeight: 10000 }}>
               {(this.state.coursePassInfo.minitask_solved + "/" + this.state.coursePassInfo.total_minitask)}
             </Typography>
           </Box>
@@ -547,7 +547,7 @@ class CourseItem extends Component {
                     variant="body2"
                     color="textSecondary"
                     component="p"
-                    style = {{
+                    style={{
                       fontWeight: 1000,
                     }}
                   >
@@ -568,11 +568,12 @@ class CourseItem extends Component {
                     <FacebookShareButton url="https://www.google.com/" >
                       <Grid container xs={12}>
                         <Grid xs={3}>
-                          <FacebookIcon fontSize="medium" />
+                          <FacebookIcon fontSize="large" />
                         </Grid>
-                        <Grid xs={9}>
+                        <Grid container justify="center"
+                          alignItems="center" xs={9}>
                           <Box mb={1}>
-                            <span>&nbsp;Chia sẻ</span>
+                            <Typography style={{fontSize:13}}>&nbsp;&nbsp;Chia sẻ</Typography>
                           </Box>
                         </Grid>
                       </Grid>

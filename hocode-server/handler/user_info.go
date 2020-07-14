@@ -221,8 +221,18 @@ func (h *Handler) UpdateUserCourseWhenRunCourseFailed(c echo.Context) (err error
 
 	data_modified = append(data_modified, new_CourseInfo)
 	user_course.CourseInfo = data_modified
-	// update user course
-	_, _ = db.DB(config.NameDb).C("user_course").UpsertId(user_course.ID, user_course)
+
+	// update or create user course
+	if user_course.UserID != "" {
+		_, _ = db.DB(config.NameDb).C("user_course").UpsertId(user_course.ID, user_course)
+	} else {
+		user_course.UserID = userID
+		user_course.UserPoint = 250
+		user_course.Timestamp = time.Now()
+		user_course.ID = bson.NewObjectId()
+
+		_, _ = db.DB(config.NameDb).C("user_course").UpsertId(user_course.ID, user_course)
+	}
 
 	return c.JSON(http.StatusOK, user_course)
 }

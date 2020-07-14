@@ -136,6 +136,21 @@ func (h *Handler) CreateFights(c echo.Context) (err error) {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	name := claims["name"].(string)
+	id := claims["id"].(string)
+
+	fight_user := &model.FightUser{
+		ID:           bson.NewObjectId(),
+		FightID:      bk.ID.Hex(),
+		UserID:       id,
+		Point:        0,
+		Tried:        0,
+		IsUserStart:  false,
+		FinishedTime: time.Time{},
+		StartTime:    time.Time{},
+		EndTime:      time.Time{},
+	}
+
+	_, _ = db.DB(config.NameDb).C("fight_user").UpsertId(fight_user.ID, fight_user)
 
 	bk.User_created = name
 	bk.Timestamp = time.Now()

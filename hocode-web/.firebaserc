@@ -1,8 +1,13 @@
 {
   "projects": {
-    "default": "hocode-2020",
-    "y": "hocode-2020",
-    "firebase-react-deloy": "hocode-2020",
-    "firebase-react-deploy": "hocode-2020"
+    "default": "hocodevn",
+    "y": "hocodevn",
+    "firebase-react-deloy": "hocodevn",
+    "firebase-react-deploy": "hocodevn",
+    "hocode-server": "hocodevn",
+    "hocode-web": "hocodevn",
+    "hocode": "hocode-dhgroup",
+    "hocodevn": "graceful-envoy-271714",
+    "hocode-2020": "graceful-envoy-271714"
   }
 }

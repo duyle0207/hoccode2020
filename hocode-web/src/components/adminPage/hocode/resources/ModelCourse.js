@@ -183,11 +183,11 @@ class ModelCourseCreateForMod extends Component {
             />
           </MuiPickersUtilsProvider>
 
-          <button type="button" className="btn btn-default"
+          {/* <button type="button" className="btn btn-default"
             variant="contained"
             style={{ background: "#1ECD97", color: "#fff" }}
           //  onClick={this.handleDialogCourseCheck}
-          >Yêu cầu xét duyệt</button>
+          >Yêu cầu xét duyệt</button> */}
 
         </SimpleForm>
       </Create>

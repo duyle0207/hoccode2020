@@ -29,6 +29,7 @@ require (
 	github.com/mailru/easyjson v0.7.1 // indirect
 	github.com/matoous/go-nanoid v1.4.1
 	github.com/mattn/go-colorable v0.1.6 // indirect
+	github.com/olekukonko/ts v0.0.0-20171002115256-78ecb04241c0 // indirect
 	github.com/pilu/config v0.0.0-20131214182432-3eb99e6c0b9a // indirect
 	github.com/pilu/fresh v0.0.0-20190826141211-0fa698148017 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -41,7 +42,7 @@ require (
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20200602180216-279210d13fed // indirect
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
-	golang.org/x/sys v0.0.0-20200602225109-6fdc65e7d980 // indirect
+	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	golang.org/x/text v0.3.3 // indirect
 	golang.org/x/tools v0.0.0-20200626171337-aa94e735be7f // indirect
 	google.golang.org/appengine v1.6.6
