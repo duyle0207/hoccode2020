@@ -738,11 +738,11 @@ class MiniTaskPage extends Component {
 
               console.log(this.state.numbers_doing);
             }
-
             if (this.state.numbers_doing > 0) {
+              console.log(this.state.minitask.task_id);
               this.props.submitUpdateMinitask(
                 this.state.minitask.id,
-                this.state.minitask.task_id,
+                params.taskId,
                 params.courseId
               );
               Swal.fire({
@@ -1007,7 +1007,7 @@ class MiniTaskPage extends Component {
     let btnSubmit;
     if (isUserStudy) {
       btnSubmit = (<Button variant="contained" startIcon={<DescriptionIcon />}
-        style={{ backgroundColor: "red" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
+        style={{ backgroundColor: "#7BC043" }} onClick={this.submitCode} disabled={this.state.isLoading} color="primary">
         Nộp bài
       </Button>)
     }

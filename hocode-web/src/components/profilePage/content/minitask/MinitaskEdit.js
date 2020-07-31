@@ -143,6 +143,7 @@ class MinitaskEdit extends Component {
           mini_task_desc: minitask.mini_task_desc,
           level: minitask.level,
           code_point: minitask.code_point,
+          numbers_doing: minitask.numbers_doing,
           inputList: minitask.input_list || [],
 
           output_type_func_select: found,
@@ -259,6 +260,7 @@ class MinitaskEdit extends Component {
       mini_task_desc: this.state.mini_task_desc,
       level: this.state.level,
       code_point: parseInt(this.state.code_point),
+      numbers_doing: parseInt(this.state.numbers_doing),
       input_list: this.state.inputList
     };
     axios
@@ -640,13 +642,23 @@ class MinitaskEdit extends Component {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={6}>
-                  {this.renderTitle("Sổ đậu:")}
+                  {this.renderTitle("Số đậu:")}
                   <input
                     name="code_point"
                     type="number"
                     className="input-createminitask"
                     onChange={this.handleSimpleInputChange}
                     value={this.state.code_point}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={6}>
+                  {this.renderTitle("Số lượt:")}
+                  <input
+                    name="numbers_doing"
+                    type="number"
+                    className="input-createminitask"
+                    onChange={this.handleSimpleInputChange}
+                    value={this.state.numbers_doing}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={6}>

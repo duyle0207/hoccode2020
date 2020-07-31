@@ -1,11 +1,13 @@
-import { ADD_CODEPOINT, GET_USER, CHANGE_USER_INFO,CHANGE_LOADING,SET_UNDEFINED_NEXT_MINITASK } from "./types";
+import { ADD_CODEPOINT, GET_USER, CHANGE_USER_INFO, CHANGE_LOADING, SET_UNDEFINED_NEXT_MINITASK } from "./types";
 import axios from "axios";
 
 export const submitUpdateMinitask = (minitask_id, task_id, course_id, courseStatus) => dispatch => {
-  console.log({minitask_id: minitask_id,
+  console.log({
+    minitask_id: minitask_id,
     task_id: task_id,
     course_id: course_id,
-    course_status: courseStatus})
+    course_status: courseStatus
+  })
   axios
     .post(`http://localhost:8081/api/v1/auth/updateusercourse/${course_id}`, {
       minitask_id: minitask_id,
@@ -13,13 +15,14 @@ export const submitUpdateMinitask = (minitask_id, task_id, course_id, courseStat
       course_id: course_id
     })
     .then(res => {
-      console.log(res.data)
       dispatch({
         type: ADD_CODEPOINT,
         payload: res.data
       });
     })
-    .catch(err => console.log(err));
+    .catch(
+      err => console.log(err)
+    );
 };
 
 export const changeUserInfo = (newUser, userId) => dispatch => {
@@ -35,7 +38,7 @@ export const changeUserInfo = (newUser, userId) => dispatch => {
       password: newUser.password,
       firstname: newUser.firstName,
       lastname: newUser.lastName,
-      
+
     })
     .then(res => {
       console.log(res.data);

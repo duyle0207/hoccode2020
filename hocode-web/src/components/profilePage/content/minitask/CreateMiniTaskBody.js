@@ -559,6 +559,16 @@ class CreateMiniTaskBody extends Component {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={6}>
+                  {this.renderTitle("Số lượt:")}
+                  <input
+                    name="numbers_doing"
+                    type="number"
+                    className="input-createminitask"
+                    onChange={this.handleSimpleInputChange}
+                    value={this.state.numbers_doing}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={6}>
                   {this.renderTitle("Độ khó:")}
                   <Select
                     styles={selectStyles}
